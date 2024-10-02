@@ -1,0 +1,19 @@
+{
+  "name": "astro-starter",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/vercel": "^8.1.1",
+    "astro": "^5.4.2",
+    "dayjs": "^1.11.13",
+    "typescript": "~5.7.3"
+  }
+}
