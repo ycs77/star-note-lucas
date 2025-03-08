@@ -1,8 +1,8 @@
-# Lucas Yang's Astro Starter
+# 星星的筆記．Lucas
 
-> Start a new project: `npx degit ycs77/astro-starter my-project`
+使用 [Astro](https://astro.build/) 構建的部落格 [星星的筆記．Lucas](https://star-note-lucas.vercel.app/)。
 
-## Installation
+## 開發
 
 ```bash
 yarn
