@@ -4,7 +4,7 @@
     { "source": "/gh", "destination": "https://github.com/ycs77" },
     { "source": "/twitter", "destination": "https://x.com/ycs77_lucas" },
     { "source": "/x", "destination": "https://x.com/ycs77_lucas" },
-    { "source": "/bsky", "destination": "https://bsky.app/profile/ycs77.bsky.social" },
+    { "source": "/bsky", "destination": "https://bsky.app/profile/ycs77.star-note-lucas.me" },
     { "source": "/sponsor", "destination": "https://www.patreon.com/c/ycs77" },
     { "source": "/patreon", "destination": "https://www.patreon.com/c/ycs77" },
     { "source": "/fb", "destination": "https://www.facebook.com/profile.php?id=61573986539814" },
