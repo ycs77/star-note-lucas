@@ -31,6 +31,8 @@ const pathname = Astro.url.pathname.replace(/\/$/, '')
   <body>
     <Header />
 
-    <slot />
+    <main>
+      <slot />
+    </main>
   </body>
 </html>

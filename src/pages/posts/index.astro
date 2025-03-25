@@ -9,12 +9,14 @@ posts.sort((a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime())
 ---
 
 <Layout title="Posts">
-  <h1 class="text-3xl font-bold">Posts</h1>
-  <ul>
-    {posts.map(post => (
-      <li>
-        <a href={`/posts/${parsePostSlug(post.id).slug}`}>{post.data.title}</a>
-      </li>
-    ))}
-  </ul>
+  <div class="container">
+    <h1 class="text-3xl font-bold">Posts</h1>
+    <ul>
+      {posts.map(post => (
+        <li>
+          <a href={`/posts/${parsePostSlug(post.id).slug}`}>{post.data.title}</a>
+        </li>
+      ))}
+    </ul>
+  </div>
 </Layout>

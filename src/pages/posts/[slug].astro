@@ -22,9 +22,9 @@ const { Content } = await render(entry)
 ---
 
 <Layout title={entry.data.title}>
-  <main>
+  <div class="container">
     <h1 class="text-3xl font-bold">{entry.data.title}</h1>
     <p>Written by {entry.data.author}</p>
     <Content />
-  </main>
+  </div>
 </Layout>
