@@ -1,4 +1,6 @@
 ---
+import Header from '@/components/Header.astro'
+
 interface Props {
   title: string
 }
@@ -23,6 +25,8 @@ const pathname = Astro.url.pathname.replace(/\/$/, '')
     <slot name="head"></slot>
   </head>
   <body>
+    <Header />
+
     <slot />
   </body>
 </html>
