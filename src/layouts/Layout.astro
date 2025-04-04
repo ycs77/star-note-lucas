@@ -1,5 +1,5 @@
 ---
-import Header from '@/components/Header.astro'
+import Header from '@/components/Header.vue'
 
 interface Props {
   title: string
@@ -7,7 +7,7 @@ interface Props {
 
 const { title } = Astro.props
 
-const pathname = Astro.url.pathname.replace(/\/$/, '')
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/'
 ---
 
 <!doctype html>
@@ -29,7 +29,7 @@ const pathname = Astro.url.pathname.replace(/\/$/, '')
     <slot name="head"></slot>
   </head>
   <body>
-    <Header />
+    <Header client:load currentPath={pathname} />
 
     <main>
       <slot />

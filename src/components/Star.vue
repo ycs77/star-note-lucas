@@ -1,0 +1,23 @@
+<template>
+  <svg
+    :class="cn([
+      'inline-block fill-current',
+      props.class,
+    ])"
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 23.02 23.87"
+  >
+    <path d="M13.93,9.43C12.06,7.56,11.51,0,11.51,0S11,7.56,9.09,9.43,0,11.94,0,11.94s7.22.63,9.09,2.5,2.42,9.43,2.42,9.43.55-7.56,2.42-9.43S23,11.94,23,11.94,15.8,11.3,13.93,9.43Z"/>
+  </svg>
+</template>
+
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue'
+import { cn } from '@/utils/className'
+
+const props = defineProps<{
+  class?: HTMLAttributes['class']
+}>()
+</script>

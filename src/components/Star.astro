@@ -2,17 +2,13 @@
 import { cn } from '@/utils/className'
 
 interface Props {
-  show?: boolean
   class?: string | undefined | null
 }
-
-const { show = true } = Astro.props
 ---
 
 <svg
   class={cn([
-    'fill-current',
-    show ? 'inline-block' : 'hidden',
+    'inline-block fill-current',
     Astro.props.class,
   ])}
   xmlns="http://www.w3.org/2000/svg"
