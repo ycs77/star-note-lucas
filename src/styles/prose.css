@@ -1,0 +1,25 @@
+@layer utilities {
+  .prose {
+    h2, h3, h4 {
+      position: relative;
+    }
+
+    span.icon-link {
+      @apply text-indigo-300 hover:text-yellow-400 font-medium;
+    }
+    span.icon-link::before {
+      @apply absolute px-1 -translate-x-full no-underline md:px-2;
+      content: '#';
+      font-size: 0.8em;
+      margin-top: 0.125em;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    h2:hover span.icon-link::before,
+    h3:hover span.icon-link::before,
+    h4:hover span.icon-link::before {
+      opacity: 1;
+    }
+  }
+}

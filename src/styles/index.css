@@ -8,8 +8,6 @@
   --tracking-wider: 0.15em;
   --tracking-widest: 0.2em;
 
-  --breakpoint-2xl: 1440px;
-
   --color-gray-50: #fafafa;
   --color-gray-100: #f5f5f5;
   --color-gray-200: #e5e5e5;
@@ -240,6 +238,7 @@
   padding-inline: 1.5rem;
   @media (width >= theme(--breakpoint-md)) {
     padding-inline: 2rem;
+    max-width: 51rem !important;
   }
 }
 
@@ -262,5 +261,6 @@
 }
 
 @import "./base.css";
+@import "./prose.css";
 
-@config "../../tailwind.config.ts";
+@plugin "@tailwindcss/typography";
