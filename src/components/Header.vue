@@ -59,7 +59,7 @@
         <div
           v-show="showMenu"
           id="navbar-content"
-          class="absolute top-20 bottom-0 inset-x-0 md:static md:!flex md:space-x-3"
+          class="absolute top-20 bottom-0 inset-x-0 md:static md:!flex md:space-x-3 xl:space-x-5"
         >
           <ul class="px-4 pt-2 pb-6 space-y-4 md:flex md:px-0 md:py-0 md:space-x-1 md:space-y-0">
             <li v-for="item in nav" :key="item.link">
@@ -86,25 +86,25 @@
             </li>
           </ul>
 
-          <ul class="flex items-center justify-center space-x-6 mt-4 md:space-x-5 md:mt-0 md:mr-2">
+          <ul class="flex items-center justify-center space-x-6 mt-4 md:space-x-4 md:mt-0 md:mr-2">
             <li>
               <a :href="siteConfig.facebook" title="Facebook" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
-                <MingcuteFacebookLine class="size-6 md:size-5" />
+                <MingcuteFacebookLine class="size-6" />
               </a>
             </li>
             <li>
               <a :href="siteConfig.bluesky" title="Bluesky" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
-                <TablerBrandBluesky class="size-6 md:size-5" />
+                <TablerBrandBluesky class="size-6" />
               </a>
             </li>
             <li>
               <a :href="siteConfig.github" title="GitHub" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
-                <TablerBrandGithub class="size-6 md:size-5" />
+                <TablerBrandGithub class="size-6" />
               </a>
             </li>
             <li>
               <a :href="siteConfig.discord" title="Discord" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
-                <TablerBrandDiscord class="size-6 md:size-5" />
+                <TablerBrandDiscord class="size-6" />
               </a>
             </li>
           </ul>
@@ -131,7 +131,6 @@ const showMenu = ref(false)
 
 const nav = [
   { text: '文章', link: '/posts', match: '/posts' },
-  { text: '標籤', link: '/tags', match: '/tags' },
   { text: '專案', link: '/projects', match: '/projects' },
   { text: '關於', link: '/about' },
 ] satisfies NavItem[]
