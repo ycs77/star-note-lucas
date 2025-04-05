@@ -8,10 +8,13 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div v-if="showMenu" class="fixed isolate inset-0 bg-indigo-800 md:hidden" />
+      <div v-if="showMenu" class="fixed z-10 inset-0 bg-indigo-800 md:hidden" />
     </Transition>
 
-    <nav class="isolate p-6 flex justify-between items-center">
+    <nav
+      class="top-0 inset-x-0 z-10 p-6 flex justify-between items-center"
+      :class="pathname === '/' ? 'absolute' : 'relative'"
+    >
       <a href="/" class="text-lg text-whi font-lightte md:text-xl lg:text-2xl">
         <Star class="size-6 md:size-8 mr-1 mb-1 text-yellow-400" />星星的筆記．<span class="text-yellow-400 font-bold">Lucas</span>
       </a>
@@ -119,7 +122,7 @@ import siteConfig from '@/site.config'
 import type { NavItem } from '@/types'
 
 const props = defineProps<{
-  currentPath: string
+  pathname: string
 }>()
 
 const isLocked = useScrollLock(typeof document !== 'undefined' ? document.body : null)
@@ -135,8 +138,8 @@ const nav = [
 
 function isActive(item: NavItem) {
   if (item.match) {
-    return new RegExp(`^${item.match}`).test(props.currentPath)
+    return new RegExp(`^${item.match}`).test(props.pathname)
   }
-  return props.currentPath === item.link
+  return props.pathname === item.link
 }
 </script>

@@ -29,7 +29,16 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/'
     <slot name="head"></slot>
   </head>
   <body>
-    <Header client:load currentPath={pathname} />
+    <div
+      class="fixed inset-0 z-[-1] opacity-50 motion-safe:animate-stars-1-fade"
+      style="background-image: url('/images/stars-1.png')"
+    ></div>
+    <div
+      class="fixed inset-0 z-[-1] opacity-50 motion-safe:animate-stars-2-fade"
+      style="background-image: url('/images/stars-2.png')"
+    ></div>
+
+    <Header client:load pathname={pathname} />
 
     <main>
       <slot />
