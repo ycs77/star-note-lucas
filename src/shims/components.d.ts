@@ -14,6 +14,7 @@ declare module 'vue' {
     Header: typeof import('./../components/Header.vue')['default']
     JamFacebookCircle: typeof import('~icons/jam/facebook-circle')['default']
     MingcuteFacebookLine: typeof import('~icons/mingcute/facebook-line')['default']
+    PostListItem: typeof import('./../components/PostListItem.vue')['default']
     RiBlueskyLine: typeof import('~icons/ri/bluesky-line')['default']
     RiFacebookCircleLine: typeof import('~icons/ri/facebook-circle-line')['default']
     Star: typeof import('./../components/Star.vue')['default']
