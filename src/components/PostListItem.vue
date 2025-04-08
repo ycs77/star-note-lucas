@@ -7,8 +7,7 @@
     <div v-if="post.data.image" class="shrink-0 sm:order-2 sm:ml-4">
       <div class="relative w-full pb-16/9 bg-yellow-400 rounded overflow-hidden sm:rounded-md sm:w-48 lg:w-60">
         <img
-          :src="post.data.image.url"
-          :alt="post.data.image.alt"
+          :src="post.data.image"
           class="absolute w-full h-full object-cover hover:opacity-75 rounded sm:rounded-md md:transition-opacity md:duration-150"
           :class="{ 'border-2 border-yellow-400': border }"
         />
