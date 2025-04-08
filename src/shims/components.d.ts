@@ -8,20 +8,15 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    CarbonLogoGithub: typeof import('~icons/carbon/logo-github')['default']
     Date: typeof import('./../components/Date.vue')['default']
     Draft: typeof import('./../components/Draft.vue')['default']
     Header: typeof import('./../components/Header.vue')['default']
-    JamFacebookCircle: typeof import('~icons/jam/facebook-circle')['default']
     MingcuteFacebookLine: typeof import('~icons/mingcute/facebook-line')['default']
     PostListItem: typeof import('./../components/PostListItem.vue')['default']
-    RiBlueskyLine: typeof import('~icons/ri/bluesky-line')['default']
-    RiFacebookCircleLine: typeof import('~icons/ri/facebook-circle-line')['default']
     Star: typeof import('./../components/Star.vue')['default']
     TablerBrandBluesky: typeof import('~icons/tabler/brand-bluesky')['default']
     TablerBrandDiscord: typeof import('~icons/tabler/brand-discord')['default']
     TablerBrandGithub: typeof import('~icons/tabler/brand-github')['default']
     Tag: typeof import('./../components/Tag.vue')['default']
-    UilGithubAlt: typeof import('~icons/uil/github-alt')['default']
   }
 }

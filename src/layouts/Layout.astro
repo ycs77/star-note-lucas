@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions'
 import Header from '@/components/Header.vue'
 
 interface Props {
@@ -11,7 +12,7 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/'
 ---
 
 <!doctype html>
-<html lang="zh-Hant-TW">
+<html lang="zh-Hant-TW" transition:name="root" transition:animate="none">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -25,6 +26,8 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/'
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;700;900&family=Noto+Sans+SC:wght@300&family=Noto+Sans+TC:wght@100;300;400;500;700;900&family=Noto+Serif+TC:wght@200;300;400;500&display=swap" />
+
+    <ClientRouter fallback="none" />
 
     <slot name="head"></slot>
   </head>
