@@ -1,9 +1,10 @@
 ---
 import { ClientRouter } from 'astro:transitions'
 import Header from '@/components/Header.vue'
+import siteConfig from '@/site.config'
 
 interface Props {
-  title: string
+  title?: string
 }
 
 const { title } = Astro.props
@@ -19,7 +20,7 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/'
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    <title>{title}</title>
+    <title>{title ? `${title} | ${siteConfig.title}` : siteConfig.title}</title>
 
     <link rel="canonical" href={new URL(pathname, Astro.site)} />
 
