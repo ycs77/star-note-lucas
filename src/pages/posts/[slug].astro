@@ -51,8 +51,8 @@ const { Content } = await render(entry)
       <div class="mt-4 flex items-center flex-wrap">
         {entry.data.draft && <Draft />}
         <Date datetime={entry.data.pubDate} class="text-gray-400" />
-        {entry.data.tags.length && <span class="text-gray-400">．</span>}
-        {entry.data.tags.map(tag => (
+        {entry.data.tags?.length && <span class="text-gray-400">．</span>}
+        {entry.data.tags?.map(tag => (
           <Tag name={tag} href={`/tags/${tag}`} class="mr-2 my-1" />
         ))}
       </div>
