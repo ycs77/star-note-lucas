@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config'
 import vercel from '@astrojs/vercel'
 import vue from '@astrojs/vue'
+import mdx from '@astrojs/mdx'
 import tailwindcss from '@tailwindcss/vite'
 import components from 'unplugin-vue-components/vite'
 import icons from 'unplugin-icons/vite'
@@ -11,7 +12,10 @@ import rehypeSlug from 'rehype-slug'
 export default defineConfig({
   site: 'http://localhost:4321',
   adapter: vercel(),
-  integrations: [vue()],
+  integrations: [
+    vue(),
+    mdx(),
+  ],
   vite: {
     plugins: [
       tailwindcss(),
@@ -28,7 +32,7 @@ export default defineConfig({
     shikiConfig: {
       theme: 'material-theme-palenight',
       // langAlias: {
-      //   cjs: "javascript"
+      //   cjs: 'javascript',
       // },
     },
     rehypePlugins: [
