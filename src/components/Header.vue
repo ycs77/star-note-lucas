@@ -65,7 +65,7 @@
             <li v-for="item in nav" :key="item.link">
               <a
                 :href="item.link"
-                class="relative flex px-4 py-2 md:py-1 md:px-3 font-light tracking-wider rounded-lg"
+                class="relative flex px-4 py-2 md:py-1 md:px-3 font-light tracking-wider rounded-full"
                 :class="
                   isActive(item)
                     ? 'bg-indigo-700 text-white'

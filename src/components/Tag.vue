@@ -3,13 +3,13 @@
     :is="href ? 'a' : 'span'"
     :href="href?.toLowerCase()"
     :class="cn([
-      'inline-block bg-yellow-400 text-yellow-800 rounded-full transition-colors',
-      large ? 'px-6 py-1 text-lg duration-150' : 'px-3 py-0.5 text-sm duration-100',
-      href ? 'hover:bg-yellow-300' : '',
+      'inline-block bg-indigo-600 text-white font-normal rounded-full transition-colors',
+      large ? 'px-6 py-1 text-lg duration-150' : 'px-3 py-0.5 text-xs duration-100',
+      href ? 'hover:text-yellow-800 hover:bg-yellow-300' : '',
       props.class,
     ])"
   >
-    {{ name }}<span v-if="count"> ({{ count }})</span>
+    # {{ name }}<span v-if="count"> ({{ count }})</span>
   </component>
 </template>
 

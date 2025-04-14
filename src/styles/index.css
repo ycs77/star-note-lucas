@@ -119,9 +119,6 @@
   --color-pink-900: #702459;
   --color-pink-950: #521b41;
 
-  --padding-16\/9: 56.25%;
-  --padding-32\/9: 28.125%;
-
   --font-sans:
     Inter, Noto Sans TC, ui-sans-serif, system-ui, sans-serif,
     'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -237,8 +234,7 @@
   margin-inline: auto;
   padding-inline: 1.5rem;
   @media (width >= theme(--breakpoint-md)) {
-    padding-inline: 2rem;
-    max-width: 51rem !important;
+    max-width: 56rem !important;
   }
 }
 

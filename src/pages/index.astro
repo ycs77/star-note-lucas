@@ -1,17 +1,24 @@
 ---
+import { getCollection } from 'astro:content'
 import Layout from '@/layouts/Layout.astro'
+import PostItem from '@/components/Post/PostItem.vue'
 import Star from '@/components/Star.vue'
 import '@/styles/index.css'
+
+const posts = await getCollection('posts')
+posts.sort((a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime())
 ---
 
 <Layout>
   <!-- Jumbotron -->
-  <div class="relative isolate h-svh min-h-[360px] flex justify-center items-center overflow-hidden">
-    <div class="relative">
+  <div class="relative isolate h-[400px] md:h-[460px] flex justify-center items-center pt-[100px] overflow-hidden">
+    <div class="relative isolate">
       <!-- 標題 -->
       <h1 class="relative">
         <div class="text-5xl text-center xl:text-6xl font-thin motion-safe:animate-home-title">
-          <Star class="w-12 h-12 md:w-20 md:h-20 mr-1 mb-1 text-yellow-400" />星星的筆記
+          <span class="relative isolate inline-block w-12 h-12 md:w-20 md:h-20 mr-1 mb-1">
+            <Star class="w-full h-full text-yellow-400" />
+          </span>星星的筆記
         </div>
 
         <!-- 動畫方塊 -->
@@ -41,6 +48,28 @@ import '@/styles/index.css'
             <div class="w-[120px] h-[4px] bg-gradient-to-r from-white rounded-full overflow-hidden animate-shooting-star [animation-delay:550ms] sm:w-[200px]"></div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mb-12">
+    <h2 class="text-3xl md:text-4xl font-serif font-medium">
+      文章
+    </h2>
+
+    <div class="mt-8">
+      <ul class="grid gap-8">
+        {posts.map(post => (
+          <li class="min-w-0">
+            <PostItem post={post} />
+          </li>
+        ))}
+      </ul>
+
+      <div class="text-center mt-8 lg:mt-12">
+        <a href="/posts" class="px-10 py-3 bg-indigo-600 hover:bg-yellow-300 text-white hover:text-yellow-800 text-sm tracking-wide rounded-full transition-colors duration-150">
+          全部文章
+        </a>
       </div>
     </div>
   </div>

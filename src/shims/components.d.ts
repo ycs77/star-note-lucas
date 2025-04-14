@@ -12,7 +12,7 @@ declare module 'vue' {
     Draft: typeof import('./../components/Draft.vue')['default']
     Header: typeof import('./../components/Header.vue')['default']
     MingcuteFacebookLine: typeof import('~icons/mingcute/facebook-line')['default']
-    PostListItem: typeof import('./../components/PostListItem.vue')['default']
+    PostItem: typeof import('./../components/Post/PostItem.vue')['default']
     Star: typeof import('./../components/Star.vue')['default']
     TablerBrandBluesky: typeof import('~icons/tabler/brand-bluesky')['default']
     TablerBrandDiscord: typeof import('~icons/tabler/brand-discord')['default']
