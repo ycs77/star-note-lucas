@@ -1,8 +1,13 @@
 ---
 import { getCollection } from 'astro:content'
+import siteConfig from '@/site.config'
 import Layout from '@/layouts/Layout.astro'
 import PostItem from '@/components/Post/PostItem.vue'
 import Star from '@/components/Star.vue'
+import MingcuteFacebookLine from '~icons/mingcute/facebook-line'
+import TablerBrandBluesky from '~icons/tabler/brand-bluesky'
+import TablerBrandGithub from '~icons/tabler/brand-github'
+import TablerBrandDiscord from '~icons/tabler/brand-discord'
 import '@/styles/index.css'
 
 const posts = await getCollection('posts')
@@ -11,7 +16,7 @@ posts.sort((a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime())
 
 <Layout>
   <!-- Jumbotron -->
-  <div class="relative isolate h-[400px] md:h-[460px] flex justify-center items-center pt-[100px] overflow-hidden">
+  <div class="relative isolate h-[460px] md:h-[530px] flex justify-center items-center pt-[100px] overflow-hidden">
     <div class="relative isolate">
       <!-- 標題 -->
       <h1 class="relative">
@@ -52,11 +57,42 @@ posts.sort((a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime())
     </div>
   </div>
 
-  <div class="container mb-12">
-    <h2 class="text-3xl md:text-4xl font-serif font-medium">
-      文章
-    </h2>
+  <div class="container mb-8">
+    <div class="bg-indigo-700 p-8 rounded-lg shadow-md shadow-indigo-950/50">
+      <h2 class="text-3xl md:text-4xl font-medium">
+        Lucas Yang
+      </h2>
 
+      <p class="mt-6">
+        哈囉~ 我是 Lucas~ Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsum iure voluptatibus perferendis rerum illum. Vero nihil eaque cupiditate necessitatibus dolorem.
+      </p>
+
+      <ul class="flex items-center space-x-5 mt-6">
+        <li>
+          <a href={siteConfig.facebook} title="Facebook" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
+            <MingcuteFacebookLine class="size-6" />
+          </a>
+        </li>
+        <li>
+          <a href={siteConfig.bluesky} title="Bluesky" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
+            <TablerBrandBluesky class="size-6" />
+          </a>
+        </li>
+        <li>
+          <a href={siteConfig.github} title="GitHub" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
+            <TablerBrandGithub class="size-6" />
+          </a>
+        </li>
+        <li>
+          <a href={siteConfig.discord} title="Discord" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
+            <TablerBrandDiscord class="size-6" />
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container mb-12">
     <div class="mt-8">
       <ul class="grid gap-8">
         {posts.map(post => (

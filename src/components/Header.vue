@@ -86,7 +86,7 @@
             </li>
           </ul>
 
-          <ul class="flex items-center justify-center space-x-6 mt-4 md:space-x-4 md:mt-0 md:mr-2">
+          <ul class="flex items-center justify-center space-x-6 mt-2 md:hidden">
             <li>
               <a :href="siteConfig.facebook" title="Facebook" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
                 <MingcuteFacebookLine class="size-6" />
