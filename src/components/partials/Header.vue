@@ -15,7 +15,7 @@
       class="top-0 inset-x-0 z-10 p-6 flex justify-between items-center"
       :class="pathname === '/' ? 'absolute' : 'relative'"
     >
-      <a href="/" class="text-lg text-whi font-lightte md:text-xl lg:text-2xl">
+      <a href="/" class="text-lg text-white font-light md:text-xl lg:text-2xl">
         <Star class="size-6 md:size-8 mr-1 mb-1 text-yellow-400" />星星的筆記．<span class="text-yellow-400 font-bold">Lucas</span>
       </a>
 
@@ -87,24 +87,15 @@
           </ul>
 
           <ul class="flex items-center justify-center space-x-6 mt-2 md:hidden">
-            <li>
-              <a :href="siteConfig.facebook" title="Facebook" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
-                <MingcuteFacebookLine class="size-6" />
-              </a>
-            </li>
-            <li>
-              <a :href="siteConfig.bluesky" title="Bluesky" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
-                <TablerBrandBluesky class="size-6" />
-              </a>
-            </li>
-            <li>
-              <a :href="siteConfig.github" title="GitHub" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
-                <TablerBrandGithub class="size-6" />
-              </a>
-            </li>
-            <li>
-              <a :href="siteConfig.discord" title="Discord" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
-                <TablerBrandDiscord class="size-6" />
+            <li v-for="link in socialLinks" :key="link.href">
+              <a
+                :href="link.href"
+                :title="link.title"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-white hover:text-yellow-400"
+              >
+                <component :is="link.icon" class="size-6" />
               </a>
             </li>
           </ul>
@@ -118,22 +109,17 @@
 import { ref } from 'vue'
 import { useScrollLock } from '@vueuse/core'
 import { Star } from '@/components/icons'
-import siteConfig from '@/site.config'
-import type { NavItem } from '@/types'
+import { nav, socialLinks } from '@/nav'
+import type { NavItem } from '@/nav'
 
 const props = defineProps<{
+  // pathname 必須要從 Astro 傳入，因為要讓 SSR 的時候也能正確顯示
   pathname: string
 }>()
 
 const isLocked = useScrollLock(typeof document !== 'undefined' ? document.body : null)
 
 const showMenu = ref(false)
-
-const nav = [
-  { text: '文章', link: '/posts', match: '/posts' },
-  { text: '專案', link: '/projects', match: '/projects' },
-  { text: '關於', link: '/about' },
-] satisfies NavItem[]
 
 function isActive(item: NavItem) {
   if (item.match) {

@@ -6,7 +6,7 @@
       "@/*": ["./src/*"]
     },
     "types": [
-      "unplugin-icons/types/astro",
+      "unplugin-icons/types/vue3",
     ]
   },
   "exclude": ["public", "dist"]

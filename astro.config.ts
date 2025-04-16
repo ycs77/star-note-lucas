@@ -29,7 +29,9 @@ export default defineConfig({
         ],
         dts: 'src/shims/components.d.ts',
       }),
-      icons(),
+      icons({
+        compiler: 'vue3',
+      }),
     ],
   },
   markdown: {

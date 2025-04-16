@@ -12,6 +12,7 @@ declare module 'vue' {
     Danger: typeof import('./../components/callouts/Danger.vue')['default']
     Date: typeof import('./../components/general/Date.vue')['default']
     Draft: typeof import('./../components/general/Draft.vue')['default']
+    Footer: typeof import('./../components/partials/Footer.vue')['default']
     Header: typeof import('./../components/partials/Header.vue')['default']
     Important: typeof import('./../components/callouts/Important.vue')['default']
     Info: typeof import('./../components/callouts/Info.vue')['default']

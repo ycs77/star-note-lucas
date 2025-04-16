@@ -1,13 +1,10 @@
 ---
 import { getCollection } from 'astro:content'
-import siteConfig from '@/site.config'
 import Layout from '@/layouts/Layout.astro'
 import { PostItem } from '@/components/general'
 import { Star } from '@/components/icons'
-import MingcuteFacebookLine from '~icons/mingcute/facebook-line'
-import TablerBrandBluesky from '~icons/tabler/brand-bluesky'
-import TablerBrandGithub from '~icons/tabler/brand-github'
-import TablerBrandDiscord from '~icons/tabler/brand-discord'
+import { Footer } from '@/components/partials'
+import { socialLinks } from '@/nav'
 import '@/styles/index.css'
 
 const posts = await getCollection('posts')
@@ -68,31 +65,24 @@ posts.sort((a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime())
       </p>
 
       <ul class="flex items-center space-x-5 mt-6">
-        <li>
-          <a href={siteConfig.facebook} title="Facebook" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
-            <MingcuteFacebookLine class="size-6" />
-          </a>
-        </li>
-        <li>
-          <a href={siteConfig.bluesky} title="Bluesky" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
-            <TablerBrandBluesky class="size-6" />
-          </a>
-        </li>
-        <li>
-          <a href={siteConfig.github} title="GitHub" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
-            <TablerBrandGithub class="size-6" />
-          </a>
-        </li>
-        <li>
-          <a href={siteConfig.discord} title="Discord" target="_blank" rel="noopener noreferrer" class="text-white hover:text-yellow-400">
-            <TablerBrandDiscord class="size-6" />
-          </a>
-        </li>
+        {socialLinks.map(link => (
+          <li>
+            <a
+              href={link.href}
+              title={link.title}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-white hover:text-yellow-400"
+            >
+              <link.icon class="size-6" />
+            </a>
+          </li>
+        ))}
       </ul>
     </div>
   </div>
 
-  <div class="container mb-12">
+  <div class="container">
     <div class="mt-8">
       <ul class="grid gap-8">
         {posts.map(post => (
@@ -108,5 +98,9 @@ posts.sort((a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime())
         </a>
       </div>
     </div>
+  </div>
+
+  <div class="container">
+    <Footer />
   </div>
 </Layout>
