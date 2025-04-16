@@ -117,7 +117,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useScrollLock } from '@vueuse/core'
-import Star from './Star.vue'
+import { Star } from '@/components/icons'
 import siteConfig from '@/site.config'
 import type { NavItem } from '@/types'
 

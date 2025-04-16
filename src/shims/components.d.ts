@@ -8,15 +8,15 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    Date: typeof import('./../components/post/Date.vue')['default']
-    Draft: typeof import('./../components/post/Draft.vue')['default']
-    Header: typeof import('./../components/Header.vue')['default']
+    Date: typeof import('./../components/general/Date.vue')['default']
+    Draft: typeof import('./../components/general/Draft.vue')['default']
+    Header: typeof import('./../components/partials/Header.vue')['default']
     MingcuteFacebookLine: typeof import('~icons/mingcute/facebook-line')['default']
-    PostItem: typeof import('./../components/post/PostItem.vue')['default']
-    Star: typeof import('./../components/Star.vue')['default']
+    PostItem: typeof import('./../components/general/PostItem.vue')['default']
+    Star: typeof import('./../components/icons/Star.vue')['default']
     TablerBrandBluesky: typeof import('~icons/tabler/brand-bluesky')['default']
     TablerBrandDiscord: typeof import('~icons/tabler/brand-discord')['default']
     TablerBrandGithub: typeof import('~icons/tabler/brand-github')['default']
-    Tag: typeof import('./../components/Tag.vue')['default']
+    Tag: typeof import('./../components/general/Tag.vue')['default']
   }
 }
