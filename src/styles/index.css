@@ -241,6 +241,7 @@
 }
 
 @import "./base.css";
+@import "./code.css";
 @import "./prose.css";
 
 @plugin "@tailwindcss/typography";

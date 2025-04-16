@@ -1,0 +1,5 @@
+@layer theme {
+  .expressive-code {
+    --ec-codeFontSize: 1rem;
+  }
+}
