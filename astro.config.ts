@@ -12,6 +12,10 @@ import rehypeSlug from 'rehype-slug'
 
 export default defineConfig({
   site: 'http://localhost:4321',
+  trailingSlash: 'never',
+  build: {
+    format: 'file',
+  },
   adapter: vercel(),
   integrations: [
     vue(),
@@ -33,6 +37,9 @@ export default defineConfig({
         compiler: 'vue3',
       }),
     ],
+    ssr: {
+      external: ['astro/container', '@astrojs/mdx'],
+    },
   },
   markdown: {
     // shikiConfig: {

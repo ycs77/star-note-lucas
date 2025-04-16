@@ -4,6 +4,7 @@ import TablerBrandGithub from '~icons/tabler/brand-github'
 import TablerBrandBluesky from '~icons/tabler/brand-bluesky'
 import TablerBrandDiscord from '~icons/tabler/brand-discord'
 import MingcuteFacebookLine from '~icons/mingcute/facebook-line'
+import TablerRss from '~icons/tabler/rss'
 
 export interface NavItem {
   text: string
@@ -43,5 +44,10 @@ export const socialLinks = [
     title: 'Facebook',
     href: siteConfig.facebook,
     icon: MingcuteFacebookLine,
+  },
+  {
+    title: 'RSS',
+    href: siteConfig.rss,
+    icon: TablerRss,
   },
 ] satisfies SocialLink[] as SocialLink[]

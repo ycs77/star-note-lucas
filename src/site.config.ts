@@ -7,4 +7,5 @@ export default {
   bluesky: 'https://star-note-lucas.me/bsky',
   github: 'https://star-note-lucas.me/github',
   discord: 'https://star-note-lucas.me/discord',
+  rss: 'https://star-note-lucas.me/rss',
 }

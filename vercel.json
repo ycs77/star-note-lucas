@@ -9,6 +9,7 @@
     { "source": "/patreon", "destination": "https://www.patreon.com/c/ycs77" },
     { "source": "/fb", "destination": "https://www.facebook.com/profile.php?id=61573986539814" },
     { "source": "/discord", "destination": "https://discord.gg/AuA7E4QY" },
+    { "source": "/rss", "destination": "https://star-note-lucas.me/rss.xml" },
 
     { "source": "/post", "destination": "/posts" },
     { "source": "/post/:path*", "destination": "/posts/:path*" }

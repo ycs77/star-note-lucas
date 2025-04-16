@@ -8,7 +8,7 @@ import { socialLinks } from '@/nav'
 import '@/styles/index.css'
 
 const posts = await getCollection('posts')
-posts.sort((a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime())
+posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
 ---
 
 <Layout>
