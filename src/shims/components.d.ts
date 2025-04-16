@@ -8,11 +8,11 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    Date: typeof import('./../components/Date.vue')['default']
-    Draft: typeof import('./../components/Draft.vue')['default']
+    Date: typeof import('./../components/post/Date.vue')['default']
+    Draft: typeof import('./../components/post/Draft.vue')['default']
     Header: typeof import('./../components/Header.vue')['default']
     MingcuteFacebookLine: typeof import('~icons/mingcute/facebook-line')['default']
-    PostItem: typeof import('./../components/Post/PostItem.vue')['default']
+    PostItem: typeof import('./../components/post/PostItem.vue')['default']
     Star: typeof import('./../components/Star.vue')['default']
     TablerBrandBluesky: typeof import('~icons/tabler/brand-bluesky')['default']
     TablerBrandDiscord: typeof import('~icons/tabler/brand-discord')['default']

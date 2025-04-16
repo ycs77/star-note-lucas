@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import type { CollectionEntry } from 'astro:content'
-import Date from '@/components/Date.vue'
+import Date from '@/components/post/Date.vue'
 import { parsePostSlug } from '@/utils/slug'
 
 defineProps<{
