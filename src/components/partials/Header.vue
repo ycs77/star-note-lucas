@@ -8,11 +8,16 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div v-if="showMenu" class="fixed z-10 inset-0 bg-indigo-800 md:hidden" />
+      <div v-if="showMenu" class="fixed z-20 inset-0 bg-indigo-800 md:hidden" />
     </Transition>
 
+    <!--
+      首頁需要設定成 `absolute`，
+      原因是首頁必須要讓[流星區塊]頂到頁面最上面，
+      防止流星畫面從上面掉下來的時候，會有一個留白的區塊。
+    -->
     <nav
-      class="top-0 inset-x-0 z-10 p-6 flex justify-between items-center"
+      class="top-0 inset-x-0 z-20 p-6 flex justify-between items-center"
       :class="pathname === '/' ? 'absolute' : 'relative'"
     >
       <a href="/" class="text-lg text-white font-light md:text-xl lg:text-2xl">
@@ -117,9 +122,9 @@ const props = defineProps<{
   pathname: string
 }>()
 
-const isLocked = useScrollLock(typeof document !== 'undefined' ? document.body : null)
-
 const showMenu = ref(false)
+
+const isLocked = useScrollLock(typeof document !== 'undefined' ? document.body : null)
 
 function isActive(item: NavItem) {
   if (item.match) {
