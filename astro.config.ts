@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config'
 import vercel from '@astrojs/vercel'
 import vue from '@astrojs/vue'
+import expressiveCode from 'astro-expressive-code'
 import mdx from '@astrojs/mdx'
 import tailwindcss from '@tailwindcss/vite'
 import components from 'unplugin-vue-components/vite'
@@ -14,6 +15,9 @@ export default defineConfig({
   adapter: vercel(),
   integrations: [
     vue(),
+    expressiveCode({
+      themes: ['night-owl'],
+    }),
     mdx(),
   ],
   vite: {
@@ -29,12 +33,12 @@ export default defineConfig({
     ],
   },
   markdown: {
-    shikiConfig: {
-      theme: 'material-theme-palenight',
-      // langAlias: {
-      //   cjs: 'javascript',
-      // },
-    },
+    // shikiConfig: {
+    //   theme: 'material-theme-palenight',
+    //   // langAlias: {
+    //   //   cjs: 'javascript',
+    //   // },
+    // },
     rehypePlugins: [
       rehypeSlug,
       rehypeAutolinkHeadings,
