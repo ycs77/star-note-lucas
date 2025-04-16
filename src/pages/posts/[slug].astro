@@ -40,7 +40,7 @@ const { Content } = await render(entry)
     </script>
   </Fragment>
 
-  <div class="container py-8 xl:py-12">
+  <div class="container py-8 md:!max-w-3xl xl:py-12">
     <article itemscope itemtype="https://schema.org/BlogPosting" itemid={new URL(`/posts/${parsePostSlug(entry.id).slug}`, Astro.site).href}>
       <h1 itemprop="name" class="text-3xl/[1.25] md:text-4xl/[1.25] xl:text-5xl/[1.25] font-medium font-serif">
         {entry.data.title}
