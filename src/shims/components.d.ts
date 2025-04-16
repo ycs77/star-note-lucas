@@ -9,6 +9,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Callout: typeof import('./../components/callouts/Callout.vue')['default']
+    Card: typeof import('./../components/general/Card.vue')['default']
     Danger: typeof import('./../components/callouts/Danger.vue')['default']
     Date: typeof import('./../components/general/Date.vue')['default']
     Draft: typeof import('./../components/general/Draft.vue')['default']
@@ -16,12 +17,7 @@ declare module 'vue' {
     Header: typeof import('./../components/partials/Header.vue')['default']
     Important: typeof import('./../components/callouts/Important.vue')['default']
     Info: typeof import('./../components/callouts/Info.vue')['default']
-    MingcuteFacebookLine: typeof import('~icons/mingcute/facebook-line')['default']
-    PostItem: typeof import('./../components/general/PostItem.vue')['default']
     Star: typeof import('./../components/icons/Star.vue')['default']
-    TablerBrandBluesky: typeof import('~icons/tabler/brand-bluesky')['default']
-    TablerBrandDiscord: typeof import('~icons/tabler/brand-discord')['default']
-    TablerBrandGithub: typeof import('~icons/tabler/brand-github')['default']
     Tag: typeof import('./../components/general/Tag.vue')['default']
     Tip: typeof import('./../components/callouts/Tip.vue')['default']
     Warning: typeof import('./../components/callouts/Warning.vue')['default']
