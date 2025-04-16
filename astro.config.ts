@@ -3,6 +3,7 @@ import vercel from '@astrojs/vercel'
 import vue from '@astrojs/vue'
 import expressiveCode from 'astro-expressive-code'
 import mdx from '@astrojs/mdx'
+import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
 import components from 'unplugin-vue-components/vite'
 import icons from 'unplugin-icons/vite'
@@ -11,7 +12,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeSlug from 'rehype-slug'
 
 export default defineConfig({
-  site: 'http://localhost:4321',
+  site: 'https://star-note-lucas.me',
   trailingSlash: 'never',
   build: {
     format: 'file',
@@ -23,6 +24,7 @@ export default defineConfig({
       themes: ['night-owl'],
     }),
     mdx(),
+    sitemap(),
   ],
   vite: {
     plugins: [
