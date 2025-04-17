@@ -5,7 +5,7 @@
     :class="cn([
       'inline-block bg-indigo-600 text-white font-normal rounded-full transition-colors',
       large ? 'px-6 py-1 text-lg duration-150' : 'px-3 py-0.5 text-xs duration-100',
-      href ? 'hover:text-yellow-800 hover:bg-yellow-300' : '',
+      href ? 'hover:bg-yellow-300 hover:text-yellow-800' : '',
       props.class,
     ])"
   >

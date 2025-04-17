@@ -92,10 +92,10 @@
           </ul>
 
           <ul class="flex items-center justify-center space-x-6 mt-2 md:hidden">
-            <li v-for="link in socialLinks" :key="link.href">
+            <li v-for="link in socialLinks" :key="link.name">
               <a
                 :href="link.href"
-                :title="link.title"
+                :title="link.name"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="text-white hover:text-yellow-400"

@@ -19,34 +19,40 @@ export const nav = [
 ] satisfies NavItem[] as NavItem[]
 
 export interface SocialLink {
-  title: string
-  href: string
+  name: string
+  label?: string
+  href?: string
+  notes?: string
   icon: FunctionalComponent<SVGAttributes>
 }
 
 export const socialLinks = [
   {
-    title: 'GitHub',
+    name: 'GitHub',
+    label: '@ycs77',
     href: siteConfig.github,
     icon: TablerBrandGithub,
   },
   {
-    title: 'Bluesky',
+    name: 'Bluesky',
+    label: '@ycs77.star-note-lucas.me',
     href: siteConfig.bluesky,
     icon: TablerBrandBluesky,
   },
   {
-    title: 'Discord',
+    name: 'Discord',
+    label: '✨星星の聊天室',
     href: siteConfig.discord,
     icon: TablerBrandDiscord,
   },
   {
-    title: 'Facebook',
+    name: 'Facebook',
+    label: '星星的筆記．Lucas',
     href: siteConfig.facebook,
     icon: MingcuteFacebookLine,
   },
   {
-    title: 'RSS',
+    name: 'RSS',
     href: siteConfig.rss,
     icon: TablerRss,
   },

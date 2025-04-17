@@ -1,5 +1,5 @@
 <template>
-  <footer class="mt-24 mb-12 text-center space-y-6">
+  <footer class="my-12 text-center space-y-6">
     <ul class="flex justify-center space-x-4">
       <li v-for="item in nav" :key="item.link">
         <a
@@ -12,10 +12,10 @@
     </ul>
 
     <ul class="flex items-center justify-center space-x-6">
-      <li v-for="link in socialLinks" :key="link.href">
+      <li v-for="link in socialLinks" :key="link.name">
         <a
           :href="link.href"
-          :title="link.title"
+          :title="link.name"
           target="_blank"
           rel="noopener noreferrer"
           class="text-white hover:text-yellow-400"

@@ -8,6 +8,8 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ArticleContent: typeof import('./../components/article/ArticleContent.vue')['default']
+    ArticleTitle: typeof import('./../components/article/ArticleTitle.vue')['default']
     Callout: typeof import('./../components/callouts/Callout.vue')['default']
     Card: typeof import('./../components/general/Card.vue')['default']
     Danger: typeof import('./../components/callouts/Danger.vue')['default']
@@ -17,6 +19,7 @@ declare module 'vue' {
     Header: typeof import('./../components/partials/Header.vue')['default']
     Important: typeof import('./../components/callouts/Important.vue')['default']
     Info: typeof import('./../components/callouts/Info.vue')['default']
+    SocialInfoList: typeof import('./../components/general/SocialInfoList.vue')['default']
     Star: typeof import('./../components/icons/Star.vue')['default']
     Tag: typeof import('./../components/general/Tag.vue')['default']
     Tip: typeof import('./../components/callouts/Tip.vue')['default']

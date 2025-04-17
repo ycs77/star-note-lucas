@@ -1,0 +1,71 @@
+<template>
+  <div
+    :class="cn([
+      `text-indigo-100
+      tracking-[0.03em]
+      max-w-none
+      prose
+      md:prose-lg
+      prose-h1:text-white
+      prose-h2:text-white
+      prose-h3:text-white
+      prose-h4:text-white
+      prose-h5:text-white
+      prose-h6:text-white
+      prose-h1:font-serif
+      prose-h2:font-serif
+      prose-h3:font-serif
+      prose-h4:font-serif
+      prose-h5:font-serif
+      prose-h6:font-serif
+      prose-a:text-indigo-300
+      prose-a:hover:text-yellow-400
+      prose-strong:text-yellow-100
+      prose-em:break-all
+      prose-code:text-indigo-300
+      prose-code:bg-indigo-700
+      prose-code:px-[0.4em]
+      prose-code:py-[0.2em]
+      prose-code:rounded-md
+      prose-code:font-normal
+      prose-code:break-all
+      prose-code:before:content-none
+      prose-code:after:content-none
+      prose-hr:text-gray-300
+      prose-blockquote:text-indigo-200/70
+      prose-blockquote:font-normal
+      prose-blockquote:border-l-yellow-400
+      prose-blockquote:not-italic
+      prose-blockquote:[&_p:first-of-type]:before:content-none
+      prose-blockquote:[&_p:last-of-type]:after:content-none
+      prose-img:rounded
+      sm:prose-img:rounded-md
+      prose-figcaption:text-gray-500
+      prose-th:text-white
+      prose-li:marker:text-indigo-400
+      prose-li:my-1
+      lg:prose-li:my-2
+      prose-pre:[&_code]:bg-transparent
+      prose-pre:[&_code]:border-0
+      prose-pre:[&_code]:rounded-none
+      prose-pre:[&_code]:p-0
+      prose-pre:[&_code]:font-[family-name:inherit]
+      prose-pre:[&_code]:font-[length:inherit]
+      prose-pre:[&_code]:text-[color:inherit]
+      prose-pre:[&_code]:text-[length:inherit]
+      prose-pre:[&_code]:leading-[length:inherit]`,
+      props.class,
+    ])"
+  >
+    <slot />
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue'
+import { cn } from '@/utils/className'
+
+const props = defineProps<{
+  class?: HTMLAttributes['class']
+}>()
+</script>
