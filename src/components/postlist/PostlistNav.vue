@@ -1,0 +1,37 @@
+<template>
+  <div class="flex flex-wrap items-center **:w-1/2 **:mb-3 sm:**:w-auto sm:**:mb-0 sm:**:me-3">
+    <template v-for="item in nav">
+      <h1
+        v-if="item.slug === slug"
+        class="text-3xl md:text-4xl font-serif font-medium"
+      >
+        {{ item.label }}
+      </h1>
+      <a
+        v-else
+        :href="item.href"
+        class="text-3xl md:text-4xl font-serif font-medium text-indigo-200/35 hover:text-indigo-200/65"
+        :title="item.label"
+      >
+        {{ item.label }}
+      </a>
+    </template>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { categoriesMap } from '@/categories'
+
+const nav = [
+  { slug: 'all', label: '文章', href: '/posts' },
+  ...Object.entries(categoriesMap).map(([slug, { name }]) => ({
+    slug,
+    label: name,
+    href: `/category/${slug}`,
+  })),
+]
+
+defineProps<{
+  slug: keyof typeof categoriesMap | 'all'
+}>()
+</script>

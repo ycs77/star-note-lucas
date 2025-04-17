@@ -2,9 +2,9 @@ export interface CardModel {
   id: string
   data: {
     title: string
-    pubDate: Date
+    pubDate?: Date
     description: string
-    category: 'coding' | 'acg' | 'life'
+    category?: 'coding' | 'acg' | 'life'
     image?: string
     imageUnsplashAuthor?: {
       name: string

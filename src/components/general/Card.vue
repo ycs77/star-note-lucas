@@ -15,7 +15,7 @@
     </div>
 
     <div class="w-full flex flex-col justify-between min-w-0 p-6 bg-indigo-800 transition-colors duration-150 group-hover:bg-indigo-700">
-      <div class="flex items-center text-gray-400">
+      <div v-if="model.data.pubDate" class="flex items-center text-gray-400">
         <Date :datetime="model.data.pubDate" class="text-xs" />
       </div>
 
@@ -33,10 +33,17 @@
         {{ model.data.description }}
       </div>
 
-      <div v-if="model.data.tags" class="mt-3 relative mask-r-from-80%">
+      <div v-if="model.data.category || model.data.tags?.length" class="mt-3 relative mask-r-from-80%">
         <div class="flex gap-2 overflow-hidden">
           <Tag
-            v-for="tag in [...model.data.tags, ...model.data.tags]"
+            v-if="model.data.category"
+            type="category"
+            :name="categoriesMap[model.data.category].name"
+            :href="`/category/${model.data.category}`"
+            class="mt-1 shrink-0"
+          />
+          <Tag
+            v-for="tag in [...(model.data.tags || [])]"
             :name="tag"
             :href="`/tags/${tag}`"
             class="mt-1 shrink-0"
@@ -49,6 +56,7 @@
 
 <script setup lang="ts">
 import Date from './Date.vue'
+import { categoriesMap } from '@/categories'
 import { parsePostSlug } from '@/utils/slug'
 import type { CardModel } from '@/types'
 

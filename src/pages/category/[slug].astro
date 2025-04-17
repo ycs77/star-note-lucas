@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content'
+import { categoriesMap } from '@/categories'
+import Layout from '@/layouts/Layout.astro'
+import { Postlist } from '@/components/postlist'
+import { Footer } from '@/components/partials'
+import '@/styles/index.css'
+
+export async function getStaticPaths() {
+  return Object.keys(categoriesMap).map(key => ({
+    params: { slug: key },
+  }))
+}
+
+const slug = Astro.params.slug as keyof typeof categoriesMap
+
+const category = categoriesMap[slug].name
+
+const posts = (await getCollection('posts')).filter(post => post.data.category.includes(slug))
+posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+---
+
+<Layout title={category}>
+  <div class="container py-8 xl:py-12">
+    <Postlist slug={slug} posts={posts} />
+  </div>
+
+  <div class="container">
+    <Footer />
+  </div>
+</Layout>
