@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content'
 import Layout from '@/layouts/Layout.astro'
-import { Postlist } from '@/components/postlist'
+import { Postlist, PostlistNav } from '@/components/postlist'
 import { Footer } from '@/components/partials'
 import '@/styles/index.css'
 
@@ -11,7 +11,8 @@ posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
 
 <Layout title="文章">
   <div class="container py-8 xl:py-12">
-    <Postlist slug="all" posts={posts} />
+    <PostlistNav slug="all" />
+    <Postlist posts={posts} />
   </div>
 
   <div class="container">

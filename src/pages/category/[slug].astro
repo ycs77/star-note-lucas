@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content'
 import { categoriesMap } from '@/categories'
 import Layout from '@/layouts/Layout.astro'
-import { Postlist } from '@/components/postlist'
+import { Postlist, PostlistNav } from '@/components/postlist'
 import { Footer } from '@/components/partials'
 import '@/styles/index.css'
 
@@ -22,7 +22,8 @@ posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
 
 <Layout title={category}>
   <div class="container py-8 xl:py-12">
-    <Postlist slug={slug} posts={posts} />
+    <PostlistNav slug={slug} />
+    <Postlist posts={posts} />
   </div>
 
   <div class="container">

@@ -29,9 +29,10 @@ const nav = [
     label: name,
     href: `/category/${slug}`,
   })),
+  { slug: 'tags', label: '標籤', href: '/tags' },
 ]
 
 defineProps<{
-  slug: keyof typeof categoriesMap | 'all'
+  slug: keyof typeof categoriesMap | 'all' | 'tags'
 }>()
 </script>

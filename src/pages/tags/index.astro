@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content'
+import Layout from '@/layouts/Layout.astro'
+import { Tag } from '@/components/general'
+import { PostlistNav } from '@/components/postlist'
+import { Footer } from '@/components/partials'
+import '@/styles/index.css'
+
+const posts = await getCollection('posts')
+const tags = [...new Set(posts.map(post => post.data.tags || []).flat())]
+---
+
+<Layout title="標籤">
+  <div class="container py-8 xl:py-12">
+    <PostlistNav slug="tags" />
+
+    <div class="mt-10 flex flex-wrap">
+      {tags.map(tag => (
+        <Tag
+          name={tag}
+          href={`/tags/${encodeURIComponent(tag)}`}
+          large
+          class="me-3 mb-3"
+        />
+      ))}
+    </div>
+  </div>
+
+  <div class="container">
+    <Footer />
+  </div>
+</Layout>
