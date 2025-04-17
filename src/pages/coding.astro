@@ -6,14 +6,7 @@ import { Postlist, PostlistNav } from '@/components/postlist'
 import { Footer } from '@/components/partials'
 import '@/styles/index.css'
 
-export async function getStaticPaths() {
-  return Object.keys(categoriesMap).map(key => ({
-    params: { slug: key },
-  }))
-}
-
-const slug = Astro.params.slug as keyof typeof categoriesMap
-
+const slug = 'coding'
 const category = categoriesMap[slug].name
 
 const posts = (await getCollection('posts')).filter(post => post.data.category.includes(slug))

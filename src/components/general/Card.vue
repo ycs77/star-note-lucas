@@ -39,7 +39,7 @@
             v-if="model.data.category"
             type="category"
             :name="categoriesMap[model.data.category].name"
-            :href="`/category/${model.data.category}`"
+            :href="`/${model.data.category}`"
             class="mt-1 shrink-0"
           />
           <Tag

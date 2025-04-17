@@ -13,7 +13,9 @@ export interface NavItem {
 }
 
 export const nav = [
-  { text: '文章', link: '/posts', match: '/(?:posts|category)' },
+  { text: '程式', link: '/coding' },
+  { text: 'ACG', link: '/acg' },
+  { text: '生活', link: '/life' },
   { text: '專案', link: '/projects', match: '/projects' },
   { text: '關於', link: '/about' },
 ] satisfies NavItem[] as NavItem[]
