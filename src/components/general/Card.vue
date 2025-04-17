@@ -16,6 +16,7 @@
 
     <div class="w-full flex flex-col justify-between min-w-0 p-6 bg-indigo-800 transition-colors duration-150 group-hover:bg-indigo-700">
       <div v-if="model.data.pubDate" class="flex items-center text-gray-400">
+        <Draft v-if="model.data.draft" />
         <Date :datetime="model.data.pubDate" class="text-xs" />
       </div>
 
@@ -56,7 +57,7 @@
 
 <script setup lang="ts">
 import Date from './Date.vue'
-import { categoriesMap } from '@/categories'
+import { categoriesMap } from '@/category'
 import { parsePostSlug } from '@/utils/slug'
 import type { CardModel } from '@/types'
 

@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content'
+import { preprocessPosts } from '@/post'
 import Layout from '@/layouts/Layout.astro'
 import { Card } from '@/components/general'
 import { Star } from '@/components/icons'
@@ -8,8 +9,7 @@ import HeroiconsArrowRight16Solid from '~icons/heroicons/arrow-right-16-solid'
 import { socialLinks } from '@/nav'
 import '@/styles/index.css'
 
-const posts = await getCollection('posts')
-posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+const posts = preprocessPosts(await getCollection('posts'))
 ---
 
 <Layout>
@@ -67,7 +67,7 @@ posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
       <p class="mt-4">平常的喜好是宅在家刻網站、看動漫、玩遊戲等。</p>
       <p class="mt-4">
         <a href="/about" class="inline-flex items-center px-4 py-1.5 bg-indigo-500 hover:bg-yellow-300 text-white hover:text-yellow-800 text-sm font-normal rounded-full transition-colors duration-150">
-          <HeroiconsArrowRight16Solid class="size-4 mr-1" /> 更多關於我
+          <HeroiconsArrowRight16Solid class="size-4 mr-1" /> 關於我
         </a>
       </p>
 

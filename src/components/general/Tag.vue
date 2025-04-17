@@ -1,7 +1,7 @@
 <template>
   <component
     :is="href ? 'a' : 'span'"
-    :href="href?.toLowerCase()"
+    :href="href"
     :class="cn([
       'inline-block bg-indigo-600 text-white font-normal rounded-full transition-colors',
       large ? 'px-4 py-1 text-lg duration-150' : 'px-2.5 py-0.5 text-xs duration-100',

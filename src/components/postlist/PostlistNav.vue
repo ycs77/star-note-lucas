@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { categoriesMap } from '@/categories'
+import { categoriesMap } from '@/category'
 
 const nav = [
   ...Object.entries(categoriesMap).map(([slug, { name }]) => ({

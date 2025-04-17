@@ -1,12 +1,13 @@
 ---
 import { getCollection } from 'astro:content'
+import { preprocessPosts } from '@/post'
 import Layout from '@/layouts/Layout.astro'
 import { Postlist } from '@/components/postlist'
 import { Footer } from '@/components/partials'
 import '@/styles/index.css'
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts')
+  const posts = preprocessPosts(await getCollection('posts'))
   const tags = [...new Set(posts.map(post => post.data.tags || []).flat())]
   return tags.map(tag => ({
     params: { slug: tag },
@@ -15,8 +16,8 @@ export async function getStaticPaths() {
 
 const slug = Astro.params.slug
 
-const posts = (await getCollection('posts')).filter(post => (post.data.tags || []).includes(slug))
-posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+const posts = preprocessPosts(await getCollection('posts'))
+  .filter(post => (post.data.tags || []).includes(slug))
 ---
 
 <Layout title={`標籤：${slug}`}>

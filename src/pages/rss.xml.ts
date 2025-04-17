@@ -6,13 +6,13 @@ import rss, { type RSSFeedItem } from '@astrojs/rss'
 import sanitizeHtml from 'sanitize-html'
 import { getCollection, render } from 'astro:content'
 import siteConfig from '@/site.config'
+import { preprocessPosts } from '@/post'
 import { parsePostSlug } from '@/utils/slug'
 
 export const GET: APIRoute = async context => {
   const baseUrl = (context.site?.href || '').replace(/\/$/, '')
 
-  const posts = await getCollection('posts')
-  posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  const posts = preprocessPosts(await getCollection('posts'))
 
   const container = await AstroContainer.create()
   // @ts-ignore
