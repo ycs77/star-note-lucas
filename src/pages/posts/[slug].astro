@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content'
 import type { CollectionEntry } from 'astro:content'
 import { Schema } from 'astro-seo-schema'
 import { preprocessPosts } from '@/post'
+import { categoriesMap } from '@/category'
 import Layout from '@/layouts/Layout.astro'
 import { Date, Draft, Tag } from '@/components/general'
 import { ArticleContent, ArticleTitle } from '@/components/article'
@@ -51,14 +52,24 @@ const { Content } = await render(entry)
 
       <div class="mt-4 flex items-center flex-wrap">
         {entry.data.draft && <Draft />}
-        <Date datetime={entry.data.pubDate} class="text-gray-400" />
-        {entry.data.tags?.length && <span class="text-gray-400">．</span>}
+        <Date datetime={entry.data.pubDate} />
+        {(entry.data.category || entry.data.tags?.length) && (
+          <span class="text-indigo-300">．</span>
+        )}
+        {entry.data.category && (
+          <Tag
+            type="category"
+            name={categoriesMap[entry.data.category].name}
+            href={`/${entry.data.category}`}
+            class="me-2 my-1 shrink-0"
+          />
+        )}
         {entry.data.tags?.map(tag => (
-          <Tag name={tag} href={`/tags/${tag}`} class="mr-2 my-1" />
+          <Tag name={tag} href={`/tags/${tag}`} class="me-2 my-1 shrink-0" />
         ))}
       </div>
 
-      <div class="mt-8 md:mt-10 mb-8">
+      <div class="mt-8 md:mt-12 mb-8">
         <ArticleContent>
           <Content />
         </ArticleContent>

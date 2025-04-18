@@ -33,7 +33,7 @@ const { model, target } = Astro.props
 
   <div class="w-full flex flex-col justify-between min-w-0 p-6 bg-indigo-800 transition-colors duration-150 group-hover:bg-indigo-700">
     {model.data.pubDate && (
-      <div class="flex items-center text-gray-400">
+      <div class="flex items-center">
         {model.data.draft && <Draft />}
         <Date datetime={model.data.pubDate} class="text-xs" />
       </div>
@@ -57,21 +57,17 @@ const { model, target } = Astro.props
 
     {(model.data.category || model.data.tags?.length) && (
       <div class="mt-3 relative mask-r-from-80%">
-        <div class="flex gap-2 overflow-hidden">
+        <div class="flex overflow-hidden">
           {model.data.category && (
             <Tag
               type="category"
               name={categoriesMap[model.data.category].name}
               href={`/${model.data.category}`}
-              class="mt-1 shrink-0"
+              class="mt-1 me-2 shrink-0"
             />
           )}
-          {[...(model.data.tags || [])].map(tag => (
-            <Tag
-              name={tag}
-              href={`/tags/${tag}`}
-              class="mt-1 shrink-0"
-            />
+          {model.data.tags?.map(tag => (
+            <Tag name={tag} href={`/tags/${tag}`} class="mt-1 me-2 shrink-0" />
           ))}
         </div>
       </div>
