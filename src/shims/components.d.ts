@@ -8,23 +8,12 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    ArticleContent: typeof import('./../components/article/ArticleContent.vue')['default']
-    ArticleTitle: typeof import('./../components/article/ArticleTitle.vue')['default']
     Callout: typeof import('./../components/callouts/Callout.vue')['default']
-    Card: typeof import('./../components/general/Card.vue')['default']
     Danger: typeof import('./../components/callouts/Danger.vue')['default']
-    Date: typeof import('./../components/general/Date.vue')['default']
-    Draft: typeof import('./../components/general/Draft.vue')['default']
-    Footer: typeof import('./../components/partials/Footer.vue')['default']
     Header: typeof import('./../components/partials/Header.vue')['default']
     Important: typeof import('./../components/callouts/Important.vue')['default']
     Info: typeof import('./../components/callouts/Info.vue')['default']
-    Postlist: typeof import('./../components/postlist/Postlist.vue')['default']
-    PostlistNav: typeof import('./../components/postlist/PostlistNav.vue')['default']
-    SocialInfoList: typeof import('./../components/general/SocialInfoList.vue')['default']
     Star: typeof import('./../components/icons/Star.vue')['default']
-    TablerLayoutGridFilled: typeof import('~icons/tabler/layout-grid-filled')['default']
-    Tag: typeof import('./../components/general/Tag.vue')['default']
     Tip: typeof import('./../components/callouts/Tip.vue')['default']
     Warning: typeof import('./../components/callouts/Warning.vue')['default']
   }

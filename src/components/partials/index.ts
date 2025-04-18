@@ -1,4 +1,4 @@
 import Header from './Header.vue'
-import Footer from './Footer.vue'
+import Footer from './Footer.astro'
 
 export { Header, Footer }

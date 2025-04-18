@@ -1,0 +1,23 @@
+---
+import dayjs from 'dayjs'
+import { cn } from '@/utils/className'
+
+interface Props {
+  datetime?: string | Date
+  class?: astroHTML.JSX.HTMLAttributes['class']
+}
+
+const datetime = Astro.props.datetime
+  ? dayjs(Astro.props.datetime)
+  : undefined
+---
+
+{datetime && (
+  <time
+    datetime={datetime.toISOString()}
+    title={datetime.format('YYYY/MM/DD HH:mm:ss')}
+    class={cn('text-indigo-300', Astro.props.class)}
+  >
+    {datetime.format('YYYY/MM/DD')}
+  </time>
+)}

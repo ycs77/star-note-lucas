@@ -1,3 +1,0 @@
-<template>
-  <span class="inline-block me-2 px-2.5 py-0.5 bg-green-500 text-white font-normal text-xs rounded-full">草稿</span>
-</template>

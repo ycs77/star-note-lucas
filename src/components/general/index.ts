@@ -1,8 +1,8 @@
-import Card from './Card.vue'
-import Date from './Date.vue'
-import Draft from './Draft.vue'
+import Card from './Card.astro'
+import Date from './Date.astro'
+import Draft from './Draft.astro'
 import Pagination from './Pagination.astro'
-import SocialInfoList from './SocialInfoList.vue'
-import Tag from './Tag.vue'
+import SocialInfoList from './SocialInfoList.astro'
+import Tag from './Tag.astro'
 
 export { Card, Date, Draft, Pagination, SocialInfoList, Tag }

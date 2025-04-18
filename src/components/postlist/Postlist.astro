@@ -1,0 +1,22 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { Card } from '@/components/general'
+
+interface Props {
+  posts: CollectionEntry<'posts'>[]
+}
+
+const { posts } = Astro.props
+---
+
+<div class="mt-10">
+  <ul class="grid gap-8">
+    {posts.map(post => (
+      <li class="min-w-0">
+        <Card model={post} />
+      </li>
+    ))}
+  </ul>
+
+  <!-- <Pagination /> -->
+</div>

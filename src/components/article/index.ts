@@ -1,4 +1,4 @@
-import ArticleContent from './ArticleContent.vue'
-import ArticleTitle from './ArticleTitle.vue'
+import ArticleContent from './ArticleContent.astro'
+import ArticleTitle from './ArticleTitle.astro'
 
 export { ArticleContent, ArticleTitle }

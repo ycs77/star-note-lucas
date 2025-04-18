@@ -20,7 +20,7 @@ const posts = preprocessPosts(await getCollection('posts'))
   .filter(post => (post.data.tags || []).includes(slug))
 ---
 
-<Layout title={`標籤：${slug}`}>
+<Layout title={`標籤 # ${slug}`}>
   <div class="container py-8 xl:py-12">
     <h1 class="text-3xl md:text-4xl font-serif font-medium">
       <a class="text-indigo-300 hover:text-yellow-400" href="/tags">標籤</a> # {slug}

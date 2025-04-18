@@ -11,6 +11,7 @@
         :icon-class="cn('mr-2', mainClass)"
       />{{ title }}
     </div>
+
     <div
       :class="cn([
         'break-all [&_p:first-child]:mt-0 [&_p:last-child]:mb-0',

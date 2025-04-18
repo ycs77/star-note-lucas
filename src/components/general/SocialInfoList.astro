@@ -1,0 +1,47 @@
+---
+import type { SocialLink } from '@/nav'
+
+interface Props {
+  list: SocialLink[]
+}
+
+const list = Astro.props.list.map(link => {
+  let tag = 'span' as 'span' | 'a'
+  let attrs = {}
+
+  if (link.href) {
+    tag = 'a'
+    attrs = {
+      href: link.href,
+      title: link.name,
+      target: '_blank',
+      rel: 'noopener noreferrer',
+    }
+  }
+
+  return { ...link, tag, attrs }
+})
+---
+
+<div class="max-w-lg p-4 mx-auto bg-indigo-700 rounded-lg shadow-md shadow-indigo-950/50">
+  <ul class="!space-y-2 !p-0 !m-0 !list-none">
+    {list.map(link => (
+      <li class="!p-0 first:!mt-0 last:!mb-0">
+        <link.tag
+          {...link.attrs}
+          class="flex justify-between items-center px-3 py-1.5 !text-white hover:!text-yellow-400 hover:bg-indigo-600 no-underline rounded-md transition-colors"
+        >
+          <div class="inline-flex items-center shrink-0">
+            <link.icon class="size-6 mr-4 sm:mr-3" />
+            <div>
+              <div class="text-sm sm:text-base">{link.name}</div>
+              <div v-if="link.label" class="sm:hidden text-indigo-300/75 text-xs">{link.label}</div>
+            </div>
+          </div>
+
+          {link.label && <div class="hidden sm:inline">{link.label}</div>}
+        </link.tag>
+      </li>
+    ))}
+  </ul>
+</div>
