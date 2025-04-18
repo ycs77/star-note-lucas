@@ -1,0 +1,93 @@
+---
+import { usePagination } from '@/composables/usePagination'
+import HeroiconsArrowLeft20Solid from '~icons/heroicons/arrow-left-20-solid'
+import HeroiconsArrowRight20Solid from '~icons/heroicons/arrow-right-20-solid'
+
+interface Props {
+  baseUrl: string
+  total: number
+  perPage?: number
+  visiblePages?: number
+  currentPage?: number
+}
+
+const {
+  items,
+  showPagination,
+  currentPage,
+  canPrev,
+  canNext,
+  prevUrl,
+  nextUrl,
+  getUrl,
+} = usePagination({
+  total: Astro.props.total,
+  perPage: Astro.props.perPage,
+  visiblePages: Astro.props.visiblePages,
+  currentPage: Astro.props.currentPage || Number(Astro.url.searchParams.get('page')) || 1,
+  url: Astro.props.baseUrl,
+  transformUrl: (baseUrl, page) => page === 1 ? baseUrl : `${baseUrl}/${page}`,
+})
+---
+
+{showPagination && (
+  <ul class="flex justify-center flex-wrap my-8">
+    {canPrev && (
+      <li>
+        <a href={prevUrl} class:list={[
+          'w-10 h-10 m-2 text-sm font-normal',
+          'inline-flex justify-center items-center rounded-full select-none',
+          'transition-colors duration-150',
+          'focus:outline-none',
+          'md:w-12 md:h-12 md:text-base',
+          'text-indigo-100 hover:text-indigo-900 bg-indigo-800 hover:bg-yellow-400',
+        ]}>
+          <HeroiconsArrowLeft20Solid class="w-5 h-5" />
+        </a>
+      </li>
+    )}
+
+    {items.map(page => (
+      <li>
+        {page === currentPage ? (
+          <span class:list={[
+            'w-10 h-10 m-2 text-sm font-normal',
+            'inline-flex justify-center items-center rounded-full select-none',
+            'transition-colors duration-150',
+            'focus:outline-none',
+            'md:w-12 md:h-12 md:text-base',
+            'text-white bg-indigo-600 hover:bg-indigo-600',
+          ]}>
+            {page}
+          </span>
+        ) : (
+          <a href={getUrl(page)} class:list={[
+            'w-10 h-10 m-2 text-sm font-normal',
+            'inline-flex justify-center items-center rounded-full select-none',
+            'transition-colors duration-150',
+            'focus:outline-none',
+            'md:w-12 md:h-12 md:text-base',
+            'text-indigo-100 hover:text-indigo-900 bg-indigo-800 hover:bg-yellow-400',
+          ]}>
+            {page}
+          </a>
+        )}
+      </li>
+    ))}
+
+    {canNext && (
+      <li>
+        <a href={nextUrl} class:list={[
+          'w-10 h-10 m-2 text-sm font-normal',
+          'inline-flex justify-center items-center rounded-full select-none',
+          'transition-colors duration-150',
+          'focus:outline-none',
+          'md:w-12 md:h-12 md:text-base',
+          'text-indigo-100 hover:text-indigo-900 bg-indigo-800 hover:bg-yellow-400',
+        ]}>
+          <HeroiconsArrowRight20Solid class="w-5 h-5" />
+        </a>
+      </li>
+    )}
+  </ul>
+)}

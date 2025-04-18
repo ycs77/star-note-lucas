@@ -1,0 +1,41 @@
+---
+import type { GetStaticPaths } from 'astro'
+import { getCollection } from 'astro:content'
+import { preprocessPosts } from '@/post'
+import { categoriesMap } from '@/category'
+import Layout from '@/layouts/Layout.astro'
+import { Postlist, PostlistNav, Pagination } from '@/components/postlist'
+import { Footer } from '@/components/partials'
+import '@/styles/index.css'
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const slug = 'coding' as const
+  const category = categoriesMap[slug].name
+  const posts = preprocessPosts(await getCollection('posts'))
+    .filter(post => post.data.category.includes(slug))
+
+  return paginate(posts, {
+    pageSize: 10,
+    props: { slug, category },
+  })
+}) satisfies GetStaticPaths
+
+const { slug, category, page } = Astro.props
+---
+
+<Layout title={category}>
+  <div class="container py-8 xl:py-12">
+    <PostlistNav slug={slug} />
+    <Postlist posts={page.data} />
+    <Pagination
+      baseUrl={page.url.current.replace(/\/\d+$/, '')}
+      total={page.total}
+      perPage={page.size}
+      currentPage={page.currentPage}
+    />
+  </div>
+
+  <div class="container">
+    <Footer />
+  </div>
+</Layout>

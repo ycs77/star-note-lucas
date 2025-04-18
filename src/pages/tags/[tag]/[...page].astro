@@ -1,0 +1,45 @@
+---
+import type { GetStaticPaths } from 'astro'
+import { getCollection } from 'astro:content'
+import { preprocessPosts } from '@/post'
+import Layout from '@/layouts/Layout.astro'
+import { Postlist, Pagination } from '@/components/postlist'
+import { Footer } from '@/components/partials'
+import '@/styles/index.css'
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = preprocessPosts(await getCollection('posts'))
+  const tags = [...new Set(posts.map(post => post.data.tags || []).flat())]
+
+  return tags.flatMap(tag => {
+    const filteredPosts = posts.filter(post => (post.data.tags || []).includes(tag))
+    return paginate(filteredPosts, {
+      pageSize: 10,
+      params: { tag },
+    })
+  })
+}) satisfies GetStaticPaths
+
+const { tag } = Astro.params
+const { page } = Astro.props
+---
+
+<Layout title={`標籤 # ${tag}`}>
+  <div class="container py-8 xl:py-12">
+    <h1 class="text-3xl md:text-4xl font-serif font-medium">
+      <a class="text-indigo-300 hover:text-yellow-400" href="/tags">標籤</a> # {tag}
+    </h1>
+
+    <Postlist posts={page.data} />
+    <Pagination
+      baseUrl={page.url.current.replace(/\/\d+$/, '')}
+      total={page.total}
+      perPage={page.size}
+      currentPage={page.currentPage}
+    />
+  </div>
+
+  <div class="container">
+    <Footer />
+  </div>
+</Layout>

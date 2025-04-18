@@ -4,11 +4,13 @@ export function usePagination(options: {
   url: string
   perPage?: number
   visiblePages?: number
+  transformUrl?: (baseUrl: string, page: number) => string
 }) {
   const {
     total,
     currentPage,
-    perPage = 12,
+    perPage = 10,
+    transformUrl,
   } = options
 
   const items = []
@@ -32,6 +34,10 @@ export function usePagination(options: {
   }
 
   function getUrl(page: number) {
+    if (transformUrl) {
+      return transformUrl(options.url, page)
+    }
+
     const url = new URL(options.url)
     url.searchParams.set('page', String(page))
     return url.toString()
