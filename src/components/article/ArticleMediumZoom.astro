@@ -1,0 +1,15 @@
+<script src="node_modules/medium-zoom/dist/medium-zoom.min.js"></script>
+<script>
+import mediumZoom from 'medium-zoom/dist/pure'
+import 'medium-zoom/dist/style.css'
+
+let zoom = mediumZoom('article :not(a) > img')
+
+document.addEventListener('astro:before-swap', () => {
+  zoom.detach()
+})
+
+document.addEventListener('astro:after-swap', () => {
+  zoom.attach('article :not(a) > img')
+})
+</script>

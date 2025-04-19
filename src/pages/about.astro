@@ -2,7 +2,7 @@
 import { Schema } from 'astro-seo-schema'
 import * as entry from '@/content/about.mdx'
 import Layout from '@/layouts/Layout.astro'
-import { ArticleContent, ArticleTitle } from '@/components/article'
+import { ArticleContent, ArticleMediumZoom, ArticleTitle } from '@/components/article'
 import { Footer } from '@/components/partials'
 import '@/styles/index.css'
 
@@ -43,4 +43,8 @@ const { Content } = entry
   <div class="container">
     <Footer />
   </div>
+
+  <Fragment slot="body">
+    <ArticleMediumZoom />
+  </Fragment>
 </Layout>

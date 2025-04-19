@@ -242,6 +242,7 @@
 
 @import "./base.css";
 @import "./code.css";
+@import "./medium-zoom.css";
 @import "./prose.css";
 
 @plugin "@tailwindcss/typography";

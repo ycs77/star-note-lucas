@@ -1,0 +1,7 @@
+.medium-zoom-image.medium-zoom-image--opened {
+  @apply !rounded-none z-50;
+}
+.medium-zoom-overlay {
+  background: rgba(26, 32, 44, 0.75) !important;
+  @apply z-50;
+}

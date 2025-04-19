@@ -6,7 +6,7 @@ import { preprocessPosts } from '@/post'
 import { categoriesMap } from '@/category'
 import Layout from '@/layouts/Layout.astro'
 import { Date, Draft, Tag } from '@/components/general'
-import { ArticleContent, ArticleTitle } from '@/components/article'
+import { ArticleContent, ArticleMediumZoom, ArticleTitle } from '@/components/article'
 import { Footer } from '@/components/partials'
 import { parsePostSlug } from '@/utils/slug'
 import '@/styles/index.css'
@@ -73,7 +73,7 @@ const { Content } = await render(entry)
         {entry.data.image && entry.data.showImage !== false && (
           <figure class="mb-8 md:mb-12">
             <img
-              class="rounded sm:rounded-md"
+              class="rounded-md shadow-md shadow-indigo-950/50"
               src={entry.data.image}
               alt={
                 entry.data.imageUnsplashAuthor
@@ -99,4 +99,8 @@ const { Content } = await render(entry)
   <div class="container">
     <Footer />
   </div>
+
+  <Fragment slot="body">
+    <ArticleMediumZoom />
+  </Fragment>
 </Layout>
