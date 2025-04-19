@@ -70,6 +70,25 @@ const { Content } = await render(entry)
       </div>
 
       <div class="mt-8 md:mt-12 mb-8">
+        {entry.data.image && entry.data.showImage !== false && (
+          <figure class="mb-8 md:mb-12">
+            <img
+              class="rounded sm:rounded-md"
+              src={entry.data.image}
+              alt={
+                entry.data.imageUnsplashAuthor
+                  ? `Photo by ${entry.data.imageUnsplashAuthor.name} (https://unsplash.com/${entry.data.imageUnsplashAuthor.username}) on Unsplash (https://unsplash.com/)`
+                  : entry.data.title
+              }
+            />
+            {entry.data.imageUnsplashAuthor && (
+              <figcaption class="text-center text-indigo-200/65 mt-4">
+                <span>Photo by <a class="text-indigo-300 hover:text-yellow-400 font-medium underline" href={`https://unsplash.com/${entry.data.imageUnsplashAuthor.username}?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText`} target="_blank">{entry.data.imageUnsplashAuthor.name}</a> on <a class="text-indigo-300 hover:text-yellow-400 font-medium underline" href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText" target="_blank">Unsplash</a></span>
+              </figcaption>
+            )}
+          </figure>
+        )}
+
         <ArticleContent>
           <Content />
         </ArticleContent>
