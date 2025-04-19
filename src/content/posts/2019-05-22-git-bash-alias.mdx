@@ -1,0 +1,141 @@
+---
+title: Git Bash 使用別名
+description: 在 Git Bash 使用別名教學
+image: /images/2019-05-22-git-bash-alias.jpg
+showImage: false
+pubDate: 2019-05-22
+category: coding
+tags: ["Git", "Homestead"]
+---
+
+import { Tip } from '@/components/callouts'
+
+<Tip>
+Vim 輸入 `i` 開始編輯模式，`Esc` 關閉編輯模式，`:wq` 儲存並退出。\([Vim 教學](http://linux.vbird.org/linux_basic/0310vi.php)\)
+</Tip>
+
+### 設定本機指令別名
+
+開啟 Git Bash 設定別名的檔案：
+
+```bash
+vim /c/'Program Files'/Git/etc/profile.d/aliases.sh
+```
+
+增加以下內容，或自訂常用指令：
+
+```bash
+alias pa='php artisan'
+alias pa71='php71 artisan'
+alias pa72='php72 artisan'
+alias pa73='php73 artisan'
+alias pa74='php74 artisan'
+alias pa80='php80 artisan'
+alias pa81='php81 artisan'
+alias pa82='php82 artisan'
+alias pav='php artisan serve'
+alias pam='php artisan migrate'
+alias pams='php artisan migrate --seed'
+alias pamr='php artisan migrate:rollback'
+alias pamf='php artisan migrate:fresh'
+alias pamfs='php artisan migrate:fresh --seed'
+alias pas='php artisan db:seed'
+alias par='php artisan route:list'
+alias paq='php artisan queue:work'
+alias pah='php artisan horizon'
+alias pat='php artisan tinker'
+alias phpunit='./vendor/bin/phpunit --colors=always'
+alias pu='phpunit'
+alias pest='./vendor/bin/pest'
+alias pint='./vendor/bin/pint'
+alias stan='./vendor/bin/larastan'
+```
+
+如果在 Laragon 有安裝多個 PHP 版本，可以增加以下別名來切換使用版本：
+
+```bash
+alias php71='/c/laragon/bin/php/php-7.1.33-Win32-VC14-x64/php'
+alias php72='/c/laragon/bin/php/php-7.2.34-Win32-VC15-x64/php'
+alias php73='/c/laragon/bin/php/php-7.3.33-Win32-VC15-x64/php'
+alias php74='/c/laragon/bin/php/php-7.4.30-Win32-vc15-x64/php'
+alias php80='/c/laragon/bin/php/php-8.0.14-Win32-vs16-x64/php'
+alias php81='/c/laragon/bin/php/php-8.1.14-Win32-vs16-x64/php'
+alias php82='/c/laragon/bin/php/php-8.2.1-Win32-vs16-x64/php'
+alias composer71='php71 /c/Users/Lucas/AppData/Local/ComposerSetup/bin/composer.phar'
+alias composer72='php72 /c/Users/Lucas/AppData/Local/ComposerSetup/bin/composer.phar'
+alias composer73='php73 /c/Users/Lucas/AppData/Local/ComposerSetup/bin/composer.phar'
+alias composer74='php74 /c/Users/Lucas/AppData/Local/ComposerSetup/bin/composer.phar'
+alias composer80='php80 /c/Users/Lucas/AppData/Local/ComposerSetup/bin/composer.phar'
+alias composer81='php81 /c/Users/Lucas/AppData/Local/ComposerSetup/bin/composer.phar'
+alias composer82='php82 /c/Users/Lucas/AppData/Local/ComposerSetup/bin/composer.phar'
+```
+
+### 設定 Homestead 指令別名
+
+開啟 Git Bash 設定別名的檔案：
+
+```bash
+vim /c/'Program Files'/Git/etc/profile.d/aliases.sh
+```
+
+增加以下指令內容：
+
+```bash
+# 開啟虛擬機
+function vup() (
+  cd ~/Homestead
+  if [[ $1 == '-p' ]]; then
+    vagrant up --provision
+  else
+    vagrant up
+  fi
+)
+
+# 更新設定值
+function vp() (
+  cd ~/Homestead
+  vagrant provision
+)
+
+# 登入 SSH
+function vs() (
+  cd ~/Homestead
+  if [[ ! -z $1 ]]; then
+    vagrant ssh -c "$1"
+  else
+    vagrant ssh
+  fi
+)
+
+# 關機虛擬機
+function vh() (
+  cd ~/Homestead
+  vagrant halt
+)
+
+# 重新開啟虛擬機
+function vrs() (
+  cd ~/Homestead
+  vagrant halt
+  if [[ $1 == '-p' ]]; then
+    vagrant up --provision
+  else
+    vagrant up
+  fi
+)
+
+# 查看虛擬機狀態
+function vst() (
+  cd ~/Homestead
+  vagrant status
+)
+```
+
+設定完成後，可使用以下指令操作 Vagrant：
+
+* `vup`：開機
+* `vp`：更新設定值
+* `vs`：登入 SSH
+* `vh`：關機
+* `vrs`：重新開機
+* `vst`：查看虛擬機狀態

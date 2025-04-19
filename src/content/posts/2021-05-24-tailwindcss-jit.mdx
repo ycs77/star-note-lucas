@@ -1,0 +1,189 @@
+---
+title: 快速了解 Tailwind CSS 的 JIT 模式
+description: Tailwind CSS 2.0 正式上線的 Just-in-Time (簡稱 JIT) 編譯器，可以在寫 HTML 時及時編譯 CSS，大幅縮短編譯時間，和縮小產生的資產大小。
+image: /images/2021-05-24-tailwindcss-jit.jpg
+showImage: false
+pubDate: 2021-05-24
+category: coding
+tags: ["TailwindCSS"]
+---
+
+import { Note, Tip } from '@/components/callouts'
+
+<Note>
+[切版技術再升級！一課覆蓋 TailwindCSS + Vue3｜打造後台管理頁面 UI](https://hiskio.com/courses/620/about?s=tc) - 課程開播中~
+</Note>
+
+<Tip>
+線上範例：[JIT 線上範例 - Tailwind Play](https://play.tailwindcss.com/oOiqoowOoM)
+</Tip>
+
+因為 Tailwind CSS 的設計原理，在開發時會先幫你產生好超多的 class，CSS 檔最少 **3 MB** 起跳，而且預設還只有開 1-2個 Variants。但現實往往沒有那麼單純，開發下去需要的 Variants 只會越來越多，開發中產生的 CSS 檔長到 10-20 MB 都是可能的，還會連帶拖慢 Chrome  載入的時間。
+
+這時候 JIT 模式就派上用場啦！Tailwind CSS 2.0 正式上線的 **Just-in-Time** (簡稱 **JIT**) 編譯器，可以在寫 HTML 時及時編譯 CSS，大幅縮短編譯時間，和縮小產生的資產大小。
+
+## Just-in-Time 模式的新功能
+
+廢話不說，馬上來看它可以做什麼：
+
+* **超快速的編譯時間**。原本 Tailwind CLI 編譯需要 3-8 秒，在 **JIT 模式** 下僅需 **0.8 秒**。
+* **直接使用任意 Variants**。不用再煩惱需不需要開 `active`、`focus` 或 `disabled` 等。
+* **任意值 CSS class**。可以直接在 HTML 裡寫像 `top-[247px]` 這樣的 class，將會自動生成。而且也可以使用 Variants：`lg:top-[587px]`。
+* **在 develop 和 production 產生一樣的 CSS**。不需要煩惱上線後會不會有 class 靈異的消失~
+* **在開發時有更好的瀏覽器效能**。因為 develop 和 production 的 CSS 大小一樣小，本地預覽時不會出現 10-20 MB 的 CSS 檔案，開啟相關開發工具也不會載入很久。
+
+## 啟用 JIT 模式
+
+要開啟非常簡單，只需要在 `tailwind.config.js` 裡把 `mode` 設成 `'jit'` 就行了：
+
+```js {2}
+module.exports = {
+  mode: 'jit',
+  theme: {
+    // ...
+  }
+  // ...
+}
+```
+
+但因為 JIT 模式在開發時就只會打包需要的 class，所以也要配置 `purge` 的部分：
+
+```js {3-6}
+module.exports = {
+  mode: 'jit',
+  purge: [
+    './public/**/*.html',
+    './src/**/*.{js,jsx,ts,tsx,vue}',
+  ],
+  theme: {
+    // ...
+  }
+  // ...
+}
+```
+
+## 新功能
+
+然後就可以開始玩功能了！
+
+### 直接使用任意 Variants
+
+```html
+<input class="active:bg-indigo-200">
+```
+
+直接在 HTML 寫就可以了，不用在 `tailwind.config.js` 做設定，方便許多了。其他的 `focus-visible`、`disabled`、`even` 等都可以用喔！
+
+當然，還支援各種疊加的用法，像這樣 XD：
+
+```html
+<button class="md:dark:disabled:focus:hover:bg-gray-300">
+```
+
+### 任意值 class
+
+如果網站是照著設計稿刻出來的，這個功能絕對是必備。使用任意值 class 很簡單，把你想要指定的值用 `[...]` 框起來，比如 `h-[100px]` 可以設定高度為 `100px`。但要注意的是不能濫用，否則 Tailwind CSS 的設計系統就失去了原本的優勢了。
+
+首先是萬惡的圖片，絕對定位+圖片寬高，現在終於都可以在 HTML 裡搞定！：
+
+```html
+<img class="absolute w-[165px] h-[110px] top-[-125px] left-[62px] md:top-[-30px] md:left-[180px]" src="/background-image.png">
+```
+
+如果有嵌入 LINE 或 Twitter 的按鈕時，LINE/Twitter 的商標顏色也不用增加到顏色系統了，因為只會用這麼一次呀：
+
+```html
+<button class="bg-[#00b900]">加入 LINE 好友</button>
+```
+
+或者是更客製的網格設定：
+
+```html
+<div class="grid-cols-[1fr,700px,2fr]">
+  <!-- ... -->
+</div>
+```
+
+### !important 修飾符
+
+還有 `!important` 也可以使用，在特殊狀況時會用到：
+
+```html
+<div class="!font-bold">!IMPORTANT BOLD TITLE</div>
+```
+
+如果加上 Variants 時，`!` 要跟著樣式名字，而不是加在最前面：
+
+```html
+<div class="sm:hover:!font-bold">
+```
+
+## JIT 模式的限制
+
+當然 JIT 模式不是萬能的，它也有一些使用上的限制，請往下看...
+
+需要記住一件事情，Tailwind CSS 是靜態提取 class 的，寫 class 務必要寫完整，不然 Tailwind CSS 會無法正確的打包 CSS。
+
+❌ 這樣是不行的呦：
+
+```html
+<div :class="`mt-[${size === 'lg' ? '22px' : '17px' }]`"></div>
+```
+
+✅ 動態選擇完整的 class：
+
+```html
+<div :class="size === 'lg' ? 'mt-[22px]' : 'mt-[17px]'"></div>
+```
+
+但如果真的要寫完全動態的 class 的話，只能改用 Inline-style 或 CSS-in-JS 的套件了。
+
+❌ 這樣是不行的呦：
+
+```html
+<div :class="`bg-[${userThemeColor}]`"></div>
+```
+
+✅ 改用 Inline-style
+
+```html
+<div :style="`background-color: ${userThemeColor}`"></div>
+```
+
+還有，JIT 模式是沒有使用 PurgeCSS，所以 PurgeCSS 的設定都不能用。不過 [v2.2 更新後](https://github.com/tailwindlabs/tailwindcss/releases/tag/v2.2.0#built-in-safelist-transform-and-extract-support) 增加了 `safelist` 的選項，所以現在 JIT 模式下也可以正常使用 `safelist` 囉！(記得要寫下完整的 class)
+
+```js title="tailwind.config.js"
+module.exports = {
+  mode: 'jit',
+  purge: {
+    content: ['./src/**/*.html'],
+    safelist: [
+      'bg-blue-500',
+      'text-center',
+      'hover:opacity-100',
+      // ...
+      'lg:text-right',
+    ],
+  },
+}
+```
+
+## 結語
+
+結論，JIT 模式太香了！速度快不說，還有這麼多新功能，推薦新專案都要啟用，真的爽到起飛！！！
+
+## 線上體驗
+
+啊！別忘了來用用看 Tailwind Play，可以在本篇的範例體驗看看唷：[JIT 線上範例 - Tailwind Play](https://play.tailwindcss.com/oOiqoowOoM)
+
+## 參考資料
+
+* [Just-in-Time Mode - Tailwind CSS](https://tailwindcss.com/docs/just-in-time-mode)
+
+---
+
+## 課程資訊
+
+我和 HiSIO 合作開設了一堂[結合 Tailwind CSS + Vue3 的進階課程](https://hiskio.com/courses/620/about?s=tc)，透過一步步講解以及實作，帶大家整合使用 Tailwind CSS 和 Vue 3 來完成一個部落格的後台 UI。實作功能包含文章列表、編輯表單、富文本編輯器、用戶資料設定等，並教大家使用快速啟動又新潮的打包器 Vite 作為開發和編譯工具。一起來加入課程，提升切版技術吧！
+
+[![https://hiskio.com/courses/620/about?s=tc](https://lucas-hiskio-2021-tailwindcss-slide.vercel.app/thumbnail.png)](https://hiskio.com/courses/620/about?s=tc)

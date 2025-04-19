@@ -1,0 +1,202 @@
+---
+title: Astro 筆記 (5)：Astro 實作 i18n 多語系功能之二
+description: 描述...
+# image: /images/2025-02-08-astro-i18n-2.jpg
+# showImage: false
+pubDate: 2025-02-08
+category: coding
+tags: ["Astro", "i18n"]
+draft: true
+---
+
+## 安裝 @astrolicious/i18n
+
+```bash
+yarn add i18next @astrolicious/i18n
+```
+
+```ts title="astro.config.ts"
+import i18n from '@astrolicious/i18n'
+
+export default defineConfig({
+  integrations: [
+    i18n({
+      defaultLocale: 'zh-TW',
+      locales: ['zh-TW', 'en'],
+    }),
+  ],
+})
+```
+
+```astro title="src/layouts/Layout.astro"
+---
+import I18nHead from '@astrolicious/i18n/components/I18nHead.astro'
+import { getHtmlAttrs, getLocale } from 'i18n:astro'
+
+const locale = getLocale()
+
+const htmlLangMap: Record<string, string> = {
+  'zh-TW': 'zh-Hant-TW',
+}
+
+const htmlAttrs = getHtmlAttrs()
+htmlAttrs.lang = htmlLangMap[locale] || locale
+---
+
+<!doctype html>
+<html {...htmlAttrs}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <I18nHead />
+  </head>
+  <body>
+    ...
+  </body>
+</html>
+```
+
+## 顯示翻譯文字
+
+```json title="src/locales/en/common.json"
+{
+  "nav_about": "About",
+  "nav_home": "Home",
+  "nav_posts": "Posts"
+}
+```
+
+```json title="src/locales/zh-TW/common.json"
+{
+  "nav_about": "關於",
+  "nav_home": "首頁",
+  "nav_posts": "文章"
+}
+```
+
+```astro title="src/layouts/Layout.astro"
+---
+import { t, getHtmlAttrs, getLocale, getLocalePath } from 'i18n:astro'
+---
+
+<!doctype html>
+<html {...htmlAttrs}>
+  <head>
+    ...
+  </head>
+  <body>
+    <ul class="menu">
+      <li class:list={['menu-item', pathname === getLocalePath('/') && 'active']}>
+        <a href={getLocalePath('/')}>{t('nav_home')}</a>
+      </li>
+      <li class:list={['menu-item', pathname.startsWith(getLocalePath('/posts/')) && 'active']}>
+        <a href={getLocalePath('/posts/')}>{t('nav_posts')}</a>
+      </li>
+      <li class:list={['menu-item', pathname === getLocalePath('/about/') && 'active']}>
+        <a href={getLocalePath('/about/')}>{t('nav_about')}</a>
+      </li>
+    </ul>
+  </body>
+</html>
+```
+
+## 新增語言選單
+
+```astro title="src/layouts/Layout.astro"
+---
+import { t, getHtmlAttrs, getLocale, getLocalePath, getSwitcherData } from 'i18n:astro'
+
+const switcherData = getSwitcherData()
+
+const switcherLabels: Record<string, string> = {
+  en: 'English',
+  'zh-TW': '繁體中文',
+}
+
+---
+
+<!doctype html>
+<html {...htmlAttrs}>
+  <head>
+    ...
+  </head>
+  <body>
+    <ul class="menu">
+      ...
+      <li class="menu-item menu-item-lang menu-item-has-children">
+        <a href="#">
+          <i class="fas fa-globe"></i>
+          {switcherLabels[locale]}
+        </a>
+        <ul class="sub-menu">
+          {switcherData.map(item => (
+            <li class:list={['menu-item', item.locale === locale && 'active']}>
+              <a href={`${item.href.replace(/\/$/, '')}/`}>{switcherLabels[item.locale]}</a>
+            </li>
+          ))}
+        </ul>
+      </li>
+    </ul>
+  </body>
+</html>
+```
+
+## 完整程式碼
+
+```astro title="src/layouts/Layout.astro"
+---
+import { t, getHtmlAttrs, getLocale, getLocalePath, getSwitcherData } from 'i18n:astro'
+
+const locale = getLocale()
+const switcherData = getSwitcherData()
+
+const switcherLabels: Record<string, string> = {
+  en: 'English',
+  'zh-TW': '繁體中文',
+}
+
+const htmlLangMap: Record<string, string> = {
+  'zh-TW': 'zh-Hant-TW',
+}
+
+const htmlAttrs = getHtmlAttrs()
+htmlAttrs.lang = htmlLangMap[locale] || locale
+---
+
+<!doctype html>
+<html {...htmlAttrs}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <I18nHead />
+  </head>
+  <body>
+    <ul class="menu">
+      <li class:list={['menu-item', pathname === getLocalePath('/') && 'active']}>
+        <a href={getLocalePath('/')}>{t('nav_home')}</a>
+      </li>
+      <li class:list={['menu-item', pathname.startsWith(getLocalePath('/posts/')) && 'active']}>
+        <a href={getLocalePath('/posts/')}>{t('nav_posts')}</a>
+      </li>
+      <li class:list={['menu-item', pathname === getLocalePath('/about/') && 'active']}>
+        <a href={getLocalePath('/about/')}>{t('nav_about')}</a>
+      </li>
+      <li class="menu-item menu-item-lang menu-item-has-children">
+        <a href="#">
+          <i class="fas fa-globe"></i>
+          {switcherLabels[locale]}
+        </a>
+        <ul class="sub-menu">
+          {switcherData.map(item => (
+            <li class:list={['menu-item', item.locale === locale && 'active']}>
+              <a href={`${item.href.replace(/\/$/, '')}/`}>{switcherLabels[item.locale]}</a>
+            </li>
+          ))}
+        </ul>
+      </li>
+    </ul>
+  </body>
+</html>
+```

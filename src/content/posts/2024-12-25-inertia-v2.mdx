@@ -1,0 +1,230 @@
+---
+title: Inertia v2.0 新功能介紹
+description: 介紹 Inertia v2.0 推出的新功能，包含 Async Requests (異步載入)、Polling (輪巡)、Prefetching (預先載入)、Deferred props (延遲載入 Prop)、Lazy loading (惰性載入) 等
+image: /images/2024-12-25-inertia-v2.jpg
+pubDate: 2024-12-25
+category: coding
+tags: ["Laravel", "Vue.js", "Inertia.js"]
+---
+
+Inertia 是一個像膠水一樣的東西，將前後端的框架黏合在一起。在這裡你可以看到用 Laravel 的路由 + Vue.js/React 前端頁面來開發 SPA 網頁應用。而在 2024 年年末，終於 Inertia 推出了 v2.0！我等了好久啊😭！！！下面就一起來看看有哪些新功能吧~
+
+## Async Requests (異步載入)
+
+在 Inertia v1.0 的時候，預設載入頁面和 Partial reload (部分重載) 的時候都是同步載入 (Synchronous) 的，機制上是需要等到請求完成後才能發送下個請求，而畫面上則是都會有 Loading 載入的進度條。
+
+這個機制在載入頁面是沒有問題的，畢竟是第一次載入，理所當然一次只能發一個請求，但是在 Partial reload 的時候就變得不大美觀。因為 Partial reload 就是想要模擬打 API 請求的效果，但一次只能發一個請求，且在發送請求時還會出現進度條，就看起來很奇怪。
+
+因為這些原因，Inertia 團隊重寫了載入請求的程式碼，從 Inertia v2.0 開始，預設對當前頁面 Reload 的請求使用了異步載入 (Asynchronous) 的方式。異步載入可以同時發送多個請求的時候，不會影響當前頁面的請求，也不會出現上方的載入進度條，但要注意異步載入無法取消。
+
+| | 同步載入 (Synchronous) | 異步載入 (Asynchronous) |
+| --- | --- | --- |
+| 同時請求數 | 1 | Infinity (無限制) |
+| 取消請求 | 可以 | 不可以 |
+| 進度條 | 有 | 無 |
+
+## Polling (輪巡)
+
+Polling (輪巡) 是可以固定時間重新拉取新資料的功能，通常用於需要即時資料的情境，比如比賽計分、天氣資訊、資訊看板等。
+
+雖然說要手寫也不是什麼難事，不過 Inertia 還是新增了此輔助函數，簡化了需要寫的程式量，讓定時更新資料可以更方便。而且在預設情況下，會在比如縮小視窗、切換到其他頁籤等背景執行時候，限制輪巡的請求。
+
+要使用輪巡，只要呼叫 `usePoll()` 就可以了，而參數是給每次輪巡間隔的毫秒數：
+
+```js
+import { usePoll } from '@inertiajs/vue3'
+
+// 2秒後重新拉資料
+usePoll(2000)
+```
+
+效果差不多長這樣：
+
+![Polling 效果](/images/2024-12-25-inertia-v2-polling.gif)
+
+## Prefetching (預先載入)
+
+Prefetching (預先載入) 可以在使用者尚未點擊連結時，預先載入該連結的資料，這樣使用者真正點下此連結時就不用等待載入時間，可以直接看到資料，提升使用者體驗。
+
+要使用 Prefetching 很簡單，只要在 `<Link>` 元件中加上 `prefetch` 屬性就可以了，這樣就會在滑鼠滑入連連結 75 毫秒後在背景載入該頁面：
+
+```vue
+<Link href="/users" prefetch>Users</Link>
+
+<script setup>
+import { Link } from '@inertiajs/vue3'
+</script>
+```
+
+效果差不多長這樣：
+
+![Prefetching 效果](/images/2024-12-25-inertia-v2-prefetching.gif)
+
+也可以改變載入的時機，比如設定 `click` 是在點擊連結時預載：
+
+```vue
+<Link href="/users" prefetch="click">Users</Link>
+```
+
+如果確定使用者一定會點擊連結，可以設定 `mount` 在頁面載入時就開始預載：
+
+```vue
+<Link href="/users" prefetch="mount">Users</Link>
+```
+
+預先載入的資料預設會快取 30 秒，快取時間結束後的下次請求，就會強制重新發一次請求。可以透過 `cache-for` 屬性來設定快取時間，比如 `500ms` 是 500 毫秒，`6s` 是 6 秒，`1m` 是一分鐘等類推，也可以直接傳整數進去設定毫秒：
+
+```vue
+<Link href="/users" prefetch cache-for="6s">Users</Link>
+<Link href="/users" prefetch cache-for="1m">Users</Link>
+<Link href="/users" prefetch :cache-for="5000">Users</Link>
+```
+
+`cache-for` 屬性可以設定兩組時間，第一組是快取資料的有效時間，第二組是從伺服器取得新資料之前，還可以作為舊資料提供使用的時間：
+
+```vue
+<Link href="/users" prefetch :cache-for="['30s', '1m']">Users</Link>
+```
+
+嗯... 是的，聽完之後一定是霧煞煞的，這兩個不是差不多嗎?，因為我一開始也沒太看懂，後來研究了之後才慢慢搞懂。下面我們一個一個來看：
+
+```plaintext
+      第一組時間   第二組時間
+--------- * --------- * ---------
+ 有效期間    資料過時     完全過期
+```
+
+如果是在快取的有效期間 (第一組時間之前) 發出請求，會直接回傳快取資料，不會真的發送請求。
+
+如果是在資料過時 (兩組時間之間) 發出新請求，會先回傳舊資料，並且在背景發送請求，等到新資料回來後，就會把資料更新上去。
+
+如果是在第二組時間之後發出新請求，會將快取資料視為過期，就會像往常規的請求方式一樣，發送新請求來取得新資料。
+
+> 如果想要更細粒度的控制的話，現在官網有記載一個 `usePrefetch()` 的 hook，但現在似乎是壞掉的狀態，不建議現在使用。
+
+## Deferred Props (延遲載入資料)
+
+Deferred Props (延遲載入資料)，可以讓當前頁面 HTML 先載入後，再去取得資料，體感上又更接近 SPA 的效果。通常如果有以下情況，可以考慮使用 Deferred Props：
+
+* 資料庫查詢時間較長
+* 載入大量資料
+* 呼叫外部 API
+
+使用方式上，後端部分可以使用 `Inertia::defer()` 方法，將查詢資料的程式包在函數裡，這樣在載入頁面時就不會先去查詢資料：
+
+```php
+return Inertia::render('Users/Index', [
+    'users' => Inertia::defer(fn () => User::all()),
+]);
+```
+
+預設情況下，所有的 Deferred Props 都會包在一個請求當中，不過可以透過將 Props 分不同群組來並行載入。比如下面的 `teams`、`projects`、`tasks` 這三個 Props 就會在同一個請求中載入，而 `users` 則會在另一個請求中載入，這兩個請求會同步開始執行。群組名稱是字串，可以自訂名稱：
+
+```php
+return Inertia::render('Users/Index', [
+    'users' => Inertia::defer(fn () => User::all()),
+    'teams' => Inertia::defer(fn () => Team::all(), 'attributes'),
+    'projects' => Inertia::defer(fn () => Project::all(), 'attributes'),
+    'tasks' => Inertia::defer(fn () => Task::all(), 'attributes'),
+]);
+```
+
+前端部分要引入 `<Deferred>` 元件：
+
+```js
+import { Deferred } from '@inertiajs/vue3'
+```
+
+然後在 `<Deferred>` 元件中傳入延遲載入 Prop 的名稱，內部可以增加一個 `fallback` 的 Slot 來顯示載入中的畫面：
+
+```html
+<Deferred data="users">
+  <template #fallback>
+    <div>載入中...</div>
+  </template>
+
+  <h1>使用者列表</h1>
+  <table>
+    ...
+  </table>
+</Deferred>
+```
+
+效果差不多長這樣：
+
+![Deferred Props 效果](/images/2024-12-25-inertia-v2-deferred-props.gif)
+
+## Lazy Loading (惰性載入)
+
+Lazy Loading (惰性載入) 也是一種延緩載入資料時間的功能。這個看名字乍看之下和上面的 Deferred Props 有些相像，但其實是不一樣的。Deferred Props 是在載入頁面完成後就馬上載入新資料，而 Lazy Loading 是在使用者**滾動**到元素時才載入，機制上是不大一樣的。
+
+因此要判斷使用哪個功能，最簡單就是看當前頁面的長度，如果頁面不長，且新資料的位置是在頁面頂部，就使用 Deferred Props；如果頁面很長很長，新資料需要滾動後才能看到的，就使用 Lazy Loading。
+
+Lazy Loading 在以下情境，且需要滾動後才能看到的時候可以使用：
+
+* 圖表
+* 大量圖片或影片
+* 無限滾動列表
+* 使用者評論
+
+使用方式上，後端部分可以使用 `Inertia::lazy()` 方法，將查詢資料的程式包在函數裡，這樣在載入頁面時就不會先去查詢資料：
+
+```php
+return Inertia::render('Users/Chart', [
+    'chartData' => Inertia::lazy(fn () => [
+        'labels' => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        'data' => [12, 19, 3, 5, 2, 3, 7],
+    ]),
+]);
+```
+
+前端部分要引入 `<WhenVisible>` 元件：
+
+```js
+import { WhenVisible } from '@inertiajs/vue3'
+```
+
+然後在 `<WhenVisible>` 元件中傳入要 Lazy Loading 的 Prop 名稱，內部可以增加一個 `fallback` 的 Slot 來顯示載入中的畫面：
+
+```html
+<WhenVisible data="chartData">
+  <template #fallback>
+    <div>
+      載入圖表中...
+    </div>
+  </template>
+
+  <UsersChart :data="chartData" />
+</WhenVisible>
+```
+
+效果差不多長這樣：
+
+![Lazy Loading 效果](/images/2024-12-25-inertia-v2-lazy-loading.gif)
+
+## Infinite Scroll (無限滾動)
+
+*現在無法使用，預計 Inertia v2.1 會支援此功能*
+
+## 升級到 v2
+
+從 Inertia v1 升級到 v2，可以參考官方的 [v2.0 升級指南](https://inertiajs.com/upgrade-guide) 來進行升級。基本沒有太大的更動，主要差別是版本的調整。Laravel 的部分刪除了 8 和 9 版的支援，最低支援版本是 Laravel 10 和 PHP 8.1，Vue.js 的部分則是刪除了 Vue 2。如果依賴版本沒有太舊的話，理論上升級應該是沒有太大問題的。
+
+## Demo
+
+![Inertia v2.0 Demo 預覽](/images/2024-12-25-inertia-v2-demo.jpg)
+
+這次的文章提到的新功能，我寫了一個簡單的 Demo，可以下載這個 GitHub Repo [inertia-v2-demo](https://github.com/ycs77/inertia-v2-demo) 來玩玩看~
+
+## 結語
+
+Inertia v2.0 推出了許多新功能，我自然是很高興的~ 只是還是有些細節並沒有完善就推出穩定版，是比較可惜的說... 不過 Inertia 對於全端開發上是很有幫助的，至少對我來說是這樣啦XD 相信未來會越來越好的😁！
+
+## 參考資料
+
+* [Upgrade guide for v2.0 - Inertia.js](https://inertiajs.com/upgrade-guide)
+* [Polling - Inertia.js](https://inertiajs.com/polling)
+* [Prefetching - Inertia.js](https://inertiajs.com/prefetching)
+* [Deferred props - Inertia.js](https://inertiajs.com/deferred-props)
+* [Load when visible - Inertia.js](https://inertiajs.com/load-when-visible)
+* [Announcing Inertia 2.0: Redefining Frontend Development for Laravel](https://blog.laravel.com/announcing-inertia-20-redefining-frontend-development-for-laravel)

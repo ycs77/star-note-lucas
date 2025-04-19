@@ -10,6 +10,7 @@ import { socialLinks } from '@/nav'
 import '@/styles/index.css'
 
 const posts = preprocessPosts(await getCollection('posts'))
+  .slice(0, 5)
 ---
 
 <Layout>

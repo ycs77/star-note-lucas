@@ -1,0 +1,223 @@
+---
+title: ffmpeg 命令筆記
+description: 紀錄一下最近在用 ffmpeg 的一些常用指令，和轉檔成 Chromecast 支援的影片格式
+image: /images/2023-03-20-ffmpeg.jpg
+pubDate: 2023-03-20
+category: coding
+tags: ["video"]
+---
+
+紀錄一下最近在用 ffmpeg 的一些常用指令，和轉檔成 Chromecast 支援的影片格式。
+
+## 轉檔
+
+```bash
+ffmpeg -i input.avi output.mp4
+```
+
+更多選項
+
+```bash
+ffmpeg -i input.avi -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 160k -vf format=yuv420p output.mp4
+```
+
+## 壓縮
+
+壓縮影片 (`-crf` 預設值是 23，可以調更低比如 18 來壓縮影片品質)：
+
+```bash
+ffmpeg -i input.mp4 -c:v libx264 -crf 23 -c:a copy output.mp4
+```
+
+壓縮音樂：
+
+```bash
+ffmpeg -i input.mp3 -vn -b:a 192k output.mp4
+```
+
+## 定位時間
+
+依照 `HOURS:MM:SS.MICROSECONDS` 的格式來輸入時間。如果輸入是數字預設是秒數，比如 30 是 30 秒。
+
+## 分割片段
+
+從 00:01:00 剪到 00:02:00：
+
+```bash
+# 如果使用 `-c copy` 來分割，且要用 Concat Demuxer 合併的話，需要使用 `-avoid_negative_ts 1` 參數
+ffmpeg -ss 00:01:00 -to 00:02:00 -accurate_seek -i video.mp4 -c copy -avoid_negative_ts 1 cut.mp4
+# 如果剪出來的片段有問題，可以重新編碼
+ffmpeg -ss 00:01:00 -to 00:02:00 -accurate_seek -i video.mp4 -c:v libx264 -crf 23 -c:a aac -b:a 192k cut.mp4
+```
+
+從 00:01:00 剪 2 分鐘：
+
+```bash
+# 如果使用 `-c copy` 來分割，且要用 Concat Demuxer 合併的話，需要使用 `-avoid_negative_ts 1` 參數
+ffmpeg -ss 00:01:00 -t 00:02:00 -accurate_seek -i video.mp4 -c copy -avoid_negative_ts 1 cut.mp4
+# 如果剪出來的片段有問題，可以重新編碼
+ffmpeg -ss 00:01:00 -t 00:02:00 -accurate_seek -i video.mp4 -c:v libx264 -crf 23 -c:a aac -b:a 192k cut.mp4
+```
+
+## 合併片段
+
+使用 Concat Demuxer 來合併，新增一個 `mylist.txt` 檔案，檔案中包含要合併的檔案們的路徑 (可以只用檔名)：
+
+```
+file '/path/to/video1.mp4'
+file '/path/to/video2.mp4'
+file '/path/to/video3.mp4'
+```
+
+然後就可以開始合併這些媒體檔案
+
+```bash
+ffmpeg -f concat -safe 0 -i mylist.txt -c copy output.mp4
+```
+
+使用 Concat Protocol 來合併，只有在合併 MPEG-2 的 ts 檔案時使用：
+
+```bash
+ffmpeg -i "concat:video1.ts|video2.ts|video3.ts" -c copy output.ts
+```
+
+## 提取音樂/影片
+
+提取音樂：
+
+```bash
+ffmpeg -i input.mp4 -q:a 0 -map a output.mp3
+```
+
+提取影片：
+
+```bash
+ffmpeg -i input.mp4 -c:v copy -an output.mp4
+```
+
+## 截圖
+
+快速截圖：
+
+```bash
+ffmpeg -ss '01:20:29' -i video.mp4 -frames:v 1 out1.jpg
+```
+
+精準截圖：
+
+```bash
+ffmpeg -i video.mp4 -ss '01:20:29' -frames:v 1 out2.jpg
+```
+
+將影片中所有影格(Frame)都擷取成 JPG 圖片：
+
+```bash
+ffmpeg -i video.mp4 'video-screenshot-%04d.jpg'
+```
+
+將影片中每1秒的畫面擷取成 JPG 圖片：
+
+```bash
+# 每1秒截1張
+ffmpeg -i video.mp4 -vf fps=1 'video-screenshot-%04d.jpg'
+# 每5秒截1張
+ffmpeg -i video.mp4 -vf fps=1/5 'video-screenshot-%04d.jpg'
+```
+
+## 縮放畫面尺寸
+
+```bash
+ffmpeg -i video.mp4 -vf scale="1280:-1" output.mp4
+```
+
+## 碼率 (bitrate)
+
+```bash
+ffmpeg -i video.mp4 -b:v 1000k output.mp4
+```
+
+## 幀率 (frame rate)
+
+```bash
+ffmpeg -i video.mp4 -r 25 output.mp4
+```
+
+## mkv 字幕轉 mp4
+
+```bash
+ffmpeg -i video.mkv -vf "subtitles=video.mkv:si=0" -strict -2 video.mp4
+```
+
+字幕順序從 `si=0` 開始。
+
+如果不知道字幕的 index，可以使用 `ffprobe` 來查詢：
+
+```bash
+ffprobe -loglevel error -select_streams s -show_entries stream=codec_name,index:stream_tags=language -of csv=p=0 "video.mkv"
+```
+
+如果以上方法不管用的話，需要使用 [MKVToolNix](https://mkvtoolnix.download/) 合併。
+
+## ass 字幕嵌入 mp4
+
+```bash
+ffmpeg -i video.mp4 -vf "ass=subtitle.ass" output.mp4
+```
+
+## sup 圖形字幕嵌入 mp4
+
+如果 sup 圖形字幕在 `.mkv` 檔案中：
+
+```bash
+ffmpeg -i video.mkv -filter_complex "[0:v][0:s]overlay[v1]" -map "[v1]" -map 0:a output.mp4
+```
+
+如果 sup 圖形字幕是額外的字幕檔：
+
+```bash
+ffmpeg -i video.mp4 -i subtitle.sup -filter_complex "[0:v][1:s]overlay[v1]" -map "[v1]" -map 0:a output.mp4
+```
+
+## mkv 抽取軌道
+
+[MKVToolNix](https://mkvtoolnix.download/) 附了一個 `mkvextract` 可以來抽取出 `.mkv` 的各個軌道：
+
+```bash
+mkvextract tracks video.mkv 0:video.mp4 1:audio.flac 2:subtitle.srt
+```
+
+## 轉成 8 位元深度
+
+為了要投放影片到 Chromecast 上面，卻發現影片是 10 位元深度而不能播，轉成 8 位元深度 (yuv420p) 就可以了：
+
+```bash
+ffmpeg -i "video.mp4" -c:v libx264 -profile:v high -level:v 5.1 -pix_fmt yuv420p -c:a copy "output.mp4"
+```
+
+## 音訊從 5.1 轉成雙聲道
+
+為了要投放影片到 Chromecast 上面，卻發現不支援 5.1 而不能播，轉成雙聲道就可以了：
+
+```bash
+ffmpeg -i video.mp4 -c:v copy -c:a aac -ac 2 output.mp4
+```
+
+## 下載 m3u8
+
+直接丟 m3u8 連結給 ffmpeg，就可以下載影片了：
+
+```bash
+ffmpeg -i https://example.com/720p.m3u8 -c copy video.mp4
+```
+
+但也有會給 403 的時候，可以試試看加上 Cookie 和一些 headers 來偽裝：
+
+```bash
+ffmpeg -headers "Cookie: 這裡放Cookie" -headers "Referer: https://example.com/" -user_agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36" -i https://example.com/720p.m3u8 -c copy video.mp4
+```
+
+## ffmpeg 相關資源
+
+* [介紹好用工具：FFmpeg (強大的錄影、轉檔、串流工具與函式庫)](https://blog.miniasp.com/post/2022/10/08/Useful-tool-FFmpeg)
+* [FFmpeg：常用命令小笔记](https://blog.csdn.net/qq26983255/article/details/94590018)
+* [ffmpeg简单使用](https://www.huang1111.cn/index.php/archives/7/)

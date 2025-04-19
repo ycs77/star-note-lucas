@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config'
 import vercel from '@astrojs/vercel'
 import vue from '@astrojs/vue'
 import expressiveCode from 'astro-expressive-code'
+import { pluginCodeOutput } from '@fujocoded/expressive-code-output'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
@@ -22,6 +23,7 @@ export default defineConfig({
     vue(),
     expressiveCode({
       themes: ['night-owl'],
+      plugins: [pluginCodeOutput()],
     }),
     mdx(),
     sitemap(),

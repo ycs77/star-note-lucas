@@ -1,0 +1,49 @@
+---
+title: Astro 筆記 (6)：Astro 使用 Zod 驗證網址 Query String 格式
+description: 描述...
+# image: /images/2025-02-09-astro-zod-querystring.jpg
+# showImage: false
+pubDate: 2025-02-09
+category: coding
+tags: ["Astro"]
+draft: true
+---
+
+```ts
+import { z } from 'zod'
+
+const defaultParams = {
+  page: 1,
+  priceFrom: 0,
+  priceTo: 1000,
+  sort: 'latest' as 'latest' | 'oldest',
+}
+const PRICE_MIN = 0
+const PRICE_MAX = 1000
+
+const querySchema = z.object({
+  page: z.coerce.number().positive().default(1).catch(1),
+  type: z.enum(['a', 'b', 'c']).nullish().default(null).catch(null),
+  search: z.coerce.string().nullish().default(null).catch(null),
+  category: z.coerce.number().nullish().default(null).catch(null),
+  priceFrom: z.coerce.number().min(PRICE_MIN).max(PRICE_MAX).default(defaultParams.priceFrom).catch(defaultParams.priceFrom),
+  priceTo: z.coerce.number().min(PRICE_MIN).max(PRICE_MAX).default(defaultParams.priceTo).catch(defaultParams.priceTo),
+  tags: z.preprocess(val => [val || []].flat().map(Number).filter(Boolean), z.array(z.number())).catch([]),
+  sort: z.enum(['latest', 'oldest']).default(defaultParams.sort).catch(defaultParams.sort),
+})
+
+const params = querySchema.parse(parseQueryParams(Astro.url.search))
+```
+
+```astro
+<ul>
+  <li>page: {params.page}</li>
+  <li>type: {params.type}</li>
+  <li>search: {params.search}</li>
+  <li>category: {params.category}</li>
+  <li>priceFrom: {params.priceFrom}</li>
+  <li>priceTo: {params.priceTo}</li>
+  <li>tags: {params.tags}</li>
+  <li>sort: {params.sort}</li>
+</ul>
+```

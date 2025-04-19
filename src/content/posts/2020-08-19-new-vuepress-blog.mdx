@@ -1,0 +1,331 @@
+---
+title: VuePress 部落格開發踩坑記
+description: 紀錄 VuePress + Tailwind CSS + Dark Mode 遇到的坑和解決方法
+image: /images/2020-08-19-new-vuepress-blog.jpg
+pubDate: 2020-08-19
+category: coding
+tags: ["Vue.js", "TailwindCSS"]
+---
+
+import { Note, Tip, Warning, Danger } from '@/components/callouts'
+
+<Warning>
+這篇文章的內容已經過時了，請查閱 Vuepress 新版文檔使用。
+</Warning>
+
+新部落格上線，紀錄一下使用 **VuePress** + **Tailwind CSS** + **Dark Mode** 開發時的小技巧和奇怪的坑。
+
+## VuePress 篇
+
+**VuePress**，以 **Markdown** 為中心的 **Vue.js** 靜態網站產生器，只要寫好 Markdown 文件和基本的設定一下，馬上就變出一個簡單的文檔網站了。但要客製化的話，就會遇到一些奇怪的坑：
+
+### Config 沒有更新?
+
+難道是 VuePre```js title="ss 壞了?當然不是，只要改了 VuePress 都要重啟 VuePress，才會看到更新後的結果。如果有改 Markdown 上方的 frontmatter 最好也重啟。
+
+這個坑讓我一開始卡的超...久的，每次重啟都要浪費很多時間。本來想換以 **Vite** 為基礎的 **Vitepress**，本機 Dev Server 啟動超...快，更新超...快。但 Vitepress 目前尚在開發中，文檔也寫明不支持 VuePress 的生態系，也不會有**套件 (Plugin)** 這東西存在，所有功能都要自己寫。出於以上原因，最後決定還是先用 VuePress。
+
+### 語言設定
+
+語言比較簡單，直接增加這段就好了：
+
+```js title=".vuepress/config.js"
+module.exports = {
+  // ...
+  locales: {
+    '/': { lang: 'zh-TW' }
+  }
+}
+```
+
+### VuePress Blog Plugin
+
+看到官方有出建部落格的套件就馬上拿來用了，部落格都會有的文章區，可以使用套件的 **Directory Classifier** 功能實現。先上我的 Blog Plugin 設定：
+
+<Note>
+具體如何實現請看 [VuePress Blog Plugin 文檔](https://vuepress-plugin-blog.ulivz.com/guide/getting-started.html#directory-classifier)
+</Note>
+
+```js title=".vuepress/config.js"
+module.exports = {
+  // ...
+  plugins: [
+    ['@vuepress/blog', {
+      directories: [
+        {
+          id: 'post',
+          title: '文章',
+          dirname: 'post',
+          layout: 'IndexPost',
+          path: '/post/',
+          itemPermalink: '/post/:slug',
+          pagination: {
+            layout: 'IndexPost',
+            lengthPerPage: 15
+          }
+        }
+      ],
+      frontmatters: [
+        {
+          id: 'tag',
+          title: '標籤',
+          keys: ['tags'],
+          path: '/tag/',
+          layout: 'Tags',
+          scopeLayout: 'Tag'
+        }
+      ]
+    }]
+  ]
+}
+```
+
+我的文章檔名格式是 `2020-01-01-article-slug`，然後再將 Blog 套件 `directories` 內文章的 `itemPermalink` 設為 `/post/:slug`，其中 `:slug` 它就會自動抓 Markdown 檔名中的 `article-slug` 部分。這算是它比較聰明的地方。
+
+文章區做完後，想說可以在首頁顯示最新的幾篇文章，結果光就這功能要爬到源碼才找到解法。
+
+在文章列表的 Vue 組件 (`IndexPost.vue`) 裡可以使用 `this.$pagination` 直接取得文章的資料，以此為線索找了方法，可以在 `Home.vue` 裡可以調用 `this.$getPagination('post', 'post')` 取得文章，並用 `slice()` 截出我需要的文章數：
+
+```vue title=".vuepress/theme/layouts/Home.vue"
+<template>
+  <layout>
+    <!-- ... -->
+
+    <div class="container">
+      <div>文章</h2>
+      <div class="grid gap-8 sm:grid-cols-6 mt-8">
+        <div v-for="(page, i) in homePosts" :key="page.name">
+          <PostGridItem :page="page" />
+        </div>
+      </div>
+      <!-- ... -->
+    </div>
+
+    <!-- ... -->
+  </layout>
+</template>
+
+<script>
+// ...
+export default {
+  // ...
+  computed: {
+    post() {
+      return this.$getPagination('post', 'post')
+    },
+    homePosts() {
+      return this.post._matchedPages.slice(0, 9)
+    }
+  }
+}
+</script>
+```
+
+後來看到一些網站可以置頂文章在首頁，增加排序文章方法，因此程式碼改成以下：
+
+<Note>
+雖然這不是坑，姑且還是紀錄一下好了
+</Note>
+
+```vue title=".vuepress/theme/layouts/Home.vue"
+<script>
+// ...
+export default {
+  // ...
+  computed: {
+    post() {
+      return this.$getPagination('post', 'post')
+    },
+    homePosts() {
+      return this.post._matchedPages
+        .sort((prev, next) => {
+          const prevPinOrder = prev.frontmatter.pin
+          const nextPinOrder = next.frontmatter.pin
+          if (typeof prevPinOrder === 'number' && typeof nextPinOrder === 'number') {
+            return prevPinOrder > nextPinOrder ? 1 : -1
+          }
+          return typeof prevPinOrder === 'number' ? -1 : (typeof nextPinOrder === 'number' ? 1 : 0)
+        })
+        .slice(0, 9)
+    }
+  }
+}
+</script>
+```
+
+然後只要在想要置頂的文章設定 `pin` 為想要顯示的順序就好了。首頁的文章會照 1234... 的順序，之後接其他的文章：
+
+```yaml
+---
+pin: 1
+title: 文章...
+---
+```
+
+### VuePress Last Updated Plugin 的時間 Bug
+
+用 **vuepress-plugin-seo** + **@vuepress/plugin-last-updated** 這組合，連 VuePress 都啟動不了。不過爬文時還看到過別的組合但同樣問題。話不多說，先上解法：
+
+```js title=".vuepress/config.js"
+module.exports = {
+  // ...
+  plugins: [
+    ['@vuepress/last-updated', {
+      transformer: timestamp => timestamp
+    }]
+  ]
+}
+```
+
+改完重啟 VuePress 就恢復正常了。原因其實是 @vuepress/plugin-last-updated 預設 timestamp 的 `transformer()` 已經轉換成文字的日期格式 (用 `toLocaleString()`)，但在 vuepress-plugin-seo 卻把這串日期文字丟進 `new Date()` 解析。但在台灣的我，電腦預設 `toLocaleString()` 會回傳中文格式的日期再丟進 `new Date()`，但 JavaScript 卻表示看不懂，才造成現在這窘境。所以只需覆寫原本的 `transformer()`，讓它回傳原本 timestamp 格式 (自 1970年1月1日 到該時間的秒數)，再丟進 `new Date()` 解析就正常了。
+
+### 移除外部連結的 Icon
+
+VuePress 很 `貼心` 的幫你在連外的連結後方都加上了標示的 Icon，但我不是很喜歡，想關掉但卻沒有...。後來在 Issue 也有人提到這個問題，才有下方解決方案 ([參考自](https://github.com/vuejs/vuepress/pull/614#issuecomment-506507754))：
+
+```js title=".vuepress/config.js"
+module.exports = {
+  // ...
+  chainMarkdown(config) {
+    const { removePlugin, PLUGINS } = require('@vuepress/markdown')
+    const originalLinkPlugin = require('@vuepress/markdown/lib/link')
+
+    removePlugin(config, PLUGINS.CONVERT_ROUTER_LINK)
+
+    config
+      .plugin(PLUGINS.CONVERT_ROUTER_LINK)
+        .use(function (md, externalAttrs) {
+          originalLinkPlugin.call(this, md, externalAttrs)
+          const linkClose = md.renderer.rules.link_close
+          md.renderer.rules.link_close = function () {
+            return linkClose.apply(this, arguments).replace('<OutboundLink/>', '')
+          }
+        }, [{
+          target: '_blank',
+          rel: 'noopener noreferrer'
+        }])
+        .end()
+  }
+}
+```
+
+改完記得重啟 VuePress 才看得到結果。
+
+### 滾動至標題錨點
+
+VuePress 預設會在每個標題左側加上 `#` 錨點連結，但如果標題有中文，並瀏覽中文標題產生出的連結，他會留在最頂部，不會自動滾動到錨點定位的點。而且還會警告：
+
+<Danger>
+\[Vue warn\]: Error in nextTick: "SyntaxError: Failed to execute 'querySelector' on 'Document': '#%E4%B8%AD%E6%96%87%E6%A8%99%E9%A1%8C' is not a valid selector."
+</Danger>
+
+查了一下，這是源碼的問題，也有人開 [PR](https://github.com/vuejs/vuepress/pull/2566) 了，但官方還沒處理，在新版出來之前先用點硬招強行突破吧！
+
+```vue title=".vuepress/theme/components/Layout.vue"
+<script>
+// ...
+export default {
+  // ...
+  methods: {
+    scrollTo(selector) {
+      if (!selector || selector === '#') return
+      const el = document.querySelector(decodeURIComponent(selector))
+      if (el && el.offsetTop) {
+        window.scrollTo(0, el.offsetTop)
+      }
+    }
+  },
+  mounted() {
+    this.scrollTo(location.hash)
+  }
+}
+</script>
+```
+
+## Tailwind CSS 篇
+
+**Tailwind CSS** 是一個 Utility-first、可高度客製化的 CSS 框架。網頁刻板必備，比 Bootstrap 好用。
+
+### Tailwind CSS 之切換色系 (Dark/Lght Mode)
+
+Tailwind CSS 目前我遇到的問題基本只有在做雙色系 (Dark/Light Mode) 切換。原本只打算做暗色系，後來聽朋友的建議，也把亮色系加進來，做了可以切換色系的功能。
+
+首先先裝 Dark Mode 套件：
+
+```bash
+yarn add tailwindcss-dark-mode
+```
+
+除了註冊套件之外，還要手動加 Variants，要用什麼才開什麼，例如下面對 `backgroundColor` 和 `textColor` 開了 `dark` 跟 `dark-hover` 兩個 Variants。可以使用的 Variants 請參考 [Tailwind CSS Dark Mode](https://github.com/ChanceArthur/tailwindcss-dark-mode)：
+
+<Warning>
+沒看錯！這套件註冊後面要加括號！
+</Warning>
+
+```js title="tailwind.config.js"
+module.exports = {
+  // ...
+  variants: {
+    backgroundColor: ['responsive', 'hover', 'focus', 'dark', 'dark-hover'],
+    textColor: ['responsive', 'hover', 'focus', 'dark', 'dark-hover']
+  },
+  plugins: [
+    require('tailwindcss-dark-mode')()
+  ]
+}
+```
+
+### Typography 和 Dark/Lght Mode
+
+Tailwind CSS 官方也剛出建立純 HTML 樣式的套件 [Typography](https://github.com/tailwindlabs/tailwindcss-typography)，至少有現成的樣式可以調，不需要全部自己來。但用到 Dark Mode 時也出包了。不過還好，Tailwind CSS 的作者大大提供了解法：[tailwindcss-dark-mode-prototype](https://github.com/adamwathan/tailwindcss-dark-mode-prototype) ([DEMO](https://tailwindcss-dark-mode-prototype.vercel.app/))，參考裡面的寫法終於解決了這問題：
+
+```js title="tailwind.config.js"
+const plugin = require('tailwindcss/plugin')
+const selectorParser = require('postcss-selector-parser')
+
+module.exports = {
+  purge: {
+    content: [
+      './.vuepress/**/*.vue'
+    ],
+    options: {
+      whitelist: ['html', 'body', 'scheme-dark']
+    }
+  },
+  // ...
+  plugins: [
+    require('tailwindcss-dark-mode')(),
+    plugin(function ({ addVariant, theme, prefix }) {
+      const darkSelector = theme('darkSelector', '.mode-dark')
+      addVariant('dark', ({ modifySelectors, separator }) => {
+        modifySelectors(({ selector }) => {
+          return selectorParser((selectors) => {
+            selectors.walkClasses((sel) => {
+              sel.value = `dark${separator}${sel.value}`
+              sel.parent.insertBefore(sel, selectorParser().astSync(prefix(`${darkSelector} `)))
+            })
+          }).processSync(selector)
+        })
+      })
+    }),
+    require('@tailwindcss/typography')
+  ]
+}
+```
+
+除了這個之外，切換的按鈕也是直接借來用，只是它是用 React 寫的，轉換成 Vue 的格式才能使用。
+
+## 部署網站
+
+在 [Netlify](https://www.netlify.com/) 和 [Vercel](https://vercel.com/) 中經過艱難的選擇後，最後還是決定來試試用 Vercel 部署網站。開一個新的 Vercel 專案，經過簡單的設定後，就上線了我的新網站！更新網站也需要 Push 到 GitHub，不需要串任何 CI/CD 服務，還滿簡單的。目前還沒打算買 Domain，暫時先用 Vercel 預設的。
+
+## 參考文章
+
+建部落格時參考的文章：
+
+* [VuePress + TailwindCss + Netlify 重写个人独立博客](https://www.xlbd.me/posts/2020-06-01-jamstack-blog-theme.html)
+* [vuepress 踩坑记录](https://ououe.com/posts/2019/07/07/vuepress/)
+
+## 結語
+
+其實很早就有在找建個人網站/部落格的平台，試過 Medium、GitBook 和其他的方法，最後決定以 **VuePress** 為基礎、 **Tailwind CSS** 刻板這個組合最滿意，花了快1個月完成，果然自己設計網站還是比較有趣。比起完成作品，更多的是在過程中吸取的經驗，一次會比一次進步。感謝你看到這裡，希望本文些許可以幫到你😁。

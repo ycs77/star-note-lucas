@@ -1,0 +1,220 @@
+---
+title: 簽章 Git 提交
+description: 對 Git 提交進行 GPG 簽章，確保是由本人提交，而非被竄改或仿冒提交。
+image: /images/2021-04-08-git-gpg.jpg
+pubDate: 2021-04-08
+category: coding
+tags: ["Security", "Git"]
+---
+
+GPG 全名為 [The GNU Privacy Guard](https://gnupg.org/)，又稱 [GnuPG](https://gnupg.org/)，可以用來對訊息或檔案進行加密(encrypt)或簽章(sign)。且可以和 Git 整合，用來簽章 Git 的提交內容，確保是由本人提交，而非被竄改或仿冒提交。
+
+## 安裝 GPG
+
+### Windows
+
+Windows 可以安裝 [Gpg4win](https://www.gpg4win.org/)，安裝完成之後，必須開啟新的「命令提示字元」。
+
+並執行以下指令，找出 `gpg.exe` 執行檔所在路徑：
+
+```bash
+where.exe gpg
+```
+
+然後設定 Git 的 gpg.program 選項設定，指定 gpg.exe 所在路徑：
+
+```bash
+git config --global gpg.program "C:\Program Files (x86)\GnuPG\bin\gpg.exe"
+```
+
+### Bash
+
+如果有使用 Bash，需要增加以下指令到 `~/.profile` 或 `~/.bashrc` 或 `~/.bash_profile` 檔案中：
+
+```bash
+export GPG_TTY=$(tty)
+gpgconf --launch gpg-agent
+```
+
+否則在執行 gpg 簽章時會發生以下錯誤：
+
+```
+error: gpg failed to sign the data
+fatal: failed to write commit object
+```
+
+### Git 設定
+
+設定 Git 在每次提交 (commit) 或標籤 (tag) 都會加上 GPG 簽章：
+
+```
+git config --global commit.gpgSign true
+git config --global tag.gpgSign true
+```
+
+## GPG 使用方式
+
+安裝好之後就可以開始使用了。
+
+### 建立 GPG 金鑰組
+
+記住在 Windows 必須使用「命令提示字元」，不能用 Git Bash 來建立。
+
+```bash
+gpg --full-generate-key
+```
+
+建立過程中，需要輸入以下：
+
+1. Please select what kind of key you want: 輸入 `4` 為 `(4) RSA (sign only)`
+2. keysize: 輸入 `4096`
+3. Please specify how long the key should be valid: 輸入 `Enter` (`0`)
+4. 輸入你的 GitHub 的名稱和 E-mail
+5. 輸入 `O` (即 OK)
+6. 設定密碼
+
+看到如下畫面就是建立成功了：
+
+```
+gpg: key AFA8022C0E4062EF marked as ultimately trusted
+gpg: revocation certificate stored as 'C:/Users/[使用者]/AppData/Roaming/gnupg/openpgp-revocs.d\7144F0FE70DA28DE2428982FAFA8022C0E4062EF.rev'
+public and secret key created and signed.
+
+Note that this key cannot be used for encryption.  You may want to use
+the command "--edit-key" to generate a subkey for this purpose.
+pub   rsa4096 2021-04-08 [SC]
+      7144F0FE70DA28DE2428982FAFA8022C0E4062EF
+uid                      Lucas Yang <yangchenshin77@gmail.com>
+```
+
+### 查詢 GPG 金鑰組
+
+列出公開金鑰資訊：
+
+```bash
+gpg --list-keys
+gpg --list-keys --keyid-format SHORT
+gpg --list-keys --keyid-format LONG
+```
+
+列出私密金鑰資訊：
+
+```bash
+gpg --list-secret-keys
+gpg --list-secret-keys --keyid-format SHORT
+gpg --list-secret-keys --keyid-format LONG
+```
+
+如果我們要簽章 Git 提交，就必須先取得金鑰 ID：
+
+```
+C:\Users\[使用者]>gpg --list-secret-keys --keyid-format SHORT
+C:/Users/[使用者]/AppData/Roaming/gnupg/pubring.kbx
+------------------------------------------------
+sec   rsa4096/0E4062EF 2021-04-08 [SC]
+      7144F0FE70DA28DE2428982FAFA8022C0E4062EF
+uid         [ultimate] Lucas Yang <yangchenshin77@gmail.com>
+```
+
+上述訊息中，`sec` 就是 `secret` (私密金鑰)，而 `7144F0FE70DA28DE2428982FAFA8022C0E4062EF` 就是完整的金鑰 ID，可以用簡短的金鑰代替，也就是 `0E4062EF`，之後的操作都會用到這段 ID。
+
+### 設定 Git 提交進行 GPG 簽章
+
+設定預設的 GPG 金鑰：
+
+```bash
+git config --global user.signingkey 0E4062EF
+```
+
+然後現在執行 Git 提交 (commit) 或標籤 (tag) 都會加上 GPG 簽章了。
+
+### 顯示 Git 簽章資訊
+
+顯示含有簽章資訊的 Git 的指令：
+
+```
+$ git log --show-signature
+commit aa993b7b69b47a6bf9d23cacf56e00139f3907a0 (HEAD -> vue3-type-file, origin/vue3-type-file)
+gpg: Signature made 2021/4/8 <A4>U<A4><C8> 04:54:57 <A5>x<A5>_<BC>зǮɶ<A1>
+gpg:                using RSA key CB8E694EB798BFED6FA1C2DC88D3F62D215D5306
+gpg: Good signature from "Lucas Yang <yangchenshin77@gmail.com>" [ultimate]
+Author: Lucas Yang <yangchenshin77@gmail.com>
+Date:   Thu Apr 8 16:54:57 2021 +0800
+
+    Formatting
+```
+
+### 設定 GitHub 帳號的 GPG 金鑰
+
+直接將 GPG 公鑰輸出在「命令提示字元」中：
+
+```bash
+gpg --armor --export 0E4062EF
+```
+
+並複製公鑰，到 [GitHub 的 SSH and GPG keys 設定](https://github.com/settings/keys)，新增一個 GPG 金鑰。
+
+### 設定 VS Code
+
+在 VS Code 增加 `git.enableCommitSigning`，之後 VS Code 提交 Git commit 時都會加上簽章：
+
+```json title="settings.json"
+{
+  "git.enableCommitSigning": true,
+}
+```
+
+### 遷移 GPG 金鑰組到其他電腦
+
+匯出公鑰：
+
+```bash
+gpg --armor --export 0E4062EF > gpg-pub.asc
+```
+
+匯出私鑰，這裡應該會提示輸入密碼：
+
+```bash
+gpg --armor --export-secret-keys 0E4062EF > gpg-sc.asc
+```
+
+確認一下公鑰和私鑰：
+
+```bash
+ls -l gpg*.asc
+```
+
+然後把金鑰組移到新電腦上。到新電腦之後就開始匯入的操作：
+
+```bash
+gpg --import gpg-pub.asc
+```
+
+匯入私鑰，這裡應該會提示輸入密碼：
+
+```bash
+gpg --import gpg-sc.asc
+```
+
+最後記得要在舊電腦上刪除乾淨金鑰組。
+
+### 刪除 GPG 金鑰組
+
+如果公鑰私鑰都在同一台電腦，必須先刪除私鑰，才能刪除相對應的公鑰。也可以直接刪除私鑰就好，公鑰保留。
+
+刪除私鑰：
+
+```bash
+gpg --delete-secret-key 0E4062EF
+```
+
+刪除公鑰：
+
+```bash
+gpg --delete-key 0E4062EF
+```
+
+## 參考資料
+
+* [如何使用 GPG (GnuPG) 對 Git Commit 與 Tag 進行簽章](https://blog.miniasp.com/post/2020/05/04/How-to-use-GPG-sign-git-commit-and-tag-object)
+* [How (and why) to sign Git commits](https://withblue.ink/2020/05/17/how-and-why-to-sign-git-commits.html)

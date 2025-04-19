@@ -1,0 +1,402 @@
+---
+title: Homestead 安裝過程記錄 (Windows)
+description: 記錄安裝 Homestead 的過程和遇到的坑
+image: /images/2019-05-11-homestead-install.jpg
+showImage: false
+pubDate: 2019-05-11
+category: coding
+tags: ["Laravel", "Homestead"]
+---
+
+import { Note, Tip, Warning } from '@/components/callouts'
+
+## 安裝
+
+### 本地軟體安裝
+
+1. [PHP](https://www.php.net/downloads.php)
+2. [Composer](https://getcomposer.org/download/)
+3. [Node.js](https://nodejs.org/en/)
+4. Yarn\(可選\)：`npm install -g yarn`
+
+### 1. 安裝 Git
+
+[下載 Git](https://git-scm.com/)
+
+#### 設定 Git
+
+初次使用 Git 需設定使用者名稱和 E-mail：
+
+```bash
+git config --global user.name "John Doe"
+git config --global user.email "johndoe@example.com"
+```
+
+若出現亂碼 `ESC[33` 和 `ESC[m` 可執行此指令：
+
+```bash
+git config --global core.pager "less -r"
+```
+
+### 2. 終端機 - Git Bash
+
+終端機建議使用 Git Bash \(安裝 Git 即會自動安裝Git Bash\)。在 Git Bash 中無法使用 `Ctrl` `C/V` 複製貼上，需要用 `Ctrl` `Insert` 複製、`Shift` `Insert` 貼上。
+
+* [設定 VSCode 的終端機為 Git Bash](/posts/vscode-remark#設定-vscode-的終端機為-git-bash)
+* [Git Bash 使用別名](/posts/git-bash-alias)
+
+### 3. 設定 SSH
+
+生成私鑰：[Generating a new SSH key and adding it to the ssh-agent](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
+
+### 4. 安裝 VirtualBox \(虛擬機\)
+
+[下載 VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+
+### 5. 安裝 Vagrant \(虛擬機管理工具\)
+
+[下載 Vagrant](https://developer.hashicorp.com/vagrant/install)
+
+### 6. 下載 Homestead
+
+```bash
+git clone https://github.com/laravel/homestead.git ~/Homestead
+cd ~/Homestead
+init.bat
+```
+
+### 7. 配置 Homestead
+
+[\(詳細、必讀\) 配置 Homestead 教學](https://learnku.com/docs/laravel/5.7/homestead/2245#configuring-homestead)
+
+[\(可選\) 自動複製.gitconfig到虛擬機 \(配置 Vagrantfile\)](https://developer.hashicorp.com/vagrant/docs/provisioning/file)
+
+[\(可選\) 移動Vagrant Box及VirtualBox VMs到其他磁碟 \(固態硬碟適用\)](https://medium.com/@cedricdue/moving-vagrant-boxes-and-related-virtualbox-vms-to-another-drive-f1d7c50d20bc)
+
+### 8. BIOS 設定
+
+<Note>
+重新開機，進入 BIOS，將「Intel Virtualization Technology」(Intel 虛擬化技術) 選項開啟。
+</Note>
+
+### 9. 啟動虛擬機
+
+執行\(Windows須使用Git-bash\)：
+
+開機並更新設定：
+
+```bash
+vagrant up --provision
+```
+
+SSH連線、操作：
+
+```bash
+vagrant ssh
+```
+
+關機\(虛擬機使用完畢須關機，否則下次使用會出問題\)：
+
+```bash
+vagrant halt
+```
+
+### 10. 安裝 phpMyAdmin
+
+[安裝phpMyAdmin](install-phpmyadmin.md)
+
+### 11. \(Ubuntu\) 修改Ubuntu預設編輯器
+
+登入虛擬機，執行：
+
+```bash
+sudo update-alternatives --config editor
+```
+
+出現以下畫面：
+
+![](/images/2019-05-11-homestead-install-editor.jpg)
+
+輸入 `3`，將會切換成Vim編輯器。
+
+### 12. 配置共享資料夾
+
+預設的資料夾為 `C:\Users\[使用者]\code`，若 `code` 資料夾不存在須創建。
+
+```bash
+mkdir ~/code && cd ~/code
+```
+
+### 13. 新增 Laravel 專案
+
+使用 Composer 下載 Laravel 安裝包：
+
+```bash
+composer global require "laravel/installer"
+```
+
+建立新 Laravel 專案 \(`blog` 為專案名稱\)：
+
+```bash
+laravel new blog
+```
+
+修改 Homestead.yaml：
+
+```yaml {title="Homestead.yaml"}
+folders:
+  ...
+  - map: ~/code/blog
+    to: /home/vagrant/code/blog
+
+sites:
+  ...
+  - map: blog.test
+    to: /home/vagrant/code/blog/public
+```
+
+重新啟動虛擬機：
+
+```bash
+vagrant halt
+vagrant up --provision
+vagrant ssh
+```
+
+### 14. 修改 Hosts 設定
+
+開啟 `C:\Windows\System32\drivers\etc\hosts`，增加以下設定：
+
+```bash
+192.168.10.10     blog.test
+```
+
+### 15. 整合 Vite
+
+開啟 Vite Server 的 port：
+
+<Tip>
+如果有使用 [VSCode Remote SSH 套件](https://code.visualstudio.com/docs/remote/ssh) 的話就不用加這段，因為 Remote SSH 套件會在啟動 dev server 時自動轉發 port。
+</Tip>
+
+```yaml {title="Homestead.yaml"}
+ports:
+    - send: 5173 # for vite server
+      to: 5173
+```
+
+然後在 `vite.config.js` 加上以下設定：
+
+```js {title="vite.config.js"}
+import path from 'node:path'
+
+export default defineConfig({
+  server: {
+    host: true,
+    hmr: {
+      host: 'localhost',
+    },
+    watch: {
+      ignored: [
+        path.join(__dirname, 'app/**'),
+        path.join(__dirname, 'bootstrap/**'),
+        path.join(__dirname, 'config/**'),
+        path.join(__dirname, 'database/**'),
+        path.join(__dirname, 'lang/**'),
+        path.join(__dirname, 'public/**'),
+        path.join(__dirname, 'routes/**'),
+        path.join(__dirname, 'storage/**'),
+        path.join(__dirname, 'tests/**'),
+        path.join(__dirname, 'vendor/**'),
+      ],
+      usePolling: true,
+    },
+  },
+})
+```
+
+<Warning>
+`usePolling: true` 的設定會讓 CPU 使用率提高，如果要避免此問題，可以使用 [VSCode 的 Remote SSH 套件](https://code.visualstudio.com/docs/remote/ssh) 來遠端開發，只要在非 Windows 的環境編輯就不需要加上 `usePolling: true` 了。
+</Warning>
+
+建立 Vite 開發伺服器的 HTTPS 證書：
+
+```bash
+sudo /vagrant/scripts/create-certificate.sh localhost
+sudo chmod -R 644 /etc/ssl/certs/localhost.key
+```
+
+設定本地開發用證書路徑：
+
+*.env*
+```
+VITE_DEV_SERVER_KEY=/etc/ssl/certs/localhost.key
+VITE_DEV_SERVER_CERT=/etc/ssl/certs/localhost.crt
+```
+
+然後就可以在 Vite 中讀取 HTTPS 證書了：
+
+```js {title="vite.config.js"}
+import fs from 'node:fs'
+import { defineConfig, loadEnv } from 'vite'
+
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd())
+
+  return {
+    server: {
+      host: true,
+      hmr: {
+        host: 'localhost',
+      },
+      https: env.VITE_DEV_SERVER_KEY && env.VITE_DEV_SERVER_CERT
+        ? {
+            key: fs.readFileSync(env.VITE_DEV_SERVER_KEY),
+            cert: fs.readFileSync(env.VITE_DEV_SERVER_CERT),
+          }
+        : undefined,
+      ...
+    },
+  }
+})
+```
+
+### 16. ngrok 內網穿透
+
+把 `example.com` 替換成需要使用的網址，如果有用 HTTPS 可以使用 443：
+
+```bash
+ngrok http example.com:80 --host-header=rewrite
+# 若使用 HTTPS
+ngrok http example.com:443 --host-header=rewrite
+```
+
+## 其他
+
+### 錯誤訊息：「`Timed out while waiting for the machine to boot`」
+
+需要關閉「容器」、「Windows 沙箱」、「虛擬機器平台」、「Windows 子系統 Linux 版」、「Hyper-V」功能，以「系統管理員」身分開啟 PowerShell 執行：
+
+```bash
+Disable-WindowsOptionalFeature -Online -FeatureName Containers,Containers-DisposableClientVM,VirtualMachinePlatform,Microsoft-Windows-Subsystem-Linux,Microsoft-Hyper-V-All
+```
+
+若需要使用 Docker 或 WSL 的話，可以重新開啟：
+
+```bash
+Enable-WindowsOptionalFeature -Online -FeatureName Containers,Containers-DisposableClientVM,VirtualMachinePlatform,Microsoft-Windows-Subsystem-Linux,Microsoft-Hyper-V-All
+```
+
+檢查功能是否開啟：
+
+```bash
+Get-WindowsOptionalFeature -Online -FeatureName Containers
+Get-WindowsOptionalFeature -Online -FeatureName Containers-DisposableClientVM
+Get-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform
+Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
+Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All
+```
+
+### Homestead 安裝問題
+
+[Homestead 安装问题汇总](https://laravel-china.org/topics/4796/ssh-auth-method-private-key-solution-summary-when-homestead-starts)
+
+### 在本機安裝 Homestead 的安全憑證
+
+解決 HTTPS 顯示為不安全的問題。
+
+登入虛擬機，輸入以下指令取得憑證 \(`your-dir` 替換成任一已存在的資料夾\)：
+
+```bash
+sudo cp /etc/nginx/ssl/ca.homestead.homestead.crt ~/code/your-dir
+# Ubuntu 20.04 的版本要執行下方的指令
+sudo cp /etc/ssl/certs/ca.homestead.homestead.crt ~/code/your-dir
+```
+
+開啟檔案總管，雙擊開啟憑證，點擊 **安裝憑證**，憑證存放區選擇為 **受信任的根憑證授權單位**，之後點擊完成即可。
+
+<Note>
+舊的文章可以參考：[使用 HTTPS 連線 Homestead 網站 (Windows)](/posts/homestead-https)
+</Note>
+
+### \(Windows CMD\) 設定在虛擬機中用 Composer 安裝套件時，新增 .bat 檔
+
+[Config \(bin-compat\) - Composer](https://getcomposer.org/doc/06-config.md#bin-compat)
+
+於 Homestead 執行：
+
+```bash
+composer config -g bin-compat full
+```
+
+### 增加路徑至 PATH
+
+執行：
+
+```bash
+sudo vim ~/.profile
+```
+
+輸入：
+
+```bash
+PATH="/home/vagrant/.yarn/bin:$PATH"
+```
+
+### 執行 php artisan storage:link 時出錯 (無法新增 symlinks)
+
+解決方法：重新開機並以 **系統管理員** 執行 Git bash，啟動虛擬機。完成後再執行一次 `php artisan storage:link`。
+
+### 執行 vagrant up 時總是出錯，最終解決方法，重新下載相關檔案
+
+刪除以下資料夾：
+
+* `C:\Users\[使用者]\.vagrant.d`
+* `C:\Users\[使用者]\VirtualBox VMs`
+* `C:\Users\[使用者]\Homestead\.vagrant`
+
+再重新執行 `vagrant up`
+
+### 執行 vagrant ssh 並啟動任意持續執行的程式，按 Ctrl+C 會出問題
+
+導出 vagrant ssh 的設定檔：
+
+```bash
+sed -i '1i Include config.d/*' ~/.ssh/config
+mkdir ~/.ssh/config.d
+vagrant ssh-config --host vm > ~/.ssh/config.d/vm
+```
+
+之後可以在啟動 vagrant 虛擬機後使用 ssh 來連接：
+
+```bash
+ssh vm
+```
+
+### Vite HMR 沒反應或很慢
+
+因為在 Linux 環境下 file descriptor 和 inotify 遇到上限時會直接沒反應，因此當遇到此問題時可以檢查看看當前的 inotify 上限數量：
+
+```bash
+sysctl fs.inotify
+```
+
+臨時增加上限：
+
+```bash
+sudo sysctl fs.inotify.max_queued_events=16384
+sudo sysctl fs.inotify.max_user_instances=8192
+sudo sysctl fs.inotify.max_user_watches=524288
+sudo sysctl -p
+```
+
+永久增加上限，執行完記得重啟：
+
+```bash
+echo fs.inotify.max_queued_events=16384 | sudo tee -a /etc/sysctl.conf
+echo fs.inotify.max_user_instances=8192 | sudo tee -a /etc/sysctl.conf
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+```
+
+當然也有可能是 RAM 太小，同時調高虛擬機的 RAM 可以來解決。

@@ -1,0 +1,45 @@
+---
+title: Nginx 簡易防止連結圖片/網頁盜連
+description: 紀錄一下使用 Nginx 檢查 referer 來實作簡易防止連結的功能
+image: /images/2024-06-25-nginx-prevent-link.jpg
+showImage: false
+pubDate: 2024-06-25
+category: coding
+tags: ["Nginx"]
+---
+
+紀錄一下使用 Nginx 檢查 referer 來實作簡易防止連結的功能。
+
+## 簡易圖片防盜連
+
+防止其他網站直接連入自家網頁內的圖片，不過可以在新分頁開啟：
+
+```nginx
+location ~ /images {
+    valid_referers server_names none;
+
+    if ($invalid_referer) {
+        return 403;
+    }
+}
+```
+
+## 簡易頁面防直連
+
+模擬了一個情境，當自己網頁中提供了類似雲端硬碟，可以讓人下載檔案的服務，但想要讓訪客只能透過提供的主頁進入下載頁，而不想要讓其直接進入或分享下載頁的連結時使用：
+
+```nginx
+location = /secret.html {
+    valid_referers server_names;
+
+    if ($invalid_referer) {
+        rewrite ^/(.*)$ https://star-note-lucas.vercel.app/ redirect;
+    }
+}
+```
+
+如果使用者分享了下載頁，或從其他分頁開啟，就會自動跳轉至一個指定的頁面。
+
+## 參考資料
+
+* [Nginx配置referer校验，实现简单的防盗链](https://www.cnblogs.com/linuxshare/p/17188974.html)

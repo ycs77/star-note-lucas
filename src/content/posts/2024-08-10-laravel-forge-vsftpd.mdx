@@ -1,0 +1,259 @@
+---
+title: 在 Laravel Forge 配置的服務器上使用 vsftpd 設定 FTP 伺服器
+description: 在 Laravel Forge 配置的服務器上，使用 vsftpd 來設定 FTP 上傳檔案的方式
+image: /images/2024-08-10-laravel-forge-vsftpd.jpg
+showImage: false
+pubDate: 2024-08-10
+category: coding
+tags: ["Linux", "Laravel", "SSH", "FTP"]
+---
+
+雖然 Laravel Forge 預設會設定好 SSH 的連線方式，也可以快速設定好 SFTP，但內建的 `sftp-server` 要設定 `chroot` 有點不太自由，既不能彈性設定 FTP 登入的路徑，登入後的根目錄層也不能自由上傳檔案/新增目錄 (只能事先新增好一個資料夾用於上傳)，於是就找到了一個可以建立 FTP 上傳伺服器的套件 vsftpd。vsftpd 能夠設定虛擬帳號，且每個帳號都可以設定自己的初始目錄 (也可以設定重複的資料夾)，對於需要分配 FTP 帳號給其他人使用，且安全性較低的內容，可以使用此解決方案。
+
+因此這篇來簡單紀錄一下，在 Laravel Forge 配置的服務器上設定 FTP 上傳檔案的方式。
+
+## 安裝 vsftpd
+
+首先先更新 apt 套件和安裝 vsftpd：
+
+```bash
+sudo apt update
+sudo apt install vsftpd
+```
+
+## 開啟防火牆連接埠
+
+先確認現在防火牆的狀態：
+
+```bash
+sudo ufw status
+```
+
+基本上 Forge 預設只會幫我們設定好三個 port，22 是 SSH，80 是 HTTP，443 是 HTTPS：
+
+```
+Status: active
+
+To                         Action      From
+--                         ------      ----
+22                         ALLOW       Anywhere
+80                         ALLOW       Anywhere
+443                        ALLOW       Anywhere
+22 (v6)                    ALLOW       Anywhere (v6)
+80 (v6)                    ALLOW       Anywhere (v6)
+443 (v6)                   ALLOW       Anywhere (v6)
+```
+
+然後是規劃一下我們要在 vsftpd 中使用的 port ，vsftpd 預設的 port 是：
+
+* 主動連線 port (`ftp_data_port`)：20
+* vsftpd 命令通道 port (`listen_port`)：21
+* passive mode 最小 port (`pasv_min_port`)：0 (預設是不限制連接的 port)
+* passive mode 最大 port (`pasv_max_port`)：0 (預設是不限制連接的 port)
+
+當然盡量不要使用預設的 port ，既然可以自訂，那就換成以下的：
+
+* 主動連線 port (`ftp_data_port`)：60020
+* vsftpd 命令通道 port (`listen_port`)：60021
+* passive mode 最小 port (`pasv_min_port`)：65400
+* passive mode 最大 port (`pasv_max_port`)：65420
+
+其中 passive mode 會開啟 65400~65420 共 21 個 port。
+
+確定沒問題就可以更新防火牆的設定：
+
+```bash
+sudo ufw allow 60020,60021/tcp
+sudo ufw allow 65400:65420/tcp
+```
+
+{/* ## 建立 vsftpd 實體帳號
+
+建立用於登入虛擬帳號的 vsftpd 實體帳號：
+
+```bash
+sudo adduser vsftpd
+sudo chown vsftpd:nogroup /home/vsftpd
+sudo chmod a-w /home/vsftpd
+sudo usermod -s /bin/false vsftpd
+echo "vsftpd" | sudo tee -a /etc/vsftpd.userlist
+``` */}
+
+## vsftpd 設定
+
+備份 vsftpd 設定檔：
+
+```bash
+sudo cp /etc/vsftpd.conf /etc/vsftpd.conf.orig
+```
+
+用 vim 開啟 vsftpd 設定檔：
+
+```bash
+sudo vim /etc/vsftpd.conf
+```
+
+先確認以下設定是否正確：
+
+```ini title="/etc/vsftpd.conf"
+anonymous_enable=NO
+local_enable=YES
+```
+
+然後將以下設定刪掉註解：
+
+```ini title="/etc/vsftpd.conf"
+write_enable=YES
+chroot_local_user=YES
+utf8_filesystem=YES
+```
+
+最後將以下設定複製到設定檔最底部：
+
+```ini title="/etc/vsftpd.conf"
+# Basic settings
+ftp_data_port=60020
+listen_port=60021
+pasv_min_port=65400
+pasv_max_port=65420
+use_localtime=YES
+pasv_enable=YES
+local_umask=022
+allow_writeable_chroot=YES
+userlist_enable=YES
+userlist_file=/etc/vsftpd.userlist
+userlist_deny=NO
+tcp_wrappers=YES
+xferlog_enable=YES
+vsftpd_log_file=/var/log/vsftpd.log
+
+# Virtual users
+secure_chroot_dir=/var/run/vsftpd/empty
+pam_service_name=vsftpd
+hide_ids=YES
+guest_enable=YES
+guest_username=forge
+user_config_dir=/etc/vsftpd/user_conf
+one_process_model=NO
+virtual_use_local_privs=YES
+local_root=/home/vsftpd # 目前此目錄不存在，目的是讓每個虛擬用戶都設定不同的路徑
+```
+
+## 建立虛擬用戶
+
+然後要根據上面的設定來執行一些對應的指令。先是要刪除 `/var/run/vsftpd/empty` 的讀取權限：
+
+```bash
+sudo chmod o-w /var/run/vsftpd/empty
+```
+
+然後建立虛擬用戶的帳密資料庫 `/etc/vsftpd/virtual-user`，最終用於 FTP 登入：
+
+```bash
+sudo mkdir /etc/vsftpd
+sudo vim /etc/vsftpd/virtual-user
+```
+
+`virtual-user` 檔格式為一行帳號、一行密碼：
+
+```
+user1
+password
+user2
+password
+```
+
+填好之後就要轉換成資料庫檔案（Berkeley DB 格式），如果出現 `The program 'db_load' is currently not installed.` 錯誤訊息，就執行 `sudo apt install db-util` 指令來安裝需要的套件：
+
+```bash
+sudo chmod 600 /etc/vsftpd/virtual-user
+sudo apt install db-util
+sudo db_load -T -t hash -f /etc/vsftpd/virtual-user /etc/vsftpd/virtual-user.db
+sudo chmod 600 /etc/vsftpd/virtual-user.db
+```
+
+接著新增 `userlist` 檔案，設定允許使用 FTP 的帳號：
+
+```bash
+sudo vim /etc/vsftpd.userlist
+```
+
+然後把 FTP 帳號都填上去：
+
+```
+user1
+user2
+```
+
+不過 `virtual-user` 畢竟是明碼儲存帳密，建議轉換完之後就把 `virtual-user` 檔案刪除。
+
+然後建立虛擬用戶的設定檔：
+
+```bash
+sudo mkdir /etc/vsftpd/user_conf
+sudo vim /etc/vsftpd/user_conf/user1
+sudo vim /etc/vsftpd/user_conf/user2
+```
+
+user1 帳號的設定檔：
+
+```
+local_root=/home/forge/example.com
+```
+
+user2 帳號的設定檔：
+
+```
+local_root=/home/forge/example.com/storage/app/public
+```
+
+`local_root` 就是 FTP 登入後的主目錄，其他 `vsftpd.conf` 的參數都可以使用。
+
+## PAM 設定
+
+備份 vsftpd 的 PAM 設定檔：
+
+```bash
+sudo cp /etc/pam.d/vsftpd /etc/pam.d/vsftpd.orig
+```
+
+開始編輯 `/etc/pam.d/vsftpd`：
+
+```bash
+sudo vim /etc/pam.d/vsftpd
+```
+
+把預設設定全部註解掉後，在下面增加以下設定，讓 vsftpd 讀取 `virtual-user` 資料庫中的帳密：
+
+```ini title="/etc/pam.d/vsftpd"
+auth	required	pam_userdb.so db=/etc/vsftpd/virtual-user
+account	required	pam_userdb.so db=/etc/vsftpd/virtual-user
+```
+
+最後重啟 `vsftpd` 就可以連線了：
+
+```bash
+sudo systemctl restart vsftpd
+```
+
+FileZilla 連線可以參考以下：
+
+* 協定：FTP
+* 主機：[你的主機IP]
+* 連接埠：60021
+* 加密：允許的話就使用透過外顯式 TLS 的 FTP
+* 使用者：user1
+* 密碼：password
+
+## SSL 憑證
+
+*目前還沒試過，有空再補上...*
+
+## 參考資料
+
+* [Manpage of VSFTPD.CONF](https://man.linuxreviews.org/man5/vsftpd.conf.5.html)
+* [How To Set Up vsftpd for a User's Directory on Ubuntu 20.04](https://www.digitalocean.com/community/tutorials/how-to-set-up-vsftpd-for-a-user-s-directory-on-ubuntu-20-04)
+* [鳥哥私房菜 - 第二十四章、簡易 vsftpd 伺服器設定](https://linux.vbird.org/linux_server/redhat9/0410vsftpd.php)
+* [如何在 Ubuntu 中為 vsftpd 設置虛擬帳號](https://calvertyang.github.io/2017/02/06/how-to-setup-virtual-users-for-vsftpd-in-ubuntu/)
+* [500 OOPS: vsftpd: refusing to run with writable root inside chroot()](https://ishm.idv.tw/archives/607)
+* [Certbot + post hook + vsftpd](https://community.letsencrypt.org/t/certbot-post-hook-vsftpd/187159)

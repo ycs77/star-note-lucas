@@ -1,0 +1,87 @@
+---
+title: 使用本地 phpMyAdmin 連線到遠端 MySQL 資料庫
+description: 為了要管理遠端 MySQL 資料庫，還要在遠端主機安裝 phpMyAdmin 且不安全...
+image: /images/2020-12-23-local-phpmyadmin-connect-to-remote-mysql.jpg
+pubDate: 2020-12-23
+category: coding
+tags: ["Security", "SSH", "phpMyAdmin"]
+---
+
+import { Info, Tip, Danger } from '@/components/callouts'
+
+為了要管理遠端 MySQL 資料庫，還要在遠端主機安裝 phpMyAdmin 且不安全。本文分享如何在本地用 phpMyAdmin 連線到遠端 MySQL 資料庫。
+
+首先先確保有設定好 [SSH 無密碼登入](/posts/ssh-login-without-password)，讓 SSH 連線可以掛在後台運行。
+
+然後執行以下 SSH 指令連線到遠端主機，使用此方式連線會把本地的 port (這裡只 3306) 轉發到遠端主機的 (這裡只 3307)：
+
+```bash
+ssh -fNL 3307:localhost:3306 root@REMOTE_HOST
+```
+
+<Tip>
+將 `root@REMOTE_HOST` 替換為實際連線的主機名稱
+</Tip>
+
+然後確認該 SSH 連線是否已經成功掛在後台運行：
+
+```bash
+ps aux | grep ssh
+```
+
+現在可以來配置 phpMyAdmin 的設定：
+
+```bash
+sudo vim /etc/phpmyadmin/config.inc.php
+```
+
+把以下設定貼到 `Servers` 設定的底部：
+
+```php title="config.inc.php"
+$cfg['Servers'][$i]['verbose']       = 'Local';
+$cfg['Servers'][$i]['host']          = 'localhost';
+$cfg['Servers'][$i]['port']          = '3306';
+$cfg['Servers'][$i]['connect_type']  = 'tcp';
+$cfg['Servers'][$i]['extension']     = 'mysqli';
+$cfg['Servers'][$i]['compress']      = FALSE;
+$cfg['Servers'][$i]['auth_type']     = 'cookie';
+$i++;
+
+$cfg['Servers'][$i]['verbose']       = 'Remote Server 1'; // Your Remote Server Name
+$cfg['Servers'][$i]['host']          = '127.0.0.1';
+$cfg['Servers'][$i]['port']          = '3307';
+$cfg['Servers'][$i]['connect_type']  = 'tcp';
+$cfg['Servers'][$i]['extension']     = 'mysqli';
+$cfg['Servers'][$i]['compress']      = FALSE;
+$cfg['Servers'][$i]['auth_type']     = 'cookie';
+$i++;
+```
+
+正常的話現在應該就可以用 phpMyAdmin 連線到遠端主機了。但如果使用 MySQL 8 在連線時，應該會遇到一個錯誤：
+
+<Danger>
+The server requested authentication method unknown to the client
+</Danger>
+
+當然還是有解方。先用 `root` 帳號登入 MySQL (CLI)，然後執行以下：
+
+```sql
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
+```
+
+<Tip>
+把 `password` 改成你的 MySQL `root` 帳號的密碼
+</Tip>
+
+現在終於可以舒舒服服地用 phpMyAdmin 囉！
+
+啊！如果要移掉 3307 port 的話，可以執行這個指令：
+
+```bash
+fuser -n tcp -k 3307
+```
+
+## 參考資料
+
+* [Manage Remote MySQL Servers with Local phpMyAdmin](https://degreesofzero.com/article/manage-remote-mysql-servers-with-local-phpmyadmin.html)
+* [PHP with MySQL 8.0+ error: The server requested authentication method unknown to the client - Stack Overflow](https://stackoverflow.com/questions/52364415/php-with-mysql-8-0-error-the-server-requested-authentication-method-unknown-to/53881212#53881212)

@@ -1,0 +1,41 @@
+---
+title: 使用 Chocolatey 安裝 Windows 軟體
+description: 又是某天的下午，在幫朋友的新電腦裝軟體的時候，重複著先去各個官網下載和瘋狂點下一步，我心裡想說：何不去研究用下指令來安裝軟體呢?...
+image: /images/2023-03-31-chocolatey.jpg
+pubDate: 2023-03-31
+category: coding
+tags: ["powershell"]
+---
+
+又是某天的下午，在幫朋友的新電腦裝軟體的時候，重複著先去各個官網下載和瘋狂點下一步，我心裡想說：「何不去研究用下指令來安裝軟體呢?」，於是就去稍微研究了一下 Chocolatey，發現還滿好用的，連 Google Chrome、LINE 跟 K-Lite 都可以裝，這篇就來記錄一下安裝和配置我常用的軟體啦～
+
+## Chocolatey
+
+以系統管理員身分執行 Powershell：
+
+```
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+```
+
+安裝軟體 (可以在[這裡](https://community.chocolatey.org/packages)搜尋軟體)：
+
+```
+choco install googlechrome -y
+choco install line -y
+choco install git -y
+choco install nodejs-lts -y
+choco install vscode --params "/NoDesktopIcon" -y
+choco install 7zip -y
+choco install ffmpeg -y
+choco install k-litecodecpackfull -y
+```
+
+查看本地安裝的軟體：
+
+```
+choco list -l
+```
+
+## 參考資料
+
+* [Chocolatey 官網](https://chocolatey.org/)

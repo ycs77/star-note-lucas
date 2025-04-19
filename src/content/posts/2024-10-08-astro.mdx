@@ -1,0 +1,251 @@
+---
+title: Astro 筆記 (1)：Astro 初見心得和筆記
+description: 記錄一下使用 Astro 的小筆記和心得
+image: /images/2024-10-08-astro.jpg
+showImage: false
+pubDate: 2024-10-08
+category: coding
+tags: ["Astro"]
+---
+
+## 初見 Astro
+
+其實在幾年前就聽過 Astro 的大名，只是當時一方面覺得寫法很 React，另一方面覺得這專案還太年輕，所以就沒有打算去碰這個工具。直到最近的案子中，需要參考現成的模板來做前端，而這些模板清一色都是 Bootstrap + jQuery，但前端需要做 SSR，原本用了 Nuxt 來轉換，只是轉了一個案子之後我就快起笑了...，最後證明不要把 jQuery 專案塞到 Nuxt 裡面。
+
+但沒有 Nuxt 的話要怎麼做 SSR 呢? 通常這種時候可以搭配 PHP 之類的後端語言，只是就做不到前後端分離了，所以 Pass。因此我最後選到了腦海記憶深處的 Astro 這個 SSG Framework 上，可以 SSG 模式產生出 HTML，和使用 SSR 模式串後端 API，可以直接載入模板的 jQuery 套件們，這不就是完美符合我的需求的框架嘛~ 因此最後還是投降了哈哈哈XD
+
+在實際用了之後，發現說有時候不要對未知的事物抱有太大成見，雖然我沒有在寫 React，不過在 Astro 裡寫 JSX 還是滿舒服的。而且在 `.astro` 檔上方寫 Server Side 的 Block 也可以很好地控制每個頁面的 Request，以及 Islands 的設計真的太香~ 分區塊載入 JS 可以讓初次載入的使用者體驗更友好，也可以好好地重新思考 JS 是否是必須的這個問題上。以上這些都是實際用了之後才知道的事情。
+
+依目前的體驗來看，我應該會繼續多嘗試 Astro 來做專案~ 如果你現在正在學習使用 Astro，希望本篇可以幫到你~
+
+還有，這篇只是一個 Astro 的學習筆記，建議可以看看官網的[文檔](https://docs.astro.build/)和[教學](https://docs.astro.build/en/tutorial/0-introduction/)從頭了解 Astro 的使用方式再來看會比較好喔~
+
+## 建立 Astro 專案
+
+初始化可以用 Astro 官方的 CLI 來建立。在建立的過程中，可以輸入專案資料夾名稱，選擇使用的 template，是否要使用 TypeScript，是否要初始化 Git 版控等等：
+
+```bash
+# 使用 npm
+npm create astro@latest
+# 使用 yarn
+yarn create astro
+```
+
+不過試用完之後，我還是開了一個符合我使用習慣的 [Astro Starter](https://github.com/ycs77/astro-starter) 了XD，畢竟每個人習慣還是不大一樣。可以用以下指令安裝：
+
+```bash
+npx degit ycs77/astro-starter my-project
+```
+
+## Astro 元件
+
+每個 `.astro` 檔都是一個元件 Component，內部使用 JSX 的寫法，預設約定原件是放在 `components`，Layout 佈局是放在 `layouts`，當然其實是都可以改的。
+
+這裡先拿 Layout 元件做示範：
+
+```astro title="src/layouts/Layout.astro"
+---
+interface Props {
+  title: string
+}
+
+const { title } = Astro.props
+---
+
+<!doctype html>
+<html lang="zh-Hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+
+    <slot name="head"></slot>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+```
+
+然後在頁面中引入使用：
+
+```astro title="src/pages/index.astro"
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Astro">
+  <h1>Astro</h1>
+</Layout>
+```
+
+或是可以使用 slot 來注入頁面的 meta 標籤等：
+
+```astro title="src/pages/index.astro" {2-4}
+<Layout title="Astro">
+  <Fragment slot="head">
+    <meta name="description" content="Astro description..." />
+  </Fragment>
+
+  <h1>Astro</h1>
+</Layout>
+```
+
+## Astro output 輸出模式
+
+Astro 的設定檔 `astro.config.ts` 裡面有個設定叫 `output`，`output` 的兩個選項 `static` 和 `server` 都是可以在 SSR 模式下執行的，兩個本質都是可以跑 SSR 或 SSG 的混合模式，只是優先渲染方式不同。
+
+預設值是 `static`，默認預先渲染 HTML，如果內容是靜態頁面就都是用這個，而如果某個頁面需要串 API 而改成 SSR 模式，只要在頁面加上 `export const prerender = false;` 就行了。
+
+`server` 則和 `static` 相反，默認 SSR 模式，不預先渲染，通常應用於幾乎每個頁面都要串 API 的情境下使用。
+
+| 模式     | 預設                      | 切換                              |
+| -------- | ------------------------- | --------------------------------- |
+| `static` | 開啟 `prerender` 預先渲染 | `export const prerender = false;` |
+| `server` | 關閉 `prerender` 預先渲染 | `export const prerender = true;`  |
+
+## 自訂輸出頁面回應碼
+
+如果在輸出像是文章頁面時，會可能出現打的 API 返回是 404 之類的，但如果前端不做處理，就只會看到錯誤訊息，但我們只是想要讓它單純的輸出 404 頁面而已的說...，這裡就可以針對 404 的 API 直接輸出一個 404 的 Response 就行了。在 `posts/[slug].astro` 裡面對錯誤進行處理：
+
+```js title="src/pages/posts/[slug].astro"
+const response = await fetch(...)
+if (response.status === 404) {
+  return new Response(null, {
+    status: 404,
+    statusText: 'Not found',
+  })
+}
+const data = await response.json()
+```
+
+當然也可以回傳 500 伺服器錯誤：
+
+```js title="src/pages/posts/[slug].astro"
+try {
+  const response = await fetch(...)
+  const data = await response.json()
+} catch (error) {
+  return new Response(null, {
+    status: 500,
+    statusText: 'Server error',
+  })
+}
+```
+
+如果每個頁面都有串 API 的話，我們可以新增一個 Middleware `src/middleware.ts` 來統一處理 API 的回傳錯誤。這裡就可以 catch 自己串的 API 的錯誤，然後根據 Response 狀態來回傳 404 頁面：
+
+```ts title="src/middleware.ts"
+import { defineMiddleware } from 'astro/middleware'
+
+export const onRequest = defineMiddleware(async (_context, next) => {
+  try {
+    return await next()
+  } catch (e) {
+    // Handle 404 errors
+    if (e instanceof ApiRequestError) {
+      return new Response(null, {
+        status: 404,
+        statusText: 'Not found',
+      })
+    }
+
+    throw e
+  }
+})
+```
+
+## import 路徑別名
+
+Astro 的教學中，預設都是使用相對定位來引入專案中的其他模組，但複製元件內容時總是會有定位錯誤的問題，這邊在 `tsconfig.json` 加個 `paths` 就解決了：
+
+```json title="tsconfig.json"
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+然後就可以在路徑開頭用 `@/..`，以專案根目錄為絕對定位，寫引入的模組路徑了：
+
+```js
+import Layout from '@/layouts/Layout.astro'
+```
+
+## Astro check 輸出超長的 hint 提示
+
+這題直接上結論，把 `public` 和 `dist` 排除掉 TypeScript 的檢查即可：
+
+```json title="tsconfig.json"
+{
+  "exclude": ["public", "dist"]
+}
+```
+
+## 自訂網站常數設定
+
+Astro 並沒有自訂設定檔的機制，不過可以自己建立一個檔案來當作設定檔，比如這裡新增 `src/site.config.js`：
+
+```js title="src/site.config.js"
+export default {
+  email: 'astro@example.com',
+  phone: '02-1111-2222',
+  address: '台北市中山區XX路XX樓',
+}
+```
+
+真的是相當的自由~
+
+## Netlify 或 Vercel?
+
+通常情況下是看習慣，畢竟 Astro 兩個平台都有支援，只是在有個地方會有差別，就是尾部斜線的處理：
+
+* Vercel 支援強制移除網址尾部斜線，比如 `/about/` 會強制跳轉到 `/about`
+* 而 Netlify 移除尾部斜線後依然可以瀏覽，但不會且不支援強制跳轉 (只能強制尾部加斜線)
+
+事先對於網址的 style 選擇相當重要，要不然部署後可能會發現瀏覽網址有問題。
+
+通常情況下加斜線會比較多平台支援，因為只需在資料夾內部加一個 `index.html`，以資料夾的方式來達到美化網址的方式，不需要伺服器有多餘的設定。但如果對網址有潔癖，連尾隨的斜線都不想要的話，這邊建議可以選用 Vercel。
+
+而在 Astro 中尾部斜線的設定，可以參考 [trailingSlash](https://docs.astro.build/en/reference/configuration-reference/#trailingslash)。
+
+最後這邊附上我在兩個平台部署的專案所使用的設定檔：
+
+```ini title="netlify.toml"
+[build]
+  command = "yarn build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+```
+
+```json title="vercel.json"
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "github": {
+    "silent": true
+  }
+}
+```
+
+{/* ## i18n 多語系
+
+關於多語系的筆記比較冗長，我開了一篇 [Astro + Paraglide 實作 i18n 多語系功能](/posts/astro-i18n-paraglide) 來記錄這部分。 */}
+
+## 結語
+
+強烈建議透過官網的[文檔](https://docs.astro.build/)和[教學](https://docs.astro.build/en/tutorial/0-introduction/)來學 Astro 的使用方式~
+
+## 參考資料
+
+* [Astro Docs](https://docs.astro.build/)

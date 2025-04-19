@@ -1,0 +1,123 @@
+---
+title: Homestead 安裝 phpMyAdmin
+description: 在 Homestead 裡安裝 phpMyAdmin 教學
+image: /images/2019-05-12-install-phpmyadmin.jpg
+showImage: false
+pubDate: 2019-05-12
+category: coding
+tags: ["Homestead", "phpMyAdmin"]
+---
+
+import { Tip } from '@/components/callouts'
+
+### 1. 下載 phpMyAdmin：
+
+到 [phpMyAdmin官網](https://www.phpmyadmin.net/) 下載程式碼，解壓縮後重新命名為 `phpmyadmin`，並移至 `~/code/` 裡。
+
+### 2. 修改 Homestead.yaml
+
+```yaml title="Homestead.yaml"
+sites:
+  ...
+  - map: phpmyadmin.test
+    to: /home/vagrant/code/phpmyadmin
+```
+
+### 3. 修改 Hosts 設定
+
+開啟 `C:\Windows\System32\drivers\etc\hosts`，增加以下設定：
+
+```plaintext title="hosts"
+192.168.10.10     phpmyadmin.test
+```
+
+### 4. 重新啟動虛擬機
+
+```bash
+vagrant halt
+vagrant up --provision
+vagrant ssh
+```
+
+即可使用 [phpmyadmin.test](http://phpmyadmin.test/) 瀏覽 MySQL 資料庫內容了。
+
+### ◎提示訊息解決方法
+
+#### 訊息：「設定檔案需要設定一組加密密碼 (blowfish_secret)。」
+
+執行：
+
+```bash
+cd ~/code/phpmyadmin
+cp config.sample.inc.php config.inc.php
+vim config.inc.php
+```
+
+<Tip>
+Vim 輸入 `i` 開始編輯模式，`Esc` 關閉編輯模式，`:wq` 儲存並退出。\([Vim 教學](http://linux.vbird.org/linux_basic/0310vi.php)\)
+</Tip>
+
+將檔案內的：
+
+```php title="~/code/phpmyadmin/config.inc.php"
+$cfg['blowfish_secret'] = '';
+```
+
+設定為：(隨機32個以上的亂七八糟英文數字，例：sSG5sg4sd54...)
+
+```php title="~/code/phpmyadmin/config.inc.php"
+$cfg['blowfish_secret'] = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+```
+
+可使用 Laravel Tinker 生成亂數字串：
+
+```bash withOutput
+> php artisan tinker
+
+>>> \Str::random(32);
+```
+
+#### 訊息：「新的 phpMyAdmin 已經發佈，請考慮升級至最新的版本（版本 xxx，於 20xx-xx-xx 發佈）。」
+
+執行：
+
+```bash
+cd
+vim config.inc.php
+```
+
+以及關閉 phpMyAdmin 的版本檢查：
+
+```php title="~/code/phpmyadmin/config.inc.php"
+$cfg['VersionCheck'] = false;
+```
+
+#### 訊息：「設定檔權限錯誤，檔案不應讓所有人可以寫入！」
+
+如果 phpMyAdmin 安裝在虛擬機裡，將權限修改成 755 就可以正常執行了：
+
+```bash
+cd ~/code
+chmod -R 755 phpmyadmin
+```
+
+但如果是安裝在 Windows 電腦裡，再映射到虛擬機中的話就改不了 (權限強制 777)，因此只能關掉 phpMyAdmin 的權限檢查了：
+
+```php title="~/code/phpmyadmin/config.inc.php"
+$cfg['CheckConfigurationPermissions'] = false;
+```
+
+#### 增加 phpMyAdmin 登入逾時時間
+
+執行指令修改 `php.ini` 檔：
+
+```bash
+sudo sed -i 's/session.gc_maxlifetime = 1440/session.gc_maxlifetime = 86400/' /etc/php/7.4/fpm/php.ini
+sudo service php7.4-fpm restart
+```
+
+然後修改 `LoginCookieValidity` 參數：
+
+```php title="~/code/phpmyadmin/config.inc.php"
+$cfg['LoginCookieValidity'] = 86400;
+```

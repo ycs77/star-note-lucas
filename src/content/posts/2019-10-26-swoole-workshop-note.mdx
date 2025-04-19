@@ -1,0 +1,47 @@
+---
+title: Swoole 從入門到實戰 工作坊 | Docker 環境安裝筆記
+description: 2019/10/26 Swoole 從入門到實戰 工作坊上課的筆記
+image: /images/2019-10-26-swoole-workshop-note.jpg
+imageAuthorOnUnsplash:
+  name: 'Kelly Sikkema'
+  username: '@kellysikkema'
+pubDate: 2019-10-26
+category: coding
+tags: ["Homestead", "Docker"]
+---
+
+上課時使用的筆電是 Win10 家用版，因 Docker for Windows 只能在旗艦版中安裝，家用版無法直接使用 Docker，因此選擇在 Homestead 中安裝 Docker 使用。
+
+## 安裝環境
+
+先 clone [swoole-course-examples](https://github.com/albertcht/swoole-course-examples) 到本地：
+
+```bash
+git clone https://github.com/albertcht/swoole-course-examples.git
+```
+
+開啟 `homestead.yaml` 設定環境，資料夾掛載、開啟 Docker、掛載 9501 Port，設定完成後就可以 vagrant up：
+
+```yaml title="homestead.yaml"
+folders:
+    - map: d:/dev/code/swoole-course-examples
+      to: /home/vagrant/code/swoole-course-examples
+
+features:
+    - docker: true
+
+ports:
+    - send: 9501
+      to: 9501
+```
+
+登入 Vagrant SSH，切換到 swoole-course-examples 資料夾，執行 Docker image：
+
+```bash
+docker run -it --name swoole -v $PWD:/src -p 9501:9501 albertcht/swoole
+```
+
+## 參考資料
+
+* [3 分鐘快速建置可以運行 Swoole 的開發環境](https://medium.com/laraveldojo/build-a-dev-env-for-swoole-using-docker-a89fdbc9588)
+* [Vagrant Docker Provisioner](https://developer.hashicorp.com/vagrant/docs/provisioning/docker)

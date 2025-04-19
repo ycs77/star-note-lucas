@@ -1,0 +1,145 @@
+---
+title: s3cmd 和 s5cmd 安裝筆記
+description: 紀錄一下 s3cmd 和 s5cmd 的安裝步驟，和串接 DigitalOcean Spaces
+image: /images/2024-04-26-s3cmd.jpg
+showImage: false
+pubDate: 2024-04-26
+category: coding
+tags: ["AWS"]
+---
+
+原本是用 Laravel 的 S3 driver 來上傳檔案，但偏偏卻遇到需要一次上傳數百個小檔案的情境，如果按照在 Laravel 的寫法，上傳會要花非常久的時間，偏偏這數百個小檔案家起來卻又才幾 MB，搜了一番之後的結論是要透過 CLI 工具來解決。姑且是有找到老牌用 Python 寫的 [s3cmd](https://github.com/s3tools/s3cmd) 和用 Golang 寫的 [s5cmd](https://github.com/peak/s5cmd)，有支援 sync 的指令可以快速同步資料夾和檔案。本篇先記錄下在 Ubuntu 的安裝方式，以及我現在是在使用相容 S3 API 的 [DigitalOcean Spaces](https://www.digitalocean.com/products/spaces)，因此範例會使用 DigitalOcean Spaces 的網址設定。
+
+## s3cmd
+
+老牌知名的非官方 S3 CLI 工具，基本上常見的操作指令都有。
+
+安裝方式有很多種，我選擇用最簡單的用 pip 安裝，需要先安裝 Python：
+
+```bash
+pip install s3cmd
+```
+
+然後開始設定 key 之類的東西，等下要照順序填：
+
+```bash
+s3cmd --configure
+```
+
+然後輸入 Access Key 和 Secret Key 兩個金鑰，可以在 [Spaces access keys](https://cloud.digitalocean.com/account/api/spaces) 新增，region 不需要設定，因為等下會連同 endpoint 網址一起設定：
+
+```
+Access Key []: EXAMPLE7UQOTHDTF3GK4
+Secret Key []: exampleb8e1ec97b97bff326955375c5
+Default Region [US]:
+```
+
+然後要輸入 DigitalOcean 的 endpoint 網址，命名格是要依照 `<region>.digitaloceanspaces.com` 來填，像這裡我設定的 region 是 `sgp1`：
+
+```
+Use "s3.amazonaws.com" for S3 Endpoint and not modify it to the target Amazon S3.
+S3 Endpoint [s3.amazonaws.com]: sgp1.digitaloceanspaces.com
+```
+
+這邊的是要填完整的網址範本，直接輸入 `%(bucket)s.sgp1.digitaloceanspaces.com` 就可以了 (一字不漏照打)，`%(bucket)s` 是替換用的變數，會用於替換掉 bucket 名稱，如果你的 region 和我不同的話需要修改：
+
+```
+Use "%(bucket)s.s3.amazonaws.com" to the target Amazon S3. "%(bucket)s" and "%(location)s" vars c
+an be used if the target S3 system supports dns based buckets.
+DNS-style bucket+hostname:port template for accessing a bucket []: %(bucket)s.sgp1.digitaloceanspaces.com
+```
+
+接下來這幾個可以視情況酌情修改，我是直接都 Enter 跳過：
+
+```
+Encryption password:
+Path to GPG program [/usr/bin/gpg]:
+Use HTTPS protocol [Yes]:
+HTTP Proxy server name:
+```
+
+最後兩個如果都沒問題都輸入 `Y` 就設定完成了：
+
+```
+Test access with supplied credentials? [Y/n] Y
+Save settings? [y/N] Y
+```
+
+這些設定的內容會儲存在 `~/.s3cfg` 這個檔案裡面，有需要修改可以直接看這個檔案就行。
+
+s3cmd 的指令範例：
+
+```bash
+# 將 ~/demo/ 資料夾下的檔案上傳到 s3://demo-bucket/
+s3cmd --recursive --acl-public --guess-mime-type put ~/demo/ s3://demo-bucket/
+# 將 s3://demo-bucket/ 下的檔案下載到 ~/demo/ 資料夾
+s3cmd --recursive get s3://demo-bucket/ ~/demo/
+# 將 ~/demo/ 資料夾下的檔案同步到 s3://demo-bucket/
+s3cmd --acl-public --guess-mime-type --delete-removed sync ~/demo/ s3://demo-bucket/
+# 將 s3://demo-bucket/ 下的檔案強制全部刪除 (全部清空)
+s3cmd --recursive --force rm s3://demo-bucket/
+```
+
+## s5cmd
+
+s5cmd 是用 Golang 寫的 S3 操作工具，執行速度比 s3cmd 還要快，但指令上不大相同。
+
+安裝方式我選擇直接下載 s5cmd 發布的 [GitHub release](https://github.com/peak/s5cmd/releases) binary，根據你的主機要改成支援的版本，以下是一個範例的腳本：
+
+```bash
+curl -LO https://github.com/peak/s5cmd/releases/download/v2.2.2/s5cmd_2.2.2_Linux-64bit.tar.gz
+mkdir ~/s5cmd_2.2.2_Linux-64bit
+tar -xvzf s5cmd_2.2.2_Linux-64bit.tar.gz -C ~/s5cmd_2.2.2_Linux-64bit
+
+# 如果當前使用者有 `~/.local/bin` 資料夾則執行
+cp ~/s5cmd_2.2.2_Linux-64bit/s5cmd ~/.local/bin
+
+# 如果可以執行 `sudo` 權限則執行
+sudo cp -r ~/s5cmd_2.2.2_Linux-64bit /opt/s5cmd
+sudo ln -s /opt/s5cmd/s5cmd /usr/bin/s5cmd
+
+rm -rf ~/s5cmd_2.2.2_Linux-64bit s5cmd_2.2.2_Linux-64bit.tar.gz
+```
+
+s5cmd 預設是使用 AWS SDK 的 credentials 格式，下面就手動建立需要的 `.aws` 資料夾：
+
+```bash
+mkdir ~/.aws
+chmod 755 ~/.aws
+touch ~/.aws/credentials
+chmod 600 ~/.aws/credentials
+```
+
+然後在 `~/.aws/credentials` 裡輸入 Access Key 和 Secret Key 兩個金鑰，可以在 [Spaces access keys](https://cloud.digitalocean.com/account/api/spaces) 新增：
+
+```ini title="~/.aws/credentials"
+[default]
+aws_access_key_id = EXAMPLE7UQOTHDTF3GK4
+aws_secret_access_key = exampleb8e1ec97b97bff326955375c5
+```
+
+s5cmd 的指令範例：
+
+```bash
+# 將 ~/demo/ 資料夾下的檔案上傳到 s3://demo-bucket/
+s5cmd --endpoint-url https://sgp1.digitaloceanspaces.com \
+  cp --acl=public-read --cache-control "max-age=604800" \
+  ~/demo/ s3://demo-bucket/
+# 將 s3://demo-bucket/ 下的檔案下載到 ~/demo/ 資料夾
+s5cmd --endpoint-url https://sgp1.digitaloceanspaces.com \
+  cp s3://demo-bucket/* ~/demo/
+# 將 ~/demo/ 資料夾下的檔案同步到 s3://demo-bucket/
+s5cmd --endpoint-url https://sgp1.digitaloceanspaces.com \
+  sync --acl=public-read --cache-control "max-age=604800" --delete \
+  ~/demo/ s3://demo-bucket/
+# 將 s3://demo-bucket/ 下的檔案強制全部刪除 (全部清空)
+s5cmd --endpoint-url https://sgp1.digitaloceanspaces.com \
+  rm s3://demo-bucket/*
+```
+
+## 參考資料
+
+* [s3cmd](https://s3tools.org/s3cmd)
+* [Setting Up s3cmd 2.x with DigitalOcean Spaces](https://docs.digitalocean.com/products/spaces/reference/s3cmd/)
+* [s5cmd](https://github.com/peak/s5cmd)
+* [S5cmd for High Performance Object Storage](https://joshua-robinson.medium.com/s5cmd-for-high-performance-object-storage-7071352cc09d)

@@ -659,6 +659,13 @@
   dependencies:
     "@expressive-code/core" "^0.41.1"
 
+"@fujocoded/expressive-code-output@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@fujocoded/expressive-code-output/-/expressive-code-output-0.0.1.tgz#ad947fcab8ec06504f6cf03fad57cdfacb433068"
+  integrity sha512-KxpVFVs0rEHjcdtya9lFxDMeNttPl66n62PeuTPSXecpEKN7yslFG+DMsQwtyWdPoA9u0W8sPuE2tFPcVwcUFQ==
+  dependencies:
+    mdast-util-to-hast "^13.2.0"
+
 "@iconify-json/heroicons@^1.2.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@iconify-json/heroicons/-/heroicons-1.2.2.tgz#8e03d91655ea6a2d7e1283ba13df13eda50d8bd8"
@@ -3425,7 +3432,7 @@ mdast-util-phrasing@^4.0.0:
     "@types/mdast" "^4.0.0"
     unist-util-is "^6.0.0"
 
-mdast-util-to-hast@^13.0.0:
+mdast-util-to-hast@^13.0.0, mdast-util-to-hast@^13.2.0:
   version "13.2.0"
   resolved "https://registry.npmjs.org/mdast-util-to-hast/-/mdast-util-to-hast-13.2.0.tgz"
   integrity sha512-QGYKEuUsYT9ykKBCMOEDLsU5JRObWQusAolFMeko/tYPufNkRffBAQjIE+99jbA87xv6FgmjLtwjh9wBWajwAA==

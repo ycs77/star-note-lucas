@@ -1,0 +1,105 @@
+---
+title: 在 Laravel Forge 配置的服務器上設定 SFTP 伺服器
+description: 在 Laravel Forge 配置的服務器上設定 SFTP 上傳檔案的方式
+image: /images/2023-07-22-laravel-forge-sftp.jpg
+showImage: false
+pubDate: 2023-07-22
+category: coding
+tags: ["Linux", "Laravel", "SSH", "FTP"]
+---
+
+以前剛學網站的時候都是用共享主機來放網站，並用 FTP 跟 FileZilla 來連線，但後來用習慣了 Git + SSH 的佈署方式之後就幾乎很少再用 FTP 了。但今天就偏偏就有了要開 FTP 帳號給人上傳檔案的需求，這篇來簡單紀錄一下，在 Laravel Forge 配置的服務器上設定 SFTP，和連結這些上傳檔案的方式。
+
+## 建立帳號
+
+基本上 Laravel Forge 配置過之後都會有一個 `forge` 帳號，只要在後台設定過 SSH 的 Public Key 就可以直接連線：
+
+```bash
+ssh forge@[你的主機IP]
+```
+
+先建立一個 Unix 帳號，帳號名稱基本上是都可以，不過這邊我們可以在前面會冠一個 `ftp-` 開頭來區別：
+
+```bash
+sudo adduser ftp-user
+```
+
+然後因為這個帳號目的只是用來 FTP 登入，基本上是不允許用 SSH 等來連線，因此首頁可以導向給 `/bin/false`，只要一連上就會被斷掉：
+
+```bash
+sudo usermod -s /bin/false ftp-user
+```
+
+接下來要做 `chroot` 的操作，可以理解成設定用 FTP 連線之後可以瀏覽使用的根目錄。
+
+比如當 ftp-user 登入的時候只能看到 `/home/ftp-user` 目錄下的資料，無法回更上一層的目錄，相當於這就是它的根目錄了。需要注意一個點是，這個目錄的所有上層資料夾都必須是 owner 為 root，否則會無法成功設定 (如果都無法成功連線的話可以查看 `/var/log/auth.log` 裡的錯誤原因)：
+
+```bash
+sudo chown root:ftp-user /home/ftp-user
+sudo chmod 755 /home/ftp-user
+```
+
+然後就可以在這個目錄下新增好目錄，讓用戶可以在 FileZilla 上傳了：
+
+```bash
+sudo mkdir /home/ftp-user/uploads
+sudo chown ftp-user:ftp-user /home/ftp-user/uploads
+sudo chmod 755 /home/ftp-user/uploads
+```
+
+不過我一開始也在想，為什麼其他文章都教到要增加一個目錄，難道不能在 FileZilla 的根目錄直接上傳嗎? 結果還真不行。因為剛才已經把根目錄 owner 設給 root，沒有 root 的權限就不能開新資料夾上傳檔案，因此需要先開好 owner 是 `ftp-user` 的資料夾讓用戶可以上傳檔案。當然資料夾想要開幾個都可以~ 只是你開哪些用戶就只能用哪些。
+
+## 設定 SFTP
+
+然後設定 `/etc/ssh/sshd_config` 檔，先加上 `#` 來註解掉以下：
+
+```apache title="/etc/ssh/sshd_config"
+Subsystem sftp /usr/lib/openssh/sftp-server
+```
+
+然後複製以下到該行之下，`ChrootDirectory` 就是要鎖住 FTP 瀏覽時的根目錄：
+
+```apache title="/etc/ssh/sshd_config"
+# Enable sftp
+Subsystem sftp internal-sftp
+
+Match User ftp-user
+    # set the homedirectory as root
+    ChrootDirectory %h
+
+    ForceCommand internal-sftp
+    X11Forwarding no
+    AllowTCPForwarding no
+
+    # enable loging with a password
+    PasswordAuthentication yes
+```
+
+最後重啟 SSH 就可以連線了：
+
+```bash
+sudo service ssh restart
+```
+
+FileZilla 連線可以參考以下：
+
+* 協定：SFTP
+* 主機：[你的主機IP]
+* 連接埠：22
+* 使用者：ftp-user
+* 密碼：[剛才adduser時設定的密碼]
+
+## 公開上傳檔案到 Laravel 網站
+
+當然我這次的目的是要讓這些上傳的檔案可以公開在網站中，因此參考了 Laravel 公開本地上傳檔案的方式，只需設個軟連結就行了：
+
+```bash
+sudo ln -s /home/ftp-user/uploads /home/forge/[your-domain]/public/uploads
+```
+
+如果上傳了一張 `image.jpg` 檔，就可以從 `https://[your-domain]/uploads/image.jpg` 瀏覽了！
+
+## 參考資料
+
+* [Let your clients use sftp on a Forge provisioned server](https://freek.dev/411-let-your-clients-use-sftp-on-a-forge-provisioned-server)
+* [透過 OpenSSH 使用 SFTP 登入時將帳戶設為 chroot 的方法 (Linux)](https://blog.miniasp.com/post/2011/08/11/OpenSSH-SFTP-chroot-with-ChrootDirectory)

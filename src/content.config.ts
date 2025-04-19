@@ -15,6 +15,7 @@ const postsCollection = defineCollection({
       name: z.string(),
       username: z.string(),
     }).optional(),
+    showImage: z.boolean().optional(),
     category: z.enum(['coding', 'acg', 'life']),
     tags: z.array(z.string()).optional(),
     draft: z.boolean().optional(),

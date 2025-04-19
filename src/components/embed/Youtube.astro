@@ -1,0 +1,63 @@
+---
+// A simple wrapper for embeded YouTube videos
+//
+// Usage:
+//
+// <Youtube id="yxo-h0scF98" />
+// <Youtube url="https://www.youtube.com/watch?v=yxo-h0scF98" />
+// <Youtube url="https://www.youtube.com/embed/yxo-h0scF98" />
+
+interface Props {
+  id?: string
+  url?: string
+  /**
+   * Ref: https://developers.google.com/youtube/player_parameters
+   */
+  params?: Record<string, string>
+}
+
+const { params = { rel: '0' } } = Astro.props
+
+let id = ''
+let querystring = ''
+
+if (Astro.props.id) {
+  id = Astro.props.id
+
+  if (typeof params === 'object' && Object.keys(params).length) {
+    querystring = `?${new URLSearchParams(params)}`
+  }
+} else if (Astro.props.url) {
+  const url = new URL(Astro.props.url)
+  let searchParams = new URLSearchParams({
+    ...Object.fromEntries(url.searchParams.entries()),
+    ...params,
+  })
+
+  if (searchParams.get('v')) {
+    id = searchParams.get('v') || ''
+    searchParams.delete('v')
+  } else if (url.pathname.startsWith('/embed/')) {
+    id = url.pathname.replace('/embed/', '')
+  } else if (url.pathname.startsWith('/watch?v=')) {
+    id = url.pathname.replace('/watch?v=', '')
+  } else {
+    throw new Error('Invalid YouTube URL')
+  }
+
+  if (typeof searchParams === 'object' && Object.keys(searchParams).length) {
+    querystring = `?${searchParams}`
+  }
+}
+---
+
+<div class="-mx-6 sm:mx-0">
+  <iframe
+    src={`https://www.youtube.com/embed/${id}${querystring}`}
+    class="w-full aspect-video"
+    title="YouTube"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+  ></iframe>
+</div>

@@ -1,0 +1,124 @@
+---
+title: 在 Laravel Forge 配置的服務器上用 Docker 部署 Vite 專案
+description: 第一次試 Docker 部署專案，以及使用 Nginx 設定反向代理，紀錄一下筆記。
+image: /images/2025-02-21-laravel-forge-dockerize-vite-app.jpg
+pubDate: 2025-02-21
+category: coding
+tags: ["Nginx", "Docker"]
+---
+
+第一次試 Docker 部署專案，以及使用 Nginx 設定反向代理，紀錄一下筆記。
+
+## Docker 設定
+
+Docker 安裝基本是參考官方文件，這邊就不贅述了。
+
+這次測試用的專案是 Vite 6.1 版本，image 使用 `node:22-alpine` 版本，單純的前端專案部署。下面是一個簡單的 `Dockerfile` 設定：
+
+```dockerfile title="Dockerfile"
+FROM node:22-alpine
+
+WORKDIR /app
+
+COPY package.json yarn.lock ./
+RUN yarn
+COPY . .
+RUN yarn build
+
+EXPOSE 4173
+
+CMD ["yarn", "preview", "--host", "0.0.0.0"]
+```
+
+為了可以使用 Docker Compose 來管理，新增一個 `compose.yaml`：
+
+```yaml title="compose.yaml"
+services:
+  web:
+    build: .
+    ports:
+      - "4173:4173"
+```
+
+然後就可以使用 Docker Compose 來啟動容器了：
+
+```bash
+docker compose up -d
+```
+
+關閉容器，可以使用：
+
+```bash
+docker compose down
+```
+
+## Nginx 反向代理設定
+
+Forge 預設使用 Nginx 來做網站伺服器，因此我們可以直接使用 Nginx 來做反向代理，讓請求可以轉發到 Docker 容器上。
+
+在 Forge 的網站設定中，點 `Edit Files` > `Edit Nginx Configuration` 開啟 Nginx 設定，並根據以下設定調整：
+
+```nginx {29-37}
+# FORGE CONFIG (DO NOT REMOVE!)
+include forge-conf/your-domain.com/before/*;
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name your-domain.com;
+    server_tokens off;
+    root /home/forge/your-domain.com;
+
+    # FORGE SSL (DO NOT REMOVE!)
+    # ssl_certificate
+    # ssl_certificate_key
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    # ssl_ciphers XXXXXXX
+    ssl_prefer_server_ciphers off;
+    ssl_dhparam /etc/nginx/dhparams.pem;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options "nosniff";
+
+    charset utf-8;
+
+    # FORGE CONFIG (DO NOT REMOVE!)
+    include forge-conf/your-domain.com/server/*;
+
+    location / {
+        proxy_pass http://127.0.0.1:4173;
+        proxy_redirect off;
+
+        proxy_set_header Host $proxy_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    access_log off;
+    error_log  off;
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
+
+# FORGE CONFIG (DO NOT REMOVE!)
+include forge-conf/your-domain.com/after/*;
+```
+
+主要是 `proxy_pass` 等相關設定比較重要，其他的設定可以根據需求調整。
+
+雖然折騰了滿久的，不過瞭解了細節後還是挺簡單的嘛！(哼！看你下次撞完牆後還敢這麼說😏)
+
+## 參考資料
+
+* [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
+* [Linux post-installation steps for Docker Engine](https://docs.docker.com/engine/install/linux-postinstall/)
+* [How To Install and Use Docker on Ubuntu 22.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-22-04)
+* [How To Install and Use Docker Compose on Ubuntu 22.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-22-04)

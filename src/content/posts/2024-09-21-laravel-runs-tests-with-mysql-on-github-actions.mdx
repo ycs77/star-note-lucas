@@ -1,0 +1,112 @@
+---
+title: Laravel 在 GitHub Actions 上用 MySQL 跑測試
+description: GitHub Actions 用 MySQL 跑測試的 yaml 範例
+image: /images/2024-09-21-laravel-runs-tests-with-mysql-on-github-actions.jpg
+showImage: false
+pubDate: 2024-09-21
+category: coding
+tags: ["Laravel", "GitHub Actions"]
+---
+
+Laravel 預設測試用的資料庫是 SQLite，可是正常線上都是用 MySQL，在跑測試的時候常常會因為兩邊不一致。這時候會建議可以用 MySQL 來跑測試，讓測試和正式兩邊可以保持一致，才不會有測試明明過了，但線上卻出現不一樣行為的狀況，而且 MySQL 測試執行速度更快~ (參考 [Using MySQL for Testing (on Laravel)](https://madewithlove.com/blog/using-mysql-for-testing-on-laravel/))
+
+## 本地測試設定
+
+本地可以先複製好測試用的 `.env.testing`：
+
+```bash
+cp .env.example .env.testing
+```
+
+和設定測試用的 MySQL 帳密相關資料：
+
+```ini title=".env.testing"
+DB_DATABASE=laravel_test
+DB_USERNAME=root
+DB_PASSWORD=password
+```
+
+接著把 `.env.testing` 加進 `.gitignore` 裡：
+
+```plaintext {4}
+.env
+.env.backup
+.env.production
+.env.testing
+```
+
+最後產生密鑰和執行測試：
+
+```bash
+php artisan key:generate --env=testing
+./vendor/bin/pest
+```
+
+## 設定 GitHub Actions
+
+GitHub Actions 跑測試的範例 yaml：
+
+```yaml title=".github/workflows/tests.yml"
+name: Tests
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  tests:
+    name: Tests
+
+    runs-on: ubuntu-latest
+
+    env:
+      DB_DATABASE: laravel
+      DB_USERNAME: root
+      DB_PASSWORD: password
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_DATABASE: laravel
+          MYSQL_ALLOW_EMPTY_PASSWORD: false
+          MYSQL_ROOT_PASSWORD: password
+        ports:
+          - 3306/tcp
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, mysql, mysqli, pdo_mysql, bcmath, intl, gd, exif, iconv, imagick, fileinfo
+          coverage: none
+
+      - name: Setup problem matchers
+        run: |
+          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction
+
+      - name: Setup environment key
+        run: |
+          php -r "file_exists('.env.testing') || copy('.env.example', '.env.testing');"
+          php artisan key:generate --env=testing
+
+      - name: Run tests
+        run: vendor/bin/pest
+        env:
+          DB_PORT: ${{ job.services.mysql.ports[3306] }}
+```
+
+## 參考資料
+
+* [Using MySQL for Testing (on Laravel)](https://madewithlove.com/blog/using-mysql-for-testing-on-laravel/)
+* [GitHub Action for Laravel with MySQL - GitHub Gist](https://gist.github.com/GussRw/b1808cecc8e3d517de1cfefe70061d12)
+* [Laravel Testing Using GitHub Actions With MYSQL](https://www.redfern.dev/articles/laravel-testing-using-github-actions-with-mysql)

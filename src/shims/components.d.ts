@@ -13,6 +13,7 @@ declare module 'vue' {
     Header: typeof import('./../components/partials/Header.vue')['default']
     Important: typeof import('./../components/callouts/Important.vue')['default']
     Info: typeof import('./../components/callouts/Info.vue')['default']
+    Note: typeof import('./../components/callouts/Note.vue')['default']
     Star: typeof import('./../components/icons/Star.vue')['default']
     Tip: typeof import('./../components/callouts/Tip.vue')['default']
     Warning: typeof import('./../components/callouts/Warning.vue')['default']

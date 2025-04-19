@@ -1,0 +1,151 @@
+---
+title: Windi CSS -  Tailwind CSS 的上位替代
+description: Windi CSS 作為 Tailwind CSS 的上位替代，提供了更多酷炫的功能。
+image: /images/2021-06-04-windicss.jpg
+pubDate: 2021-06-04
+category: coding
+tags: ["TailwindCSS"]
+---
+
+import { Note, Warning } from '@/components/callouts'
+
+<Warning>
+Windi CSS 已經不再維護了，請使用 [UnoCSS](https://unocss.dev/) 來取代。
+</Warning>
+
+[Windi CSS](https://windicss.org/) 作為 Tailwind CSS 的上位替代，提供了更多酷炫的功能。比 Tailwind CSS **更強大的任意值 class**、**Variants 群組**，還可以**在 DevTools 裡設計** (自動生成任意值 class~)。而且 Tailwind CSS 的 JIT 功能，是因為 Windi CSS 的關係才得以完成。這麼厲害的套件，下面我們一起來了解吧！
+
+## Windi CSS 的由來
+
+如果你以前都沒有聽過 Windi CSS，看到任意值 class 功能時，反應可能是：「你這不是抄 Tailwind 嗎?」。事實恰恰相反，按需加載任意值 class 的功能其實就是從 Windi CSS 出來的。
+
+事情要從 Tailwind CSS v1 時講起。雖然 Tailwind CSS 很強大，但為人所詬病的是編譯/HMR (熱更新) 的緩慢速度，當專案有幾十個組件時，初始編譯速度 3-5 秒起跳，熱更新更是超過 1 秒。為了解決這個問題，Windi CSS 應然而生。基於 TypeScript 實現了 Tailwind CSS 的功能，還可以按需加載 class，編譯和載入速度變得飛快！ ([Tailwind CSS v1 和 Windi CSS 載入速度對照影片](https://twitter.com/antfu7/status/1361398324587163648))
+
+不過作者不是 Tailwind CSS 團隊的人，後來是 Tailwind CSS 的作者向 Windi CSS 團隊的人請教實現的細節，才完成了 v2 的 Just-in-Time 功能。
+
+## 任意值 class (Windi CSS 版)
+
+在 Windi CSS 裡可以直接書寫值，不強迫加上 `[...]`，當然你要加也可以，端看使用習慣：
+
+```html
+<!-- 尺寸、定位 -->
+<div class="pt-0.8rem pb-[0.5rem] mx-10px"></div>
+
+<!-- 分數 -->
+<div class="w-9/12"></div>
+
+<!-- 顏色 -->
+<button class="bg-hex-b2a8bb"></button>
+<button class="bg-[hsl(211.7,81.9%,69.6%)]"></button>
+
+<!-- 網格 (grid template) -->
+<div class="grid-cols-[auto,1fr,30px]"></div>
+```
+
+響應式部分，除了**手機端優先**的斷點方式，Windi CSS 還多了**大螢幕優先**和**當前斷點**兩種斷點方式，定義斷點的彈性變大了：
+
+```html
+<div class="lg:p-1"></div>  <!-- 手機端優先 -->
+<div class="<lg:p-2"></div> <!-- 大螢幕優先 -->
+<div class="@lg:p-3"></div> <!-- 當前斷點 -->
+```
+
+以上 3 種斷點寫法分別會輸出以下 CSS：
+
+```css
+@media (min-width: 1024px) {
+  .lg\:p-1 {
+    padding: 0.25rem;
+  }
+}
+@media (max-width: 1023.9px) {
+  .\<lg\:p-2 {
+    padding: 0.5rem;
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279.9px) {
+  .\@lg\:p-3 {
+    padding: 0.75rem;
+  }
+}
+```
+
+## Variants 群組
+
+當 class 越寫越多，會發現 class 變得雜亂無章，這裡我們可以依照 Variants 來分組，變得相對簡潔且易讀，而且最後會編譯成 utility class：
+
+```html
+<div class="bg-white font-light hover:(bg-gray-400 font-medium) md:(text-indigo-100 bg-indigo-500) md:hover:(text-white bg-indigo-400)">
+  ...
+</div>
+```
+
+## 在 DevTools 裡設計
+
+如果在原本 Tailwind CSS 中這樣開發還不算什麼稀有事情，畢竟所有的 class 都包在幾 MB 的 CSS 裡了，但代價就是拉垮的瀏覽器效能。在按需生成 class 的 Windi CSS 反而才覺得不可能，不過，**它 做 到 了！**
+
+先看[影片示例](https://twitter.com/antfu7/status/1372244287975387145)~
+
+只要在 Vite 專案的入口檔案 (通常是 `main.js`) 加上這串就可以使用了~
+
+```js title="src/main.js"
+import 'virtual:windi-devtools'
+```
+
+## Attributify Mode
+
+<Warning>
+Attributify Mode 目前只能在 Vite 使用。
+</Warning>
+
+在 `windi.config.js` 開啟：
+
+```js title="windi.config.js"
+export default {
+  attributify: true,
+}
+```
+
+開啟之後能幹嘛呢? 先看原本落落長難以閱讀的 class：
+
+```html
+<button class="bg-blue-400 hover:bg-blue-500 text-sm text-white font-mono font-light py-2 px-4 rounded border-2 border-blue-200 dark:bg-blue-500 dark:hover:bg-blue-600">
+  Button
+</button>
+```
+
+然後再看把 class 們變成用屬性的方式定義 (**Attributify Mode**)，更加清楚整潔，而且只要看屬性馬上就可以知道定義了哪些 utility 功能，當然還是可以使用 `class`：
+
+```html
+<button
+  bg="blue-400 hover:blue-500 dark:blue-500 dark:hover:blue-600"
+  text="sm white"
+  font="mono light"
+  p="y-2 x-4"
+  border="2 rounded blue-200"
+>
+  Button
+</button>
+```
+
+## VS Code 套件
+
+Windi CSS 官方維護的 VS Code 智能提示套件 [WindiCSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=voorjaar.windicss-intellisense)，用 Windi CSS 基本上就是必備。
+
+但我裝了之後遇到一個小衝突 *(已經有人提 issue 了，而且說是小衝突但我也被卡了半小時...)*，在安裝了 [Auto Rename Tag](https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-rename-tag) 和專案有 Windi CSS 的設定檔時，會無法運行 **WindiCSS IntelliSense**，現在解方是在專案中禁用 **Auto Rename Tag** 就正常了。
+
+## 結論
+
+**Tailwind CSS** 發展到現在已經是一個大專案，4000 左右個 commits 和 170 多位貢獻者，依賴於 PostCSS 已然是不可變動，而且想要貢獻一些實驗性功能也不會那麼容易，因此作者才會自己用 **TypeScript** 開發出 **Windi CSS**。
+
+如果你的專案還是依賴 **PostCSS** 的話請繼續用 **Tailwind CSS** *(Windi CSS 不建議用在 PostCSS)*，而如果使用 **Vite**、**Rollup**、**Webpack** 等技術，同時對上述新潮功能有興趣，不妨試試 [Windi CSS](https://windicss.org/)，官方也有 [Tailwind CSS 轉換指南](https://windicss.org/guide/migration.html)。而且 Windi CSS 是用 **TypeScript** 開發，有用 TS 的專案相性非常好。
+
+<Note>
+當然 Windi CSS 的功能不只上面那些，我只是選了幾個我覺得很強的功能來分享給大家~
+</Note>
+
+但同時也要記住，**Windi CSS** 的出現也是因為有 **Tailwind CSS**，兩者是無法從真正意義上爭論誰勝於誰的。最重要的是，選擇一個讓自己舒適的開發工具！
+
+## 參考資料
+
+* [Windi CSS 官網](https://windicss.org/)

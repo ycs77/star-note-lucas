@@ -1,0 +1,229 @@
+---
+title: Inertia.js SSR | 讓 Laravel x Vue 實現服務端渲染
+description: 介紹如何使用 Inertia.js 的 SSR (服務端渲染) 功能
+image: /images/2022-01-12-inertia-ssr.jpg
+pubDate: 2022-01-12
+category: coding
+tags: ["Laravel", "Vue.js", "Inertia.js", "SSR"]
+---
+
+import { Note, Tip } from '@/components/callouts'
+
+<Note>
+2023/02/20 更新：將 Inertia 的使用方式更新到 v1 版，以及把 Laravel Mix 換成 Vite。
+</Note>
+
+構建 Laravel 全端網站我最愛用的 [Inertia](https://inertiajs.com/)，現在終於也正式釋出 SSR 的功能，補足了 SPA 網站會有的 SEO 問題了！
+
+這一篇文章中會記錄在在一個現成的 Inertia 專案中加入 SSR 功能的過程，下面我們一起來看吧~
+
+## Inertia 中 SSR 的運作原理
+
+先大概介紹一下運作原理，因為 Inertia 要適配 PHP 或 Ruby 等不同語言，使用了 Node.js 來實作 SSR 服務。在 SSR 模式下接收到請求後會直接將 [page 物件](https://inertiajs.com/the-protocol#the-page-object) 傳入 SSR Server 做解析，最後再回傳 HTML 給瀏覽器，結束這一次的請求。
+
+## 更新 Inertia
+
+首先需要一個現成的 Inertia 專案，在現在新版 Laravel 預設都使用 Vite 來打包前端，因此我下面都會用 Vite 的配置。還有要更新 Inertia 到最新版才會支援 SSR 功能。
+
+安裝 Laravel 端到最新版：
+
+```bash
+composer require inertiajs/inertia-laravel
+```
+
+安裝 Vue 端 (使用 NPM 或 Yarn)：
+
+```bash
+npm install @inertiajs/vue3
+# 或
+yarn add @inertiajs/vue3
+```
+
+如果你的專案裡還有 `@inertiajs/inertia` 和 `@inertiajs/inertia-vue3` 的套件的話，表示還是在舊版，可以參考 [升級指南](https://inertiajs.com/upgrade-guide) 升級，基本上都是改改套件名字、變數名字等，升級難度應該不會太大。
+
+## 設置 SSR 應用
+
+現在就要開始配置 SSR 了，如果是在 Vue 3 新版可以不需要安裝官方的 SSR 套件 `@vue/server-renderer`，因為 Vue 核心套件會連帶安裝了，可以改用 `vue/server-renderer` 來使用。
+
+同樣 Inertia v1 版也會一起安裝 `@inertiajs/server` 套件，裡面包含了一個執行 SSR 渲染的 HTTP Server。
+
+之後新增一個 `resources/js/ssr.js` 檔案：
+
+```bash
+touch resources/js/ssr.js
+```
+
+這個 `ssr.js` 檔案跟 `app.js` 有點相似，但是個只會在服務端 (Node.js) 中執行的入口檔案，基本上不影響服務端渲染的套件都可以不用載入。而服務端/用戶端兩邊都會載入的部分就需要做兩邊兼容，比如需要顧慮到 Node.js 中沒有 `window` 和 `document` 的問題。
+
+下面提供 `resources/js/ssr.js` 的範例：
+
+```js title="resources/js/ssr.js"
+import { createSSRApp, h } from 'vue'
+import { renderToString } from 'vue/server-renderer'
+import { createInertiaApp } from '@inertiajs/vue3'
+import createServer from '@inertiajs/vue3/server'
+
+createServer(page =>
+  createInertiaApp({
+    page,
+    render: renderToString,
+    resolve: name => {
+      const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
+      return pages[`./Pages/${name}.vue`]
+    },
+    setup({ App, props, plugin }) {
+      return createSSRApp({
+        render: () => h(App, props),
+      }).use(plugin)
+    },
+  })
+)
+```
+
+這裡稍微提一下 Vue 的 hydration 操作，在 SSR 模式中因為已經把 HTML 渲染好了，Vue 接手的時候就不需要再重新渲染一遍，而是使用 hydration 的方式，直接把靜態的 HTML 轉換成可以與 Vue 互動的動態 DOM。但有個前提是**服務端**生成的 DOM 和**用戶端**的必須保持一致，如果遇到不同的話會直接中斷 hydration，不管原本的 DOM，直接重新渲染新的。
+
+在 Vue 3 要啟用 hydration 時，要將 `app.js` 裡的 `createApp` 替換成 `createSSRApp`：
+
+```js {1,10}
+import { createSSRApp, h } from 'vue'
+import { createInertiaApp } from '@inertiajs/vue3'
+
+createInertiaApp({
+  resolve: name => {
+    const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
+    return pages[`./Pages/${name}.vue`]
+  },
+  setup({ el, App, props, plugin }) {
+    createSSRApp({ render: () => h(App, props) })
+      .use(plugin)
+      .mount(el)
+  },
+})
+```
+
+Hydration 相關更詳細的部分可以參考 [Vue 的 hydration 注意事項](https://v3.cn.vuejs.org/guide/ssr/hydration.html#%E5%85%B3%E4%BA%8E%E6%BF%80%E6%B4%BB%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9)。
+
+## 設置 Vite
+
+然後就進到 Vite 的編譯部分了，這裡需要在 `vite.config.js` 裡增加剛才的 `ssr.js` 路徑：
+
+```js {5}
+export default defineConfig({
+  plugins: [
+    Laravel({
+      input: ['resources/css/app.css', 'resources/js/app.js'],
+      ssr: 'resources/js/ssr.js',
+      refresh: true,
+    }),
+    // ...
+  ],
+})
+```
+
+現在就可以執行 Vite 編譯 JS。原本的 `vite build` 是編譯用戶端的，所以再加一個 `vite build --ssr` 用於編譯 SSR 模式的指令：
+
+```json {3}
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && vite build --ssr"
+  },
+```
+
+之後只要執行就可以同時編譯用戶端跟 SSR 了：
+
+```bash
+npm run build
+```
+
+## 在 Laravel 中啟用 SSR
+
+開啟 `app.blade.php`，也就是 Inertia 專案的進入點，把 `@inertiaHead` 加到 `<head>` 的底部：
+
+```html {5}
+<!DOCTYPE html>
+<html>
+  <head>
+    ...
+    @inertiaHead
+  </head>
+  <body>
+    @inertia
+  </body>
+</html>
+```
+
+好了之後就可以來啟用 SSR 功能了！先發布 `config/inertia.php` 設定檔到專案中：
+
+```bash
+php artisan vendor:publish --provider="Inertia\ServiceProvider"
+```
+
+然後會看到以下設定，基本上可以先用預設的，如果要改設定可以在這邊改。`enabled` 是一個單純的開關，`url` 是 SSR server 的網址，`bundle` 則是 `vite build --ssr` 產生的檔案的位置：
+
+```php {21}
+<?php
+
+return [
+
+    'ssr' => [
+
+        'enabled' => true,
+
+        'url' => 'http://127.0.0.1:13714',
+
+        // 'bundle' => base_path('bootstrap/ssr/ssr.mjs'),
+
+    ],
+```
+
+畢竟編譯出來的檔案不要送進版控，當然要加到 `.gitignore` 裡：
+
+```plaintext {1}
+/bootstrap/ssr
+/node_modules
+...
+```
+
+## 執行 SSR 應用
+
+當以上步驟都做完之後，現在就可以來啟動 SSR 網站了，啟動基本的 Artisan Serve：
+
+```bash
+php artisan serve
+```
+
+然後啟動 SSR 服務：
+
+```bash
+php artisan inertia:start-ssr
+```
+
+如果在正式環境下，更新完程式碼會需要手動關閉可以執行：
+
+```bash
+php artisan inertia:stop-ssr
+```
+
+現在就可以開瀏覽器看看啦~ 正常的話直接看是沒有差別的，這時候打開網頁原始碼，你就會看到差別所在。
+
+首先是沒有 SSR，單純的用戶端渲染，內容很單純：
+
+![Inertia 用戶端渲染原始碼](/images/2022-01-12-inertia-ssr-source-csr.jpg)
+
+然後是啟用 SSR 的服務端渲染，就會看到已經渲染好的 `<title>` 以及 `<body>` 中的 HTML 了：
+
+<Tip>
+可以把瀏覽器左上的 **自動換行** 打開
+</Tip>
+
+![Inertia 服務端渲染原始碼](/images/2022-01-12-inertia-ssr-source-ssr.jpg)
+
+## 結語
+
+其實在 2021 年 Inertia 的 SSR 功能早期釋出時我就已經體驗過了，不過當時還沒有把功能包進套件中，使用起來比較麻煩一些，現在正式釋出的版本終於可以比較容易使用了。
+
+在還沒出 SSR 功能之前，我都把 Inertia 定位成只能做後台操作的部分，需要 SEO 的頁面就只能用 blade 來頂替。SSR 功能的出現終於可以做完整的網頁功能了。可以把 Laravel 和 Vue 的功能發揮到極緻，這就是我喜歡 Inertia 的原因~ 期望之後 Inertia 可以完善更多功能，讓用 Laravel + Vue 來建立 Modern SPA 網站變得比較輕鬆~
+
+## 參考資料
+
+* [Server-side rendering (SSR) - Inertia.js](https://inertiajs.com/server-side-rendering)

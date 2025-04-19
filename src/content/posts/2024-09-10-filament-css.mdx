@@ -1,0 +1,128 @@
+---
+title: 重新編譯 Filament 的 CSS
+description: 在客製化 Filament 後台介面後，重新編譯完整的 Tailwind CSS
+image: /images/2024-09-10-filament-css.jpg
+showImage: false
+pubDate: 2024-09-10
+category: coding
+tags: ["Laravel", "Filament", "TailwindCSS"]
+---
+
+import { Tip } from '@/components/callouts'
+
+<Tip>
+或許是當時做這個功能的時候，沒有詳細看完說明文件，後來才知道其實 Filament 早就有這個功能了...😭
+
+在 Filament 文件中的 [自訂主題 CSS](https://filamentphp.com/docs/3.x/panels/themes#creating-a-custom-theme) 就有紀錄了，而且還更簡單啊！！！不過好歹也還是研究出了我自己的方案，就留下來當作參考用的吧！或許不知道什麼時候會使用到~
+</Tip>
+
+基本上做後台時會時不時出現各種奇形怪狀的需求，Filament 預設的程式會無法負荷，在這種時候只能自己來寫 Blade 的 View。只是這時會冒出個問題...
+
+「CSS 要怎麼辦? 我用了新的 Tailwind 的 class 是不是就不會出現了?」
+
+因此在客製化 Filament 後台介面後，我們需要重新編譯完整的、包含 Filament 和我們客製化後的完整的 CSS。
+
+## 編譯 Tailwind CSS
+
+要客製化 CSS 的話需要一個基礎的資料夾結構，裡面都放置跟客製 Filament 前端相關的東西：
+
+```
+filament/
+  ├── css/
+  |  └── app.css
+  ├── assets.sh
+  └── tailwind.config.js
+```
+
+`css/app.css` 裡面依然還是 Tailwind 預設的樣板：
+
+```css title="css/app.css"
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+然後是 Tailwind 的設定檔 `tailwind.config.js`，這樣編譯完之後可以包含舊的和新的 CSS：
+
+```js title="tailwind.config.js"
+import preset from '../vendor/filament/filament/tailwind.config.preset'
+
+export default {
+    presets: [preset],
+    content: [
+        './app/Filament/**/*.php',
+        './resources/views/filament/**/*.blade.php',
+        './vendor/filament/**/*.blade.php',
+    ],
+}
+```
+
+最後在 `package.json` 中加上編譯 Filament CSS 的腳本，輸出的 CSS 會直接覆蓋掉 Filament publish 出來的 CSS，這樣就達到了增加自己客製的 Tailwind class 的目的了：
+
+```json title="package.json"
+{
+    "scripts": {
+        "dev": "vite",
+        "dev:filament-css": "npx tailwindcss -c ./filament/tailwind.config.js -i ./filament/css/app.css -o ./public/css/filament/filament/app.css --watch",
+        "build": "vite build",
+        "build:filament-css": "npx tailwindcss -c ./filament/tailwind.config.js -i ./filament/css/app.css -o ./public/css/filament/filament/app.css --minify"
+    }
+}
+```
+
+## 自訂 CSS 覆蓋問題
+
+但這時會有個問題，在每次呼叫完 `composer dump-autoload` 後 Filament 都會重新覆蓋掉 CSS 等資產，這樣我們自訂的內容就又不見了，於是我們需要修改一下編譯的腳本：
+
+```json title="package.json"
+{
+    "scripts": {
+        "build:filament-css": "npx tailwindcss -c ./filament/tailwind.config.js -i ./filament/css/app.css -o ./filament/dist/app.css --minify && bash ./filament/assets.sh"
+    }
+}
+```
+
+我們先讓 CSS 輸出到 `filament/dist/app.css`，而且**不要**加到 `.gitignore` 裡面，然後資料夾結構變成這樣：
+
+```plaintext
+filament/
+  ├── css/
+  |  └── app.css
+  ├── dist/
+  |  └── app.css
+  ├── assets.sh
+  └── tailwind.config.js
+```
+
+然後我們再加個腳本 `assets.sh` 來發布回自訂版的 CSS：
+
+```bash
+if [ -f filament/dist/app.css ]; then
+    cp filament/dist/app.css public/css/filament/filament/app.css
+
+    echo 'Published assets for Filament successfully.'
+fi
+```
+
+然後我們可以在 `composer.json` 裡面找到 `post-autoload-dump`，發現有 `@php artisan filament:upgrade`，只要我們在後面加上 `assets.sh` 就可以再次覆蓋回來了：
+
+```json title="package.json"
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade",
+            "bash filament/assets.sh" // 加上這行
+        ]
+    }
+```
+
+開發用 `dev:filament-css`，上線用 `build:filament-css`：
+
+```bash
+# dev
+npm run dev:filament-css
+
+# production
+npm run build:filament-css
+```

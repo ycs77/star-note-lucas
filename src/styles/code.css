@@ -3,3 +3,14 @@
     --ec-codeFontSize: 1rem;
   }
 }
+
+@layer components {
+  .expressive-code {
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+    @media (width >= theme(--breakpoint-md)) {
+      margin-top: 1.3333333em;
+      margin-bottom: 1.3333333em;
+    }
+  }
+}

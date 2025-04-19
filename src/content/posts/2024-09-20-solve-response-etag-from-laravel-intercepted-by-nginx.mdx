@@ -1,0 +1,71 @@
+---
+title: 解決 Laravel 回傳 Etag Header 被 Nginx 攔截的問題
+description: 在 Laravel 處理 `Etag` 和 304，並解決 Etag Header 被 Nginx 攔截的問題
+image: /images/2024-09-20-solve-response-etag-from-laravel-intercepted-by-nginx.jpg
+showImage: false
+pubDate: 2024-09-20
+category: coding
+tags: ["Nginx", "Laravel"]
+---
+
+HTTP Cache 裡面的其中一個機制是 `Etag`，可以回傳當前資源的唯一 Hash 值，然後在之後的請求可以比對此 `Etag` 值有沒有變化，沒變化就直接回傳 304，有改變才會重新下載新的資源。通常如果是靜態資源可以直接交給 Nginx 處理就行了，但剛好我有個需求需要在 Laravel 中處理後才回傳出去，因此就需要在 Laravel 處理 `Etag` 和 304 了。
+
+## Etag 和 If-None-Match
+
+先上一個基本的 Controller，把檔案內容讀出來之後用 `md5()` Hash 過傳給 `Etag` Header。然後在第二次請求的時候，會附上 `If-None-Match` Header，這時就可以比對 Hash 值是否一樣：
+
+```php title="app/Http/Controllers/AssetController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+class AssetController extends Controller
+{
+    public function __invoke(Request $request)
+    {
+        $cacheControl = 'no-cache';
+
+        $content = '...';
+
+        $etag = md5($content);
+
+        if ($this->matchesCache($etag)) {
+            return response('', 304, [
+                'Cache-Control' => $cacheControl,
+            ]);
+        }
+
+        $headers = [
+            'Content-Type' => $contentType,
+            'Cache-Control' => $cacheControl,
+            'Etag' => $etag,
+        ];
+
+        return response($content, 200, $headers);
+    }
+
+    protected function matchesCache($etag)
+    {
+        /** @var string|null */
+        $ifNoneMatch = request()->header('If-None-Match');
+
+        return $ifNoneMatch !== null && $ifNoneMatch === $etag;
+    }
+}
+```
+
+在本地還可以正常跑，但一搬到線上就沒有效果了。經過一番調查，是 Nginx 開啟 gzip 後就會過濾掉 `etag`，可是不完全對。它會刪掉不符合規則的強 Etag，而不會管弱 Etag。
+
+簡單來說在這裡我們只要轉成弱 Etag 就行了，弱 Etag 的格式是 `W/"etag內容"`，把 `etag內容` 前後加上 `W/"..."` 變成 `W/"etag內容"` 就可以了：
+
+```php
+$etag = md5($content);
+// 原本的 Etag: abc123
+
+$etag = 'W/"'.md5($content).'"';
+// 新的弱 Etag: W/"abc123"
+```
+
+## 參考資料
+
+* [循序漸進理解 HTTP Cache 機制 - Huli&#39;s blog](https://blog.huli.tw/2017/08/27/http-cache/)

@@ -1,0 +1,45 @@
+---
+title: 使用 HTTPS 連線 Homestead 網站 (Windows)
+description: 解決瀏覽 Homestead 網站時出現的「不安全」提示
+image: /images/2019-02-07-homestead-https.jpg
+showImage: false
+pubDate: 2019-02-07
+category: coding
+tags: ["Laravel", "Homestead"]
+---
+
+在本地使用 Homestead 開發 Laravel 專案非常方便，一開始使用 HTTP 連線時：
+
+![使用 HTTP 連線](/images/2019-02-07-homestead-https-1.jpg)
+
+但如果改用 HTTPS 連線時，就會...
+
+![改用 HTTPS 連線](/images/2019-02-07-homestead-https-2.jpg)
+
+其實只要在本機中安裝 Homestead CA 根憑證，「不安全」的標示就會消失了。
+
+## 在 Windows 安裝 Homestead CA 根憑證
+
+先透過 SSH 連接至 虛擬機，然後執行下列指令，複製 CA 根憑證檔：
+
+```bash
+sudo cp /etc/nginx/ssl/ca.homestead.homestead.crt ~/code/homestead
+```
+
+![複製 CA 根憑證檔](/images/2019-02-07-homestead-https-3.jpg)
+
+然後開始安裝 Homestead CA 根憑證：
+
+![安裝 Homestead CA 根憑證 1](/images/2019-02-07-homestead-https-4.jpg)
+
+![安裝 Homestead CA 根憑證 2](/images/2019-02-07-homestead-https-5.jpg)
+
+![安裝 Homestead CA 根憑證 3](/images/2019-02-07-homestead-https-6.jpg)
+
+![安裝 Homestead CA 根憑證 4](/images/2019-02-07-homestead-https-7.jpg)
+
+![安裝 Homestead CA 根憑證 5](/images/2019-02-07-homestead-https-8.jpg)
+
+最後 **重新開啟瀏覽器** 後，就可以看到 HTTPS 連線成功，也不會有「不安全」的標示了：
+
+![HTTPS 連線成功](/images/2019-02-07-homestead-https-9.jpg)

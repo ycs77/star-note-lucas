@@ -1,0 +1,92 @@
+---
+title: Tailwind CSS 小技巧之 scroll margin 篇
+description: 使用 CSS 的 scroll-margin 和 scroll-padding，可以解決在跳轉到次級標題時，卻因為上面留白不足，導致畫面頂部顯得緊湊，或是標題被導覽列擋住的問題。
+image: /images/2021-10-01-css-scroll-margin.jpg
+pubDate: 2021-10-01
+category: coding
+tags: ["CSS", "TailwindCSS"]
+---
+
+CSS 的 `scroll-margin` 和 `scroll-padding` 解決了在跳轉到次級標題時，卻因為上面留白不足，導致畫面頂部顯得緊湊，或是標題被導覽列擋住的問題。而且 `scroll-margin` 在 [caniuse 上的瀏覽器支援度](https://caniuse.com/?search=scroll-margin) 也已達到了 90% 左右了，當然，IE 是**不能**用的喔！！
+
+## scroll-margin
+
+`scroll-margin` 屬性可以設定滾動時，元素相對於容器的外邊距。可以使用在像文章中的次級標題，在導覽到次級標題正常都會直接貼到最頂端，一點空間都不留。用上 `scroll-margin` 就可以在跳轉到次級標題時增加一些邊距，留下適當的空間看起來也比較不會那麼緊湊。
+
+![scroll-margin](/images/2021-10-01-css-scroll-margin-scroll-margin.jpg)
+
+這裡看程式碼~ `scroll-margin` 跟 `margin` 一樣有 top/bottom/left/right 四個方向可以設定：
+
+```html
+<div>
+  <h2 id="sub-title" style="scroll-margin-top: 16px">Sub title</h2>
+  ...
+</div>
+```
+
+或是 Tailwind CSS 的使用方式，可以參考 `margin` 的使用方式：
+
+```html
+<div>
+  <h2 id="sub-title" class="scroll-mt-4">Sub title</h2>
+  ...
+</div>
+```
+
+因為現在 Tailwind 預設沒有增加 `scroll-margin` 相關的 utility class，所以我們要自己增加 CSS：
+
+```css
+@layer utilities {
+  .scroll-mt-4 {
+    scroll-margin-top: 1rem;
+  }
+}
+```
+
+這樣就好啦！
+
+## scroll-padding
+
+而 `scroll-padding` 則反之，是用在外層的容器元素，讓容器內部滾動時增加計算邊距。常見用法是頁面中有固定在頂部的導覽列時，跳轉到次要標題，卻被導覽列切掉了一半。因此 `scroll-padding` 就可以設定滾動後容器本身要偏移計算的內距。
+
+![scroll-padding](/images/2021-10-01-css-scroll-margin-scroll-padding.jpg)
+
+使用方式如下 (也可以在 CSS 檔中設定)，一樣也有 top/bottom/left/right 四個方向：
+
+```html
+<html style="scroll-padding-top: 56px">
+  ...
+  <body>
+    <header class="navbar">
+      <!-- 頂部導覽列 -->
+    </header>
+    ...
+  </body>
+</html>
+```
+
+或 Tailwind CSS 用法：
+
+```html
+<html class="scroll-pt-14">
+  ...
+  <body>
+    <header class="fixed ...">
+      <!-- 頂部導覽列 -->
+    </header>
+    ...
+  </body>
+</html>
+```
+
+一樣 Tailwind 也要在 CSS 自訂 utility class：
+
+```css
+@layer utilities {
+  .scroll-pt-14 {
+    scroll-padding-top: 3.5rem;
+  }
+}
+```
+
+不過你可能會覺得這樣在 Tailwind CSS 中設定比較麻煩 (雖然這些屬性通常是比較少使用)，這裡有消息要告訴你，在不久後的未來，Tailwind CSS 將會發布 3.0 的 Alpha 版🎉，其中會包含 `scroll-margin`、`scroll-padding`、`scroll-snap` 等滾動相關的 utility class，而且 JIT 會變成預設模式，當然也會有其他的更新，讓我們拭目以待吧😍！
