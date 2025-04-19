@@ -3,7 +3,8 @@ import type { GetStaticPaths } from 'astro'
 import { getCollection } from 'astro:content'
 import { preprocessPosts } from '@/post'
 import Layout from '@/layouts/Layout.astro'
-import { Postlist, Pagination } from '@/components/postlist'
+import { Postlist } from '@/components/postlist'
+import { Pagination } from '@/components/pagination'
 import { Footer } from '@/components/partials'
 import '@/styles/index.css'
 
@@ -29,7 +30,6 @@ const { page } = Astro.props
     <h1 class="text-3xl md:text-4xl font-serif font-medium">
       <a class="text-indigo-300 hover:text-yellow-400" href="/tags">標籤</a> # {tag}
     </h1>
-
     <Postlist posts={page.data} />
     <Pagination
       baseUrl={page.url.current.replace(/\/\d+$/, '')}

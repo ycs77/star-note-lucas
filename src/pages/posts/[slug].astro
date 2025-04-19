@@ -7,35 +7,50 @@ import { categoriesMap } from '@/category'
 import Layout from '@/layouts/Layout.astro'
 import { Date, Draft, Tag } from '@/components/general'
 import { ArticleContent, ArticleMediumZoom, ArticleTitle } from '@/components/article'
+import { PaginationPrevNext } from '@/components/pagination'
 import { Footer } from '@/components/partials'
 import { parsePostSlug } from '@/utils/slug'
 import '@/styles/index.css'
 
 interface Props {
-  entry: CollectionEntry<'posts'>
+  post: CollectionEntry<'posts'>
+  prev: CollectionEntry<'posts'> | null
+  next: CollectionEntry<'posts'> | null
 }
 
 export async function getStaticPaths() {
   const posts = preprocessPosts(await getCollection('posts'))
-  return posts.map(entry => ({
-    params: { slug: parsePostSlug(entry.id).slug },
-    props: { entry },
-  }))
+
+  const groupedPosts = Object.keys(categoriesMap).reduce((acc, category) => {
+    acc[category] = posts.filter(post => post.data.category === category)
+    return acc
+  }, {} as Record<string, CollectionEntry<'posts'>[]>)
+
+  return Object.entries(groupedPosts).flatMap(([_category, posts]) => {
+    return posts.map((post, i) => {
+      const prev = i > 0 ? posts[i - 1] : null
+      const next = i < posts.length - 1 ? posts[i + 1] : null
+      return {
+        params: { slug: parsePostSlug(post.id).slug },
+        props: { post, prev, next },
+      }
+    })
+  })
 }
 
-const { entry } = Astro.props
-const { Content } = await render(entry)
+const { post, prev, next } = Astro.props
+const { Content } = await render(post)
 ---
 
-<Layout title={entry.data.title}>
+<Layout title={post.data.title}>
   <Fragment slot="head">
     <Schema
       item={{
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
-        headline: entry.data.title,
+        headline: post.data.title,
         image: [],
-        datePublished: entry.data.pubDate.toISOString(),
+        datePublished: post.data.pubDate.toISOString(),
         author: {
           '@type': 'Person',
           name: 'Lucas Yang',
@@ -48,42 +63,42 @@ const { Content } = await render(entry)
 
   <div class="container py-8 md:!max-w-3xl xl:py-12">
     <article>
-      <ArticleTitle>{entry.data.title}</ArticleTitle>
+      <ArticleTitle>{post.data.title}</ArticleTitle>
 
       <div class="mt-4 flex items-center flex-wrap">
-        {entry.data.draft && <Draft />}
-        <Date datetime={entry.data.pubDate} />
-        {(entry.data.category || entry.data.tags?.length) && (
+        {post.data.draft && <Draft />}
+        <Date datetime={post.data.pubDate} />
+        {(post.data.category || post.data.tags?.length) && (
           <span class="text-indigo-300">．</span>
         )}
-        {entry.data.category && (
+        {post.data.category && (
           <Tag
             type="category"
-            name={categoriesMap[entry.data.category].name}
-            href={`/${entry.data.category}`}
+            name={categoriesMap[post.data.category].name}
+            href={`/${post.data.category}`}
             class="me-2 my-1 shrink-0"
           />
         )}
-        {entry.data.tags?.map(tag => (
+        {post.data.tags?.map(tag => (
           <Tag name={tag} href={`/tags/${tag}`} class="me-2 my-1 shrink-0" />
         ))}
       </div>
 
       <div class="mt-8 md:mt-12 mb-8">
-        {entry.data.image && entry.data.showImage !== false && (
+        {post.data.image && post.data.showImage !== false && (
           <figure class="mb-8 md:mb-12">
             <img
               class="rounded-md shadow-md shadow-indigo-950/50"
-              src={entry.data.image}
+              src={post.data.image}
               alt={
-                entry.data.imageUnsplashAuthor
-                  ? `Photo by ${entry.data.imageUnsplashAuthor.name} (https://unsplash.com/${entry.data.imageUnsplashAuthor.username}) on Unsplash (https://unsplash.com/)`
-                  : entry.data.title
+                post.data.imageUnsplashAuthor
+                  ? `Photo by ${post.data.imageUnsplashAuthor.name} (https://unsplash.com/${post.data.imageUnsplashAuthor.username}) on Unsplash (https://unsplash.com/)`
+                  : post.data.title
               }
             />
-            {entry.data.imageUnsplashAuthor && (
+            {post.data.imageUnsplashAuthor && (
               <figcaption class="text-center text-indigo-200/65 mt-4">
-                <span>Photo by <a class="text-indigo-300 hover:text-yellow-400 font-medium underline" href={`https://unsplash.com/${entry.data.imageUnsplashAuthor.username}?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText`} target="_blank">{entry.data.imageUnsplashAuthor.name}</a> on <a class="text-indigo-300 hover:text-yellow-400 font-medium underline" href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText" target="_blank">Unsplash</a></span>
+                <span>Photo by <a class="text-indigo-300 hover:text-yellow-400 font-medium underline" href={`https://unsplash.com/${post.data.imageUnsplashAuthor.username}?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText`} target="_blank">{post.data.imageUnsplashAuthor.name}</a> on <a class="text-indigo-300 hover:text-yellow-400 font-medium underline" href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText" target="_blank">Unsplash</a></span>
               </figcaption>
             )}
           </figure>
@@ -94,6 +109,8 @@ const { Content } = await render(entry)
         </ArticleContent>
       </div>
     </article>
+
+    <PaginationPrevNext prev={prev} next={next} />
   </div>
 
   <div class="container">

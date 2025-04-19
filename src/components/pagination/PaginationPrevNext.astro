@@ -1,0 +1,72 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import HeroiconsChevronLeft20Solid from '~icons/heroicons/chevron-left-20-solid'
+import HeroiconsChevronRight20Solid from '~icons/heroicons/chevron-right-20-solid'
+import { parsePostSlug } from '@/utils/slug'
+
+interface Props {
+  prev: CollectionEntry<'posts'> | null
+  next: CollectionEntry<'posts'> | null
+  isSeries?: boolean
+}
+
+const { prev, next, isSeries } = Astro.props
+---
+
+<div class="mt-16 flex flex-col gap-8 sm:flex-row">
+  <div class="min-w-0 flex-1">
+    {prev && (
+      <a href={`/posts/${parsePostSlug(prev.id).slug}`} class="group flex flex-row-reverse gap-2 sm:flex-col text-left">
+        {/* {prev.data.image && (
+          <div class="shrink-0 min-w-0 hidden sm:flex sm:items-center sm:mb-2">
+            <div class="relative w-32 aspect-[16/9] bg-yellow-400 rounded overflow-hidden sm:w-[240px] sm:rounded-md">
+              <img
+                src={prev.data.image}
+                alt={prev.data.title}
+                class="absolute w-full h-full object-cover border-2 border-yellow-400 rounded sm:rounded-md shadow-md shadow-indigo-950/50"
+              />
+            </div>
+          </div>
+        )} */}
+
+        <div class="grow flex justify-start items-center gap-1 min-w-0">
+          <HeroiconsChevronLeft20Solid class="shrink-0 w-8 h-8 text-white transition-colors duration-100 group-hover:text-yellow-400" />
+
+          <div>
+            <div class="text-indigo-300 text-sm font-light">{isSeries ? '系列' : ''}上一篇</div>
+            <div class="text-lg transition-colors duration-100 group-hover:text-yellow-400">{prev.data.title}</div>
+            <div class="bg-yellow-400 w-20 h-1 mr-auto origin-left transition-transform duration-150 ease-in-out scale-x-0 group-hover:scale-x-100"></div>
+          </div>
+        </div>
+      </a>
+    )}
+  </div>
+
+  <div class="min-w-0 flex-1">
+    {next && (
+      <a href={`/posts/${parsePostSlug(next.id).slug}`} class="group flex gap-2 sm:flex-col text-right">
+        {/* {next.data.image && (
+          <div class="shrink-0 min-w-0 hidden sm:flex sm:justify-end sm:items-center sm:mb-2">
+            <div class="relative w-32 aspect-[16/9] bg-yellow-400 rounded overflow-hidden sm:w-[240px] sm:rounded-md">
+              <img
+                src={next.data.image}
+                alt={next.data.title}
+                class="absolute w-full h-full object-cover border-2 border-yellow-400 rounded sm:rounded-md shadow-md shadow-indigo-950/50"
+              />
+            </div>
+          </div>
+        )} */}
+
+        <div class="grow flex justify-end items-center gap-1 min-w-0">
+          <div>
+            <div class="text-indigo-300 text-sm font-light">{isSeries ? '系列' : ''}下一篇</div>
+            <div class="text-lg transition-colors duration-100 group-hover:text-yellow-400">{next.data.title}</div>
+            <div class="bg-yellow-400 w-20 h-1 ml-auto origin-right transition-transform duration-150 ease-in-out scale-x-0 group-hover:scale-x-100"></div>
+          </div>
+
+          <HeroiconsChevronRight20Solid class="shrink-0 w-8 h-8 text-white transition-colors duration-100 group-hover:text-yellow-400" />
+        </div>
+      </a>
+    )}
+  </div>
+</div>
