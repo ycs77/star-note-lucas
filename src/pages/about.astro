@@ -1,5 +1,6 @@
 ---
 import { Schema } from 'astro-seo-schema'
+import siteConfig from '@/site.config'
 import * as entry from '@/content/about.mdx'
 import Layout from '@/layouts/Layout.astro'
 import { ArticleContent, ArticleMediumZoom, ArticleTitle } from '@/components/article'
@@ -20,7 +21,7 @@ const { Content } = entry
         image: [],
         author: {
           '@type': 'Person',
-          name: 'Lucas Yang',
+          name: siteConfig.author,
           url: Astro.site?.href,
         },
       }}
