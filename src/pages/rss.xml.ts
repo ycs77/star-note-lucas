@@ -35,7 +35,7 @@ export const GET: APIRoute = async context => {
       title: post.data.title,
       pubDate: post.data.pubDate,
       description: post.data.description,
-      link: `/posts/${parsePostSlug(post.id).slug}/`,
+      link: `/posts/${parsePostSlug(post).slug}/`,
       content: sanitizedHtml,
     })
   }

@@ -32,7 +32,7 @@ export async function getStaticPaths() {
       const prev = i > 0 ? posts[i - 1] : null
       const next = i < posts.length - 1 ? posts[i + 1] : null
       return {
-        params: { slug: parsePostSlug(post.id).slug },
+        params: { slug: parsePostSlug(post).slug },
         props: { post, prev, next },
       }
     })

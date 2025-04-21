@@ -18,7 +18,7 @@ const { model, target } = Astro.props
   {model.data.image && (
     <div>
       <a
-        href={`/posts/${parsePostSlug(model.id).slug}`}
+        href={`/posts/${parsePostSlug(model).slug}`}
         class="block w-full aspect-16/9 md:w-auto md:h-full"
         target={target}
       >
@@ -40,7 +40,7 @@ const { model, target } = Astro.props
     )}
 
     <a
-      href={`/posts/${parsePostSlug(model.id).slug}`}
+      href={`/posts/${parsePostSlug(model).slug}`}
       class="block mt-2"
       target={target}
     >
