@@ -1,6 +1,9 @@
 @layer theme {
   .expressive-code {
-    --ec-codeFontSize: 1rem;
+    --ec-codeFontSize: 0.875rem;
+    @media (width >= theme(--breakpoint-md)) {
+      --ec-codeFontSize: 1rem;
+    }
   }
 }
 
