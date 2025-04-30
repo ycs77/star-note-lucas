@@ -67,7 +67,7 @@
           class="absolute top-20 bottom-0 inset-x-0 md:static md:!flex md:space-x-3 xl:space-x-5"
         >
           <ul class="px-4 pt-2 pb-6 space-y-4 md:flex md:px-0 md:py-0 md:space-x-1 md:space-y-0">
-            <li v-for="item in nav" :key="item.link">
+            <li v-for="item in siteConfig.nav" :key="item.link">
               <a
                 :href="item.link"
                 class="relative flex px-4 py-2 md:py-1 md:px-3 font-light tracking-wider rounded-full"
@@ -113,9 +113,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useScrollLock } from '@vueuse/core'
+import siteConfig from '@/site.config'
 import { Star } from '@/components/icons'
-import { nav, socialLinks } from '@/nav'
-import type { NavItem } from '@/nav'
+import { socialLinks } from '@/nav'
+import type { NavItem } from '@/types'
 
 const props = defineProps<{
   // pathname 必須要從 Astro 傳入，因為要讓 SSR 的時候也能正確顯示

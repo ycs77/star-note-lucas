@@ -1,11 +1,11 @@
 ---
 import siteConfig from '@/site.config'
-import { nav, socialLinks } from '@/nav'
+import { socialLinks } from '@/nav'
 ---
 
 <footer class="my-12 text-center space-y-6">
   <ul class="flex justify-center space-x-4">
-    {nav.map(item => (
+    {siteConfig.nav.map(item => (
       <li>
         <a
           href={item.link}
