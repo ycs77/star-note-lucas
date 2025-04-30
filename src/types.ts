@@ -1,4 +1,5 @@
 import type { FunctionalComponent, SVGAttributes } from 'vue'
+import { categoriesMap } from '@/category'
 
 export interface UserSiteConfig {
   title: string
@@ -36,8 +37,8 @@ export interface CardModel {
   data: {
     title: string
     pubDate?: Date
-    description: string
-    category?: 'coding' | 'acg' | 'life'
+    description?: string
+    category?: keyof typeof categoriesMap
     image?: string
     imageUnsplashAuthor?: {
       name: string
