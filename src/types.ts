@@ -1,5 +1,5 @@
 import type { FunctionalComponent, SVGAttributes } from 'vue'
-import { categoriesMap } from '@/category'
+import { categoriesMap } from '@/category.config'
 
 export interface UserSiteConfig {
   title: string
@@ -16,6 +16,10 @@ export interface UserSiteConfig {
   discord: string
   rss: string
   email: string
+}
+
+export interface CategoryItem {
+  name: string
 }
 
 export interface NavItem {
