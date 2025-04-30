@@ -1,12 +1,12 @@
 import type { APIRoute } from 'astro'
 import type { AstroComponentFactory } from 'astro/runtime/server/index.js'
-import { type CollectionEntry, getCollection } from 'astro:content'
+import type { CollectionEntry } from 'astro:content'
 import { getOGImage } from '@/og'
-import { preprocessPosts } from '@/post'
+import { getPostCollection } from '@/post'
 import { parsePostSlug } from '@/utils/slug'
 
 export async function getStaticPaths() {
-  const posts = preprocessPosts(await getCollection('posts'))
+  const posts = await getPostCollection()
   const templates = import.meta.glob('../../content/og/*.astro')
   return await Promise.all(
     posts.map(async post => {

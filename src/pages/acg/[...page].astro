@@ -1,7 +1,6 @@
 ---
 import type { GetStaticPaths } from 'astro'
-import { getCollection } from 'astro:content'
-import { preprocessPosts } from '@/post'
+import { getPostCollection } from '@/post'
 import { categoriesMap } from '@/category'
 import Layout from '@/layouts/Layout.astro'
 import { Postlist, PostlistNav } from '@/components/postlist'
@@ -12,8 +11,9 @@ import '@/styles/index.css'
 export const getStaticPaths = (async ({ paginate }) => {
   const slug = 'acg' as const
   const category = categoriesMap[slug].name
-  const posts = preprocessPosts(await getCollection('posts'))
-    .filter(post => post.data.category.includes(slug))
+  const posts = await getPostCollection(posts =>
+    posts.filter(post => post.data.category.includes(slug))
+  )
 
   return paginate(posts, {
     pageSize: 10,

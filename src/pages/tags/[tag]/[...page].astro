@@ -1,7 +1,6 @@
 ---
 import type { GetStaticPaths } from 'astro'
-import { getCollection } from 'astro:content'
-import { preprocessPosts } from '@/post'
+import { getPostCollection } from '@/post'
 import Layout from '@/layouts/Layout.astro'
 import { Postlist } from '@/components/postlist'
 import { Pagination } from '@/components/pagination'
@@ -9,7 +8,7 @@ import { Footer } from '@/components/partials'
 import '@/styles/index.css'
 
 export const getStaticPaths = (async ({ paginate }) => {
-  const posts = preprocessPosts(await getCollection('posts'))
+  const posts = await getPostCollection()
   const tags = [...new Set(posts.map(post => post.data.tags || []).flat())]
 
   return tags.flatMap(tag => {

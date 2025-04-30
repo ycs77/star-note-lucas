@@ -4,15 +4,15 @@ import vueRenderer from '@astrojs/vue/server.js'
 import mdxRenderer from '@astrojs/mdx/server.js'
 import rss, { type RSSFeedItem } from '@astrojs/rss'
 import sanitizeHtml from 'sanitize-html'
-import { getCollection, render } from 'astro:content'
+import { render } from 'astro:content'
 import siteConfig from '@/site.config'
-import { preprocessPosts } from '@/post'
+import { getPostCollection } from '@/post'
 import { parsePostSlug } from '@/utils/slug'
 
 export const GET: APIRoute = async context => {
   const baseUrl = (context.site?.href || '').replace(/\/$/, '')
 
-  const posts = preprocessPosts(await getCollection('posts'))
+  const posts = await getPostCollection()
 
   const container = await AstroContainer.create()
   // @ts-ignore
