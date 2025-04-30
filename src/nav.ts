@@ -19,12 +19,12 @@ export const socialLinks: SocialLink[] = [
     href: siteConfig.bluesky,
     icon: TablerBrandBluesky,
   },
-  {
-    name: 'Discord',
-    label: '✨星星の聊天室',
-    href: siteConfig.discord,
-    icon: TablerBrandDiscord,
-  },
+  // {
+  //   name: 'Discord',
+  //   label: '✨星星の聊天室',
+  //   href: siteConfig.discord,
+  //   icon: TablerBrandDiscord,
+  // },
   {
     name: 'Facebook',
     label: '星星的筆記．Lucas',
