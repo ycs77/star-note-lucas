@@ -3,7 +3,7 @@ import type { AstroComponentFactory } from 'astro/runtime/server/index.js'
 import satori, { type Font } from 'satori'
 import { html } from 'satori-html'
 import sharp from 'sharp'
-import tailwindConfig from './tailwindConfig'
+import tailwindConfig from './tailwind.config'
 import defaultTemplate from '../content/og/default.astro'
 
 export async function getOGImage({ title, template }: {
