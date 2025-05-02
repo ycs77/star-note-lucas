@@ -1,15 +1,19 @@
 ---
 import type { CollectionEntry } from 'astro:content'
 import { Card } from '@/components/general'
+import { cn } from '@/utils/className'
 
 interface Props {
-  posts: CollectionEntry<'posts'>[]
+  posts: (CollectionEntry<'posts'> & {
+    excerpt?: string
+  })[]
+  class?: astroHTML.JSX.HTMLAttributes['class']
 }
 
 const { posts } = Astro.props
 ---
 
-<div class="mt-10">
+<div class={cn('mt-10', Astro.props.class)}>
   <ul class="grid gap-8">
     {posts.map(post => (
       <li class="min-w-0">
@@ -17,4 +21,6 @@ const { posts } = Astro.props
       </li>
     ))}
   </ul>
+
+  <slot name="bottom" />
 </div>

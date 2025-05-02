@@ -5,10 +5,12 @@ import Layout from '@/layouts/Layout.astro'
 import { Postlist } from '@/components/postlist'
 import { Pagination } from '@/components/pagination'
 import { Footer } from '@/components/partials'
+import { createAstroContainerWithMdx, loadPostsExcerpt } from '@/utils/article'
 import '@/styles/index.css'
 
 export const getStaticPaths = (async ({ paginate }) => {
-  const posts = await getPostCollection()
+  const container = await createAstroContainerWithMdx()
+  const posts = await loadPostsExcerpt(container, await getPostCollection())
   const tags = [...new Set(posts.map(post => post.data.tags || []).flat())]
 
   return tags.flatMap(tag => {

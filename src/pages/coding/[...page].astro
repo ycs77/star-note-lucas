@@ -6,13 +6,18 @@ import Layout from '@/layouts/Layout.astro'
 import { Postlist, PostlistNav } from '@/components/postlist'
 import { Pagination } from '@/components/pagination'
 import { Footer } from '@/components/partials'
+import { createAstroContainerWithMdx, loadPostsExcerpt } from '@/utils/article'
 import '@/styles/index.css'
 
 export const getStaticPaths = (async ({ paginate }) => {
   const slug = 'coding' as const
   const category = categoriesMap[slug].name
-  const posts = await getPostCollection(posts =>
-    posts.filter(post => post.data.category.includes(slug))
+  const container = await createAstroContainerWithMdx()
+  const posts = await loadPostsExcerpt(
+    container,
+    await getPostCollection(posts =>
+      posts.filter(post => post.data.category.includes(slug))
+    )
   )
 
   return paginate(posts, {

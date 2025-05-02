@@ -42,16 +42,17 @@ const { model, target } = Astro.props
     <a
       href={`/posts/${parsePostSlug(model).slug}`}
       class="block mt-2"
+      title={model.data.title}
       target={target}
     >
-      <h5 class="text-white text-2xl font-medium leading-tight">
+      <h5 class="text-white text-2xl font-medium leading-tight truncate">
         {model.data.title}
       </h5>
     </a>
 
-    {model.data.description && (
-      <div class="mt-2 text-indigo-200 text-sm font-light line-clamp-2">
-        {model.data.description}
+    {(model.data.description || model.excerpt) && (
+      <div class="mt-2 text-indigo-200 text-sm/[1.625] font-light line-clamp-2">
+        {model.data.description || model.excerpt}
       </div>
     )}
 

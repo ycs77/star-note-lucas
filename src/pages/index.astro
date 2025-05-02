@@ -1,14 +1,19 @@
 ---
 import { getPostCollection } from '@/post'
 import Layout from '@/layouts/Layout.astro'
-import { Card } from '@/components/general'
 import { Star } from '@/components/icons'
 import { Footer } from '@/components/partials'
+import { Postlist } from '@/components/postlist'
 import HeroiconsArrowRight16Solid from '~icons/heroicons/arrow-right-16-solid'
 import { socialLinks } from '@/nav'
+import { createAstroContainerWithMdx, loadPostsExcerpt } from '@/utils/article'
 import '@/styles/index.css'
 
-const posts = await getPostCollection(posts => posts.slice(0, 5))
+const container = await createAstroContainerWithMdx()
+const posts = await loadPostsExcerpt(
+  container,
+  await getPostCollection(posts => posts.slice(0, 5))
+)
 ---
 
 <Layout>
@@ -90,21 +95,13 @@ const posts = await getPostCollection(posts => posts.slice(0, 5))
 
   <!-- 文章列表 -->
   <div class="container mb-24">
-    <div class="mt-8">
-      <ul class="grid gap-8">
-        {posts.map(post => (
-          <li class="min-w-0">
-            <Card model={post} />
-          </li>
-        ))}
-      </ul>
-
-      <div class="text-center mt-8 lg:mt-12">
+    <Postlist posts={posts} class="mt-8">
+      <div slot="bottom" class="text-center mt-8 lg:mt-12">
         <a href="/coding" class="inline-block px-10 py-3 bg-indigo-600 hover:bg-yellow-300 text-white hover:text-yellow-800 font-normal tracking-wide rounded-full transition-colors duration-150">
           更多文章
         </a>
       </div>
-    </div>
+    </Postlist>
   </div>
 
   <div class="container">

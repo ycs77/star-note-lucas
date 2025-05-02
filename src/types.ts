@@ -51,4 +51,5 @@ export interface CardModel {
     tags?: string[]
     draft?: boolean
   }
+  excerpt?: string
 }

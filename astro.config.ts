@@ -46,12 +46,6 @@ export default defineConfig({
     },
   },
   markdown: {
-    // shikiConfig: {
-    //   theme: 'material-theme-palenight',
-    //   // langAlias: {
-    //   //   cjs: 'javascript',
-    //   // },
-    // },
     rehypePlugins: [
       rehypeSlug,
       rehypeAutolinkHeadings,

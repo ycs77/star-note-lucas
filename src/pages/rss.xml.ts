@@ -1,28 +1,17 @@
 import type { APIRoute } from 'astro'
-import { experimental_AstroContainer as AstroContainer } from 'astro/container'
-import vueRenderer from '@astrojs/vue/server.js'
-import mdxRenderer from '@astrojs/mdx/server.js'
 import rss, { type RSSFeedItem } from '@astrojs/rss'
 import sanitizeHtml from 'sanitize-html'
 import { render } from 'astro:content'
 import siteConfig from '@/site.config'
 import { getPostCollection } from '@/post'
 import { parsePostSlug } from '@/utils/slug'
+import { createAstroContainerWithMdx } from '@/utils/article'
 
 export const GET: APIRoute = async context => {
   const baseUrl = (context.site?.href || '').replace(/\/$/, '')
 
+  const container = await createAstroContainerWithMdx()
   const posts = await getPostCollection()
-
-  const container = await AstroContainer.create()
-  // @ts-ignore
-  container.addServerRenderer({ renderer: vueRenderer })
-  // @ts-ignore
-  container.addServerRenderer({ renderer: mdxRenderer })
-  container.addClientRenderer({
-    name: '@astrojs/vue',
-    entrypoint: '@astrojs/vue/client.js',
-  })
 
   const items: RSSFeedItem[] = []
 
