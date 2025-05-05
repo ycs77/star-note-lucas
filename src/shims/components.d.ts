@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    BlurHash: typeof import('./../components/image/BlurHash.vue')['default']
     Callout: typeof import('./../components/callouts/Callout.vue')['default']
     Danger: typeof import('./../components/callouts/Danger.vue')['default']
     Header: typeof import('./../components/partials/Header.vue')['default']

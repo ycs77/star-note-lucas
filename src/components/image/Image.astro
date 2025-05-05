@@ -1,0 +1,52 @@
+---
+import { getImage } from 'astro:assets'
+import BlurHash from './BlurHash.vue'
+import { getBlurhash } from './store'
+import { cn } from '@/utils/className'
+
+interface Props extends astroHTML.JSX.ImgHTMLAttributes {
+  src: string
+  alt: string
+  width: number
+  height: number
+  onlyBlur?: boolean
+}
+
+const { src: _, alt, width, height, onlyBlur = false, ...additionalAttrs } = Astro.props
+
+const base = import.meta.env.DEV ? 'http://localhost:4321/' : Astro.site
+const src = new URL(Astro.props.src, base).toString()
+
+const img = await getImage({
+  src,
+  width,
+  height,
+})
+
+const { class: className, ...attrs } = { ...additionalAttrs, ...img.attributes } as Record<string, string>
+
+const blurhash = await getBlurhash(src)
+---
+
+{onlyBlur ? (
+  blurhash ? (
+    <BlurHash
+      client:load
+      src={img.src}
+      blurhash={blurhash}
+      class="absolute inset-0"
+    />
+  ) : (
+    <img src={img.src} {...attrs} class={cn('blur-xl scale-125', className)} />
+  )
+) : (
+  <div class="relative inline-block overflow-hidden">
+    <img src={img.src} {...attrs} class={className} />
+    {blurhash && <BlurHash
+      client:load
+      src={img.src}
+      blurhash={blurhash}
+      class="absolute inset-0"
+    />}
+  </div>
+)}
