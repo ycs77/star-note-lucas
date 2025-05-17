@@ -7,15 +7,15 @@
     leave-to-class="opacity-0"
     leave-active-class="transition-opacity duration-500"
   >
-  <div
-    v-if="blurhash && !loaded"
-    :class="cn('scale-105', props.class)"
-    :style="{
-      backgroundImage: `url(${dataUri})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-    }"
-  />
+    <div
+      v-if="blurhash && !loaded"
+      :class="cn('scale-105', props.class)"
+      :style="{
+        backgroundImage: `url(${dataUri})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }"
+    />
   </Transition>
 </template>
 

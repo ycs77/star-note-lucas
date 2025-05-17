@@ -42,11 +42,13 @@ const blurhash = await getBlurhash(src)
 ) : (
   <div class="relative inline-block overflow-hidden">
     <img src={img.src} {...attrs} class={className} />
-    {blurhash && <BlurHash
-      client:load
-      src={img.src}
-      blurhash={blurhash}
-      class="absolute inset-0"
-    />}
+    {blurhash && (
+      <BlurHash
+        client:load
+        src={img.src}
+        blurhash={blurhash}
+        class="absolute inset-0"
+      />
+    )}
   </div>
 )}

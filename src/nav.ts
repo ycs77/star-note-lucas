@@ -1,7 +1,7 @@
 import siteConfig from '@/site.config'
 import TablerBrandGithub from '~icons/tabler/brand-github'
 import TablerBrandBluesky from '~icons/tabler/brand-bluesky'
-import TablerBrandDiscord from '~icons/tabler/brand-discord'
+// import TablerBrandDiscord from '~icons/tabler/brand-discord'
 import MingcuteFacebookLine from '~icons/mingcute/facebook-line'
 import TablerRss from '~icons/tabler/rss'
 import type { SocialLink } from '@/types'
