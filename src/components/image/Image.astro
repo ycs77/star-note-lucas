@@ -10,12 +10,12 @@ interface Props extends astroHTML.JSX.ImgHTMLAttributes {
   width: number
   height: number
   onlyBlur?: boolean
+  wrapperClass?: string
 }
 
-const { src: _, alt, width, height, onlyBlur = false, ...additionalAttrs } = Astro.props
+const { src: _, alt, width, height, onlyBlur = false, wrapperClass, ...additionalAttrs } = Astro.props
 
-const base = import.meta.env.DEV ? 'http://localhost:4321/' : Astro.site
-const src = new URL(Astro.props.src, base).toString()
+const src = new URL(Astro.props.src, Astro.url.origin).href
 
 const img = await getImage({
   src,
@@ -40,7 +40,7 @@ const blurhash = await getBlurhash(src)
     <img src={img.src} {...attrs} class={cn('blur-xl scale-125', className)} />
   )
 ) : (
-  <div class="relative inline-block overflow-hidden">
+  <div class={cn('relative inline-block overflow-hidden', wrapperClass)}>
     <img src={img.src} {...attrs} class={className} />
     {blurhash && (
       <BlurHash
