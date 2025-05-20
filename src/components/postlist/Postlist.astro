@@ -17,11 +17,7 @@ const { posts } = Astro.props
   <ul class="grid gap-8">
     {posts.map(post => (
       <li class="min-w-0">
-        <Card
-          model={post}
-          imageBaseUrl={Astro.url}
-          imageSize={{ width: 592, height: 333 }}
-        />
+        <Card model={post} />
       </li>
     ))}
   </ul>

@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets'
 import Date from './Date.astro'
 import Draft from './Draft.astro'
 import Tag from './Tag.astro'
@@ -10,42 +9,20 @@ import type { CardModel } from '@/types'
 interface Props {
   model: CardModel
   target?: '_blank'
-  imageBaseUrl?: string | URL
-  imageSize?: {
-    width: number
-    height: number
-  }
 }
 
-const { model, target, imageBaseUrl, imageSize } = Astro.props
-
-let imageSrc = model.data.image
-if (model.data.image && imageBaseUrl) {
-  imageSrc = new URL(model.data.image, imageBaseUrl).href
-}
+const { model, target } = Astro.props
 ---
 
 <div class="flex flex-col group rounded-lg shadow-md shadow-indigo-950/50 overflow-hidden md:flex-row md:h-[12rem] md:transition md:duration-300 md:scale-100 md:hover:scale-105 md:hover:shadow-lg">
-  {imageSrc && (
+  {model.data.image && (
     <div>
       <a
         href={`/posts/${parsePostSlug(model).slug}`}
         class="block w-full aspect-16/9 md:w-auto md:h-full"
         target={target}
       >
-        {imageSize ? (
-          <Image
-            src={imageSrc}
-            alt={model.data.title}
-            width={imageSize.width}
-            height={imageSize.height}
-          />
-        ) : (
-          <img
-            src={imageSrc}
-            alt={model.data.title}
-          />
-        )}
+        <img src={model.data.image} alt={model.data.title} />
       </a>
     </div>
   )}
