@@ -45,9 +45,6 @@ export default defineConfig({
       external: ['astro/container', '@astrojs/mdx'],
     },
   },
-  image: {
-    domains: ['localhost', 'star-note-lucas.me'],
-  },
   markdown: {
     rehypePlugins: [
       rehypeSlug,
