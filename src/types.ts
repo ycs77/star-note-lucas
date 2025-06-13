@@ -53,3 +53,10 @@ export interface CardModel {
   }
   excerpt?: string
 }
+
+export interface Project {
+  title: string
+  url: string
+  description?: string
+  tags?: string[]
+}

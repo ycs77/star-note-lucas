@@ -1,7 +1,7 @@
 import { defineCollection, z } from 'astro:content'
 import { glob } from 'astro/loaders'
 
-const postsCollection = defineCollection({
+const posts = defineCollection({
   loader: glob({
     pattern: '**/[^_]*.{md,mdx}',
     base: './src/content/posts',
@@ -22,6 +22,4 @@ const postsCollection = defineCollection({
   }),
 })
 
-export const collections = {
-  posts: postsCollection,
-}
+export const collections = { posts }
