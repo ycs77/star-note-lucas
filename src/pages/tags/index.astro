@@ -4,7 +4,6 @@ import Layout from '@/layouts/Layout.astro'
 import { Tag } from '@/components/general'
 import { PostlistNav } from '@/components/postlist'
 import { Footer } from '@/components/partials'
-import '@/styles/index.css'
 
 const posts = await getPostCollection()
 const tags = [...new Set(posts.map(post => post.data.tags || []).flat())]

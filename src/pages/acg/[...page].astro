@@ -7,7 +7,6 @@ import { Postlist, PostlistNav } from '@/components/postlist'
 import { Pagination } from '@/components/pagination'
 import { Footer } from '@/components/partials'
 import { createAstroContainerWithMdx, loadPostsExcerpt } from '@/utils/article'
-import '@/styles/index.css'
 
 export const getStaticPaths = (async ({ paginate }) => {
   const slug = 'acg' as const
