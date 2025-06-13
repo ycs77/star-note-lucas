@@ -1,3 +1,5 @@
+import defaultTheme from 'tailwindcss/defaultTheme'
+
 export default {
   theme: {
     extend: {
@@ -26,6 +28,9 @@ export default {
           900: '#3c366b',
           950: '#2d2b55',
         },
+      },
+      fontFamily: {
+        sans: ['Inter', 'Noto Sans TC', ...defaultTheme.fontFamily.sans],
       },
     },
   },

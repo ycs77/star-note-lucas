@@ -4,6 +4,11 @@ import type { CollectionEntry } from 'astro:content'
 import { getOGImage } from '@/og'
 import { getPostCollection } from '@/post'
 
+interface Props {
+  post: CollectionEntry<'posts'>
+  template?: AstroComponentFactory
+}
+
 export async function getStaticPaths() {
   const posts = await getPostCollection()
   const templates = import.meta.glob('../../content/og/*.astro')
@@ -22,12 +27,11 @@ export async function getStaticPaths() {
   return paths.filter(({ props }) => props.template)
 }
 
-export const GET: APIRoute = async ({ props }) => {
-  const post = props.post as CollectionEntry<'posts'>
-  const template = props.template as AstroComponentFactory | undefined
+export const GET: APIRoute<Props> = async ({ props }) => {
+  const post = props.post
   const image = await getOGImage({
     title: post.data.title,
-    template,
+    template: props.template,
   })
 
   return new Response(image, {

@@ -1,0 +1,84 @@
+---
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js'
+import type { CollectionEntry } from 'astro:content'
+import { getOGImageHtml } from '@/og'
+import { getPostCollection } from '@/post'
+
+interface Props {
+  post: CollectionEntry<'posts'>
+  template?: AstroComponentFactory
+}
+
+export async function getStaticPaths() {
+  // Only dev mode will visit the OG image devtool
+  if (import.meta.env.PROD) {
+    return []
+  }
+
+  const posts = await getPostCollection()
+  const templates = import.meta.glob('../../content/og/*.astro')
+  const paths = await Promise.all(
+    posts.map(async post => {
+      const templatePath = `../../content/og/${post.id}.astro`
+      const template: AstroComponentFactory | undefined = templates[templatePath]
+        ? await templates[templatePath]().then((m: any) => m.default || m)
+        : undefined
+      return {
+        params: { filename: post.id },
+        props: { post, template },
+      }
+    })
+  )
+  return paths.filter(({ props }) => props.template)
+}
+
+// Only dev mode will visit the OG image devtool
+if (import.meta.env.PROD) {
+  return rewrite('/404')
+}
+
+const post = Astro.props.post
+
+const { width, height, html, tailwindConfig } = await getOGImageHtml({
+  title: post.data.title,
+  template: Astro.props.template,
+})
+---
+
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;700&family=Noto+Sans+TC:wght@100;300;700&display=swap" />
+
+  <script is:inline src="https://cdn.tailwindcss.com"></script>
+  <script is:inline define:vars={{ tailwindConfig }}>
+    tailwind.config = {
+      ...tailwindConfig,
+      plugins: [{
+        handler({ addBase }) {
+          addBase({
+            'html': {
+              'line-height': 1.2,
+            }
+          })
+        }
+      }]
+    }
+  </script>
+</head>
+<body style="width: 100%; height: 100%; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; background-color: rgb(14, 14, 14);">
+  <div class="relative" style={{ width: `${width}px`, height: `${height}px` }}>
+    <Fragment set:html={html} />
+
+    <!-- 輔助邊框 -->
+    <!-- <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div class="h-full aspect-video border border-gray-300"></div>
+    </div> -->
+  </div>
+</body>
+</html>
