@@ -60,3 +60,10 @@ export interface Project {
   description?: string
   tags?: string[]
 }
+
+export interface FriendLink {
+  name: string
+  link: string
+  description?: string
+  avatar?: string
+}
