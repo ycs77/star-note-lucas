@@ -5,6 +5,7 @@ export interface UserSiteConfig {
   description: string
 
   author: string
+  authorX: string
 
   nav: NavItem[]
 

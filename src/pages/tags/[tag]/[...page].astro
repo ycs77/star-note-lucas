@@ -9,7 +9,7 @@ import { createAstroContainerWithMdx, loadPostsExcerpt } from '@/utils/article'
 
 export const getStaticPaths = (async ({ paginate }) => {
   const container = await createAstroContainerWithMdx()
-  const posts = await loadPostsExcerpt(container, await getPostCollection())
+  const posts = await loadPostsExcerpt<'posts'>(container, await getPostCollection())
   const tags = [...new Set(posts.map(post => post.data.tags || []).flat())]
 
   return tags.flatMap(tag => {

@@ -12,7 +12,7 @@ export const getStaticPaths = (async ({ paginate }) => {
   const slug = 'acg' as const
   const category = categoriesMap[slug].name
   const container = await createAstroContainerWithMdx()
-  const posts = await loadPostsExcerpt(
+  const posts = await loadPostsExcerpt<'posts'>(
     container,
     await getPostCollection(posts =>
       posts.filter(post => post.data.category.includes(slug))

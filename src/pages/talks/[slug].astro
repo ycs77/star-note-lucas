@@ -1,8 +1,11 @@
 ---
 import { getCollection, render } from 'astro:content'
 import type { CollectionEntry } from 'astro:content'
+import { Schema } from 'astro-seo-schema'
+import siteConfig from '@/site.config'
 import Layout from '@/layouts/Layout.astro'
 import { Date, PostBackLink } from '@/components/general'
+import Seo from '@/components/seo/Seo.astro'
 import { ArticleContent, ArticleMediumZoom, ArticleTitle } from '@/components/article'
 import { Footer } from '@/components/partials'
 import { parsePostSlug } from '@/utils/slug'
@@ -25,6 +28,33 @@ const { Content } = await render(talk)
 ---
 
 <Layout title={talk.data.title}>
+  <Fragment slot="seo">
+    <Seo
+      type="article"
+      title={talk.data.title}
+      description={talk.data.description}
+      date={talk.data.pubDate}
+    />
+  </Fragment>
+
+  <Fragment slot="head">
+    <Schema
+      item={{
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: talk.data.title,
+        image: [],
+        datePublished: talk.data.pubDate.toISOString(),
+        author: {
+          '@type': 'Person',
+          name: siteConfig.author,
+          url: Astro.site?.href,
+        },
+      }}
+    />
+    </script>
+  </Fragment>
+
   <div class="container py-8 md:!max-w-3xl xl:py-12">
     <PostBackLink href="/talks">
       返回講座列表

@@ -9,7 +9,7 @@ import { socialLinks } from '@/nav'
 import { createAstroContainerWithMdx, loadPostsExcerpt } from '@/utils/article'
 
 const container = await createAstroContainerWithMdx()
-const posts = await loadPostsExcerpt(
+const posts = await loadPostsExcerpt<'posts'>(
   container,
   await getPostCollection(posts => posts.slice(0, 5))
 )

@@ -1,7 +1,9 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container'
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js'
 import vueRenderer from '@astrojs/vue/server.js'
 import mdxRenderer from '@astrojs/mdx/server.js'
-import { render, type CollectionEntry } from 'astro:content'
+import { render } from 'astro:content'
+import type { CollectionEntry, CollectionKey } from 'astro:content'
 import { convert } from 'html-to-text'
 
 export async function createAstroContainerWithMdx() {
@@ -17,14 +19,21 @@ export async function createAstroContainerWithMdx() {
   return container
 }
 
-export async function createExcerpt(container: AstroContainer, post: CollectionEntry<'posts'>, truncate = 200): Promise<string> {
-  const { Content } = await render(post)
+export async function createExcerpt<C extends CollectionKey>(options: {
+  container: AstroContainer
+  post: CollectionEntry<C>
+  Content?: AstroComponentFactory
+  truncate?: number
+}): Promise<string> {
+  const { container, post, truncate = 200 } = options
+
+  const Content = options.Content || (await render(post)).Content
   const html = await container.renderToString(Content)
   if (!html) {
     return ''
   }
 
-  const options = {
+  const convertOptions = {
     wordwrap: null,
     selectors: [
       { selector: 'a', options: { ignoreHref: true } },
@@ -34,18 +43,19 @@ export async function createExcerpt(container: AstroContainer, post: CollectionE
   }
   // 為了要徹底清除標籤，原因可參考：
   // https://chenhuijing.com/blog/creating-excerpts-in-astro/
-  const text = convert(html, options)
-  const distilled = convert(text, options).substring(0, truncate)
-  return distilled + (distilled.length > truncate ? '...' : '')
+  const text = convert(html, convertOptions)
+  const distilled = convert(text, convertOptions).substring(0, truncate)
+  return distilled + (text.length > truncate ? '...' : '')
 }
 
-export async function loadPostsExcerpt<
-  T extends CollectionEntry<'posts'> = CollectionEntry<'posts'>
->(container: AstroContainer, posts: T[], truncate?: number): Promise<
-(T & { excerpt: string })[]> {
+export async function loadPostsExcerpt<C extends CollectionKey>(
+  container: AstroContainer,
+  posts: CollectionEntry<C>[],
+  truncate?: number,
+): Promise<(CollectionEntry<C> & { excerpt: string })[]> {
   const postsWithExcerpt = await Promise.all(
     posts.map(async post => {
-      const excerpt = await createExcerpt(container, post, truncate)
+      const excerpt = await createExcerpt<C>({ container, post, truncate })
       return { ...post, excerpt }
     })
   )

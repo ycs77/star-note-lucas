@@ -2,6 +2,7 @@
 import { ClientRouter } from 'astro:transitions'
 import siteConfig from '@/site.config'
 import { Header } from '@/components/partials'
+import Seo from '@/components/seo/Seo.astro'
 import '@/styles/index.css'
 
 interface Props {
@@ -36,7 +37,10 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/'
 
     <ClientRouter fallback="none" />
 
-    <slot name="head"></slot>
+    <slot name="seo">
+      <Seo title={title} />
+    </slot>
+    <slot name="head" />
   </head>
   <body>
     <!-- 光暈層 -->
@@ -58,6 +62,6 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/'
       <slot />
     </main>
 
-    <slot name="body"></slot>
+    <slot name="body" />
   </body>
 </html>

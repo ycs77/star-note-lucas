@@ -5,6 +5,7 @@ export default defineSiteConfig({
   description: 'Lucas Yang 的部落格 - 即使是一顆小星星 也會閃耀著光芒✨',
 
   author: 'Lucas Yang',
+  authorX: 'ycs77_lucas',
 
   nav: [
     { text: '程式', link: '/coding' },
