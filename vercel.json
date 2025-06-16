@@ -11,7 +11,8 @@
     { "source": "/discord", "destination": "https://discord.gg/2R6YFZjmGK" },
     { "source": "/rss", "destination": "https://star-note-lucas.me/rss.xml" },
 
-    { "source": "/post", "destination": "/posts" },
+    { "source": "/post", "destination": "/coding" },
+    { "source": "/posts", "destination": "/coding" },
     { "source": "/post/:path*", "destination": "/posts/:path*" }
   ],
   "cleanUrls": true,
