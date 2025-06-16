@@ -16,14 +16,16 @@ import projects from '@/content/projects'
 
     <div class="mt-12 grid gap-4 sm:grid-cols-2 sm:gap-6 lg:gap-8">
       {projects.map(project => (
-        <div v-for="project in projects">
+        <div>
           <a href={project.url} class="group" target="_blank">
             <h2 class="text-xl text-indigo-300 group-hover:text-yellow-400 font-medium">
               {project.title}
             </h2>
             <p class="mt-1 text-gray-300 text-sm">{project.description}</p>
             {/* <div class="mt-2 flex flex-wrap gap-2">
-              <Tag v-for="tag in project.tags" name={tag} class="text-xs" />
+              {project.tags.map(tag => (
+                <Tag name={tag} class="text-xs" />
+              ))}
             </div> */}
           </a>
         </div>

@@ -1,6 +1,8 @@
 ---
 import type { CollectionEntry } from 'astro:content'
-import { Card } from '@/components/general'
+import { ListCard, Tag } from '@/components/general'
+import { categoriesMap } from '@/category.config'
+import { parsePostSlug } from '@/utils/slug'
 import { cn } from '@/utils/className'
 
 interface Props {
@@ -17,7 +19,19 @@ const { posts } = Astro.props
   <ul class="grid gap-8">
     {posts.map(post => (
       <li class="min-w-0">
-        <Card model={post} />
+        <ListCard
+          model={post}
+          url={`/posts/${parsePostSlug(post).slug}`}
+          hasCategory={!!post.data.category}
+        >
+          <Tag
+            slot="category"
+            type="category"
+            name={categoriesMap[post.data.category].name}
+            href={`/${post.data.category}`}
+            class="mt-1 me-2 shrink-0"
+          />
+        </ListCard>
       </li>
     ))}
   </ul>

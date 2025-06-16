@@ -40,6 +40,7 @@ export interface CardModel {
   id: string
   data: {
     title: string
+    url?: string
     pubDate?: Date
     description?: string
     category?: keyof typeof categoriesMap
