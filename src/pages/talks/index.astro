@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content'
+import Layout from '@/layouts/Layout.astro'
+import { ListCard } from '@/components/general'
+import { Footer } from '@/components/partials'
+import { parsePostSlug } from '@/utils/slug'
+
+const talks = await getCollection('talks')
+---
+
+<Layout title="講座">
+  <div class="container !max-w-screen-md py-8 xl:py-12">
+    <h1 class="text-3xl md:text-4xl font-serif font-medium">
+      講座
+    </h1>
+
+    <div class="mt-10">
+      <ul class="grid gap-8">
+        {talks.map(talk => (
+          <li class="min-w-0">
+            <ListCard
+              model={talk}
+              url={`/talks/${parsePostSlug(talk).slug}`}
+              lineClamp={false}
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <div class="container">
+    <Footer />
+  </div>
+</Layout>

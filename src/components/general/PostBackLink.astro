@@ -1,0 +1,16 @@
+---
+import HeroiconsChevronLeft20Solid from '~icons/heroicons/chevron-left-20-solid'
+
+interface Props {
+  href: string
+}
+
+const { href } = Astro.props
+---
+
+<div class="-mt-2 mb-1 md:mb-2">
+  <a href={href} class="inline-flex group items-center space-x-0.5 text-indigo-300 hover:text-yellow-400 font-normal tracking-wide transition-transform duration-200 ease-in-out hover:-translate-x-1.5">
+    <HeroiconsChevronLeft20Solid class="w-6 h-6" />
+    <slot />
+  </a>
+</div>
