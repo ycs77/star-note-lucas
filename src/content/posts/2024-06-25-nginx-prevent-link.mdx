@@ -33,7 +33,7 @@ location = /secret.html {
     valid_referers server_names;
 
     if ($invalid_referer) {
-        rewrite ^/(.*)$ https://star-note-lucas.vercel.app/ redirect;
+        rewrite ^/(.*)$ https://star-note-lucas.me/ redirect;
     }
 }
 ```
