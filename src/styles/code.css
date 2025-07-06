@@ -16,4 +16,8 @@
       margin-bottom: 1.3333333em;
     }
   }
+
+  .expressive-code .frame {
+    box-shadow: none !important;
+  }
 }
