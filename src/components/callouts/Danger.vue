@@ -16,6 +16,8 @@
 </template>
 
 <script setup lang="ts">
+import Callout from './Callout.vue'
+
 withDefaults(defineProps<{
   title?: string
 }>(), {

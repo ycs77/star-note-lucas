@@ -6,9 +6,7 @@ import { pluginCodeOutput } from '@fujocoded/expressive-code-output'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
-import components from 'unplugin-vue-components/vite'
 import icons from 'unplugin-icons/vite'
-import IconsResolver from 'unplugin-icons/resolver'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeSlug from 'rehype-slug'
 
@@ -31,12 +29,6 @@ export default defineConfig({
   vite: {
     plugins: [
       tailwindcss(),
-      components({
-        resolvers: [
-          IconsResolver({ prefix: '' }),
-        ],
-        dts: 'src/shims/components.d.ts',
-      }),
       icons({
         compiler: 'vue3',
       }),
