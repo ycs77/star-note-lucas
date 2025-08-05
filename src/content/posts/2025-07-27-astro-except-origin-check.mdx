@@ -31,7 +31,7 @@ export default defineConfig({
  * @reference https://github.com/withastro/astro/blob/d2d04b02773f82103db75076fcdd1f089503770a/packages/astro/src/core/app/middlewares.ts
  */
 
-import { defineMiddleware } from 'astro/middleware'
+import { defineMiddleware } from 'astro:middleware'
 
 /**
  * Content types that can be passed when sending a request via a form
@@ -105,7 +105,7 @@ function hasFormLikeHeader(contentType: string | null): boolean {
 最後在 `src/middleware/index.ts` 中套用這個 middleware：
 
 ```ts title="src/middleware/index.ts"
-import { sequence } from 'astro/middleware'
+import { sequence } from 'astro:middleware'
 import { originCheck } from './originCheck'
 
 export const onRequest = sequence(

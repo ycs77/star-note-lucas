@@ -137,7 +137,7 @@ try {
 如果每個頁面都有串 API 的話，我們可以新增一個 Middleware `src/middleware.ts` 來統一處理 API 的回傳錯誤。這裡就可以 catch 自己串的 API 的錯誤，然後根據 Response 狀態來回傳 404 頁面：
 
 ```ts title="src/middleware.ts"
-import { defineMiddleware } from 'astro/middleware'
+import { defineMiddleware } from 'astro:middleware'
 
 export const onRequest = defineMiddleware(async (_context, next) => {
   try {
