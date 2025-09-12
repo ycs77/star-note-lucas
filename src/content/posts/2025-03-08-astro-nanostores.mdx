@@ -12,8 +12,7 @@ Astro 本身是沒有共享全局變數的功能，不過文件中建議使用 n
 
 在 Astro 中我對 nanostores 使用方式的理解是，因為 Astro 預設每個頁面都會重新初始化，因此狀態管理就可以非常簡單，只需管理跨元件的共用狀態，不用管切換路由後如何清理資料。
 
-這篇文章記錄了一下我第一次用 nanostores 做的範例，是訊息提示元件的狀態管理，可以呼叫顯示訊息提示的函數，並在
- 2 秒後自動消失。
+這篇文章記錄了一下我第一次用 nanostores 做的範例，是訊息提示元件的狀態管理，可以呼叫顯示訊息提示的函數，並在 2 秒後自動消失。
 
 ## 安裝 nanostores
 
@@ -23,36 +22,36 @@ yarn add nanostores
 
 ## 實作成功訊息功能
 
-首先先定義一個 `messageStateStore` 在 `src/stores/message.ts` 中，`messageStateStore` 保存了顯示訊息類型和訊息內容，然後寫一個 `showMessage()` 函數來設定呼叫時要顯示的類型和內容，並在 2 秒後會自己消失：
+首先先定義一個 `$messageState` 在 `src/stores/message.ts` 中，`$messageState` 保存了顯示訊息類型和訊息內容，然後寫一個 `showMessage()` 函數來設定呼叫時要顯示的類型和內容，並在 2 秒後會自己消失：
 
 ```ts title="src/stores/message.ts"
 import { atom } from 'nanostores'
 
 export type MessageType = 'success' | 'info'
 
-export const messageStateStore = atom({
+export const $messageState = atom({
   type: null as MessageType | null,
   content: '',
 })
 
 export function showMessage(type: MessageType, content: string) {
-  messageStateStore.set({ type, content })
+  $messageState.set({ type, content })
 
   setTimeout(() => {
-    messageStateStore.set({ type: null, content: '' })
+    $messageState.set({ type: null, content: '' })
   }, 2000)
 }
 ```
 
-然後需要增加一個 `src/components/MessagesContainer.astro` 用來顯示訊息提示，會監聽剛才的 `messageStateStore` 更新訊息內容，有內容存在就顯示出來：
+然後需要增加一個 `src/components/MessagesContainer.astro` 用來顯示訊息提示，會監聽剛才的 `$messageState` 更新訊息內容，有內容存在就顯示出來：
 
 ```html title="src/components/MessagesContainer.astro"
 <div class="messages-container"></div>
 
 <script>
-import { messageStateStore } from '@/stores/message'
+import { $messageState } from '@/stores/message'
 
-messageStateStore.subscribe(value => {
+$messageState.subscribe(value => {
   const messagesContainer = document.querySelector('.messages-container') as HTMLElement
   if (value.type) {
     messagesContainer.innerHTML = `
@@ -87,17 +86,19 @@ btnCopy.addEventListener('click', () => {
 let timer = null as ReturnType<typeof setTimeout> | null
 
 export function showMessage(type: MessageType, content: string) {
-  messageStateStore.set({ type, content })
+  $messageState.set({ type, content })
 
   if (typeof timer === 'number') {
     clearTimeout(timer)
   }
 
   timer = setTimeout(() => {
-    messageStateStore.set({ type: null, content: '' })
+    $messageState.set({ type: null, content: '' })
   }, 2000)
 }
 ```
+
+這個寫法是使用 Astro 元件和純 JS 來實作，基於 nanostores 可以跨框架的特性，也可以用在 React、Vue、Svelte 等等框架的元件中~
 
 ## 參考資料
 

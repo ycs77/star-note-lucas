@@ -8,11 +8,13 @@ category: coding
 tags: ["Astro"]
 ---
 
-Astro 預設會檢查提交表單的 Origin 是否與網站的 Origin 相同，目的是為了防止 CSRF 攻擊，但是在串第三方金流 API 的時候回傳的請求就會被擋下來，這回就來解決這個問題~
+Astro 預設會檢查提交表單的 Origin 是否與網站的 Origin 相同，目的是為了防止 CSRF 攻擊，但是在串第三方金流 API 的時候，回傳的請求就會被擋下來，因為第三方金流的 Origin 不會是我們的網站 Origin。
+
+既然 Astro 沒有提供排除部分路徑的選項，那就自己複製出來改吧！
 
 ## 修改 Astro 的 `originCheck` Middleware
 
-既然是 Astro 會擋下來，那我們就先關掉吧：
+先把 Astro 預設的 `checkOrigin` 給關掉：
 
 ```ts title="astro.config.ts"
 export default defineConfig({
@@ -24,9 +26,11 @@ export default defineConfig({
 })
 ```
 
-然後在 `src/middleware/originCheck.ts` 新增一個 `originCheck` 的 middleware，裡面只新增了 `EXCLUDE_PATHS` 陣列，裡面放入需要排除的路徑，這樣就可以讓 Astro 在這些路徑上不檢查 CSRF 的 Origin 了。比如我們這邊就放了金流的回傳請求路徑 `/checkout/done`：
+然後在 `src/middleware/originCheck.ts` 新增一個 `originCheck` 的 middleware，裡面只新增了 `EXCLUDE_PATHS` 陣列，放入需要排除的路徑，這樣就可以讓 Astro 在這些路徑上不檢查 CSRF 的 Origin 了。
 
-```ts title="src/middleware/originCheck.ts" {22-23,38-41}
+比如我們這邊就放了金流的回傳請求路徑 `/checkout/done`：
+
+```ts title="src/middleware/originCheck.ts" {22-25,40-43}
 /**
  * @reference https://github.com/withastro/astro/blob/d2d04b02773f82103db75076fcdd1f089503770a/packages/astro/src/core/app/middlewares.ts
  */
@@ -49,7 +53,9 @@ const FORM_CONTENT_TYPES = [
 const SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
 // Paths that should be excluded from origin check
-const EXCLUDE_PATHS = ['/checkout/done']
+const EXCLUDE_PATHS = [
+  '/checkout/done',
+]
 
 /**
  * Returns a middleware function in charge to check the `origin` header.
@@ -102,7 +108,7 @@ function hasFormLikeHeader(contentType: string | null): boolean {
 }
 ```
 
-最後在 `src/middleware/index.ts` 中套用這個 middleware：
+最後在 `src/middleware/index.ts` 中套用這個 middleware 就可以了：
 
 ```ts title="src/middleware/index.ts"
 import { sequence } from 'astro:middleware'
