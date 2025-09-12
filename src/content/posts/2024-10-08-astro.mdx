@@ -204,16 +204,28 @@ export default {
 
 ## Netlify 或 Vercel?
 
-通常情況下是看習慣，畢竟 Astro 兩個平台都有支援，只是在有個地方會有差別，就是尾部斜線的處理：
+通常情況下是看習慣，畢竟 Astro 兩個平台都有支援，只是如果是靜態產生 (`static` 模式) 的話就會有差，差在尾部斜線的處理：
 
-* Vercel 支援強制移除網址尾部斜線，比如 `/about/` 會強制跳轉到 `/about`
-* 而 Netlify 移除尾部斜線後依然可以瀏覽，但不會且不支援強制跳轉 (只能強制尾部加斜線)
+* Vercel 靜態產生網站支援強制移除網址尾部斜線，比如 `/about/` 會強制跳轉到 `/about`
+* 而 Netlify 靜態產生網站移除尾部斜線後依然可以瀏覽，但不會且不支援強制跳轉 (只能強制尾部加斜線)
 
 事先對於網址的 style 選擇相當重要，要不然部署後可能會發現瀏覽網址有問題。
 
 通常情況下加斜線會比較多平台支援，因為只需在資料夾內部加一個 `index.html`，以資料夾的方式來達到美化網址的方式，不需要伺服器有多餘的設定。但如果對網址有潔癖，連尾隨的斜線都不想要的話，這邊建議可以選用 Vercel。
 
 而在 Astro 中尾部斜線的設定，可以參考 [trailingSlash](https://docs.astro.build/en/reference/configuration-reference/#trailingslash)。
+
+當然如果是 `server` 模式的話，兩個平台都可以自由設定網址的尾部斜線行為。以下是一個我比較喜歡的設定，在 `server` 模式下不使用尾部斜線的設定：
+
+```ts title="astro.config.ts"
+export default defineConfig({
+  output: 'server',
+  trailingSlash: 'never',
+  build: {
+    format: 'file',
+  },
+})
+```
 
 最後這邊附上我在兩個平台部署的專案所使用的設定檔：
 
