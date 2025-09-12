@@ -1,0 +1,77 @@
+---
+title: 本地編譯和部署 Astro 專案到小型 Ubuntu 伺服器
+# description:
+# image: /og/2025-09-12-deploy-astro-to-ubuntu-server.jpg
+# showImage: false
+pubDate: 2025-09-12
+category: coding
+tags: ["Astro"]
+---
+
+這回 Astro 專案的開發，一開始選定了部署到 Netilfy 上，結果正式站在上限之時卻意外掛掉，查了之後發現是 Astro 在 Netilfy 使用 Session 時，依賴的 Netilfy Blobs 卻有問題，無奈之下決定改用自架的 Ubuntu 伺服器來部署。
+
+為了節省成本，這次專案的 Ubuntu 伺服器開得超小，只有 1G RAM，不出意外的自然無法部署成功，因為記憶體不足。後來我就研究了一個方法，先在本地 WSL 內編譯好，再把編譯好的檔案傳到伺服器上，這樣就可以成功部署了~
+
+在 Ubuntu 伺服器上可以直接用 Node.js 的部署方式，使用 Nginx 作反向代理，並用 pm2 來管理 Astro 的 Node.js 服務。
+
+## 首次部署
+
+Nginx 只要負責反向代理的部分就行了，在 `/etc/nginx/sites-available/your-domain.conf` 裡面設定：
+
+```nginx {12-19}
+server {
+    listen 80;
+    listen [::]:80;
+    server_name your-domain;
+    server_tokens off;
+    root /var/www/html;
+
+    index index.html;
+
+    charset utf-8;
+
+    location / {
+        proxy_pass http://localhost:4321;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+}
+```
+
+然後依照以下步驟部署專案：
+
+```bash
+# remote: 重建 dist 資料夾
+rm dist -rf && mkdir dist
+
+# local: 編譯和上傳檔案
+yarn
+yarn build
+# 記得要設定全局變數
+cp .env.example .env
+sftp user@remote_host
+> cd /var/www/html
+> put -r dist
+> bye
+
+# remote: 安裝 pm2 並啟動服務
+npm install -g pm2
+pm2 startup
+pm2 start ./dist/server/entry.mjs --name app_name
+
+# remote: 重啟服務
+pm2 list
+pm2 restart app_name
+# 或者是完全刪除再啟動
+pm2 delete app_name
+pm2 start ./dist/server/entry.mjs --name app_name
+```
