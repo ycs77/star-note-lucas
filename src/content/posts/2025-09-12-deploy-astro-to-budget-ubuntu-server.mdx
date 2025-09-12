@@ -8,7 +8,7 @@ category: coding
 tags: ["Astro"]
 ---
 
-這回 Astro 專案的開發，一開始選定了部署到 Netilfy 上，結果正式站在上線之時卻意外掛掉，查了之後發現是 Astro 在 Netilfy 使用 Session 時，依賴的 Netilfy Blobs 卻有問題，無奈之下決定改用自架的 Ubuntu 伺服器來部署。
+這回 Astro 專案的開發，一開始選定了部署到 Netlify 上，結果正式站在上線之時卻意外掛掉，查了之後發現是 Astro 在 Netlify 使用 Session 時，依賴的 Netlify Blobs 卻有問題，無奈之下決定改用自架的 Ubuntu 伺服器來部署。
 
 為了節省成本，這次專案給了超小的 Ubuntu 伺服器，只有 1G RAM，可是專案不是小專案，那不出意外的自然無法部署成功，因為跑 `yarn build` 時報了記憶體不足的錯誤 (這還是我頭一回見到 Node.js 中的記憶體不足的錯誤XDD)。後來我就研究了一個方法，先在本地 WSL 內編譯好，再把編譯好的檔案用 SFTP 傳到伺服器上，這樣就可以成功部署了~
 
