@@ -47,7 +47,7 @@ server {
 }
 ```
 
-然後依照以下步驟部署專案：
+在本地編譯和上傳檔案：
 
 ```bash
 # remote: 重建 dist 資料夾
@@ -62,11 +62,16 @@ sftp user@remote_host
 > cd /var/www/html
 > put -r dist
 > bye
+```
 
+然後在伺服器上用 pm2 來啟動服務：
+
+```bash
 # remote: 安裝 pm2 並啟動服務
 npm install -g pm2
-pm2 startup
 pm2 start ./dist/server/entry.mjs --name app_name
+pm2 startup
+pm2 save
 
 # remote: 重啟服務
 pm2 list
@@ -74,4 +79,12 @@ pm2 restart app_name
 # 或者是完全刪除再啟動
 pm2 delete app_name
 pm2 start ./dist/server/entry.mjs --name app_name
+```
+
+## 增加 Node.js 記憶體限制
+
+後來這個專案的後端工程師找到了編譯時記憶體不足的解法，在執行 `yarn build` 時，增加 Node.js 的記憶體限制，這樣就可以直接在伺服器上編譯了：
+
+```bash
+NODE_OPTIONS="--max-old-space-size=1024" yarn build
 ```
