@@ -85,7 +85,7 @@ pm2 start ./dist/server/entry.mjs --name app_name
 
 ## 增加 Node.js 記憶體限制
 
-後來這個專案的後端工程師找到了編譯時記憶體不足的解法，在執行 `yarn build` 時，增加 Node.js 的記憶體限制，這樣就可以直接在伺服器上編譯了：
+後來這個專案合作的後端工程師找到了編譯時記憶體不足的解法，在執行 `yarn build` 時，增加 Node.js 的記憶體限制，這樣就可以直接在伺服器上編譯了：
 
 ```bash
 NODE_OPTIONS="--max-old-space-size=1024" yarn build
