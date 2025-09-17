@@ -83,9 +83,9 @@ pm2 delete app_name
 pm2 start ./dist/server/entry.mjs --name app_name
 ```
 
-## 增加 Node.js 記憶體限制
+## 解除限制！自動化部署
 
-後來這個專案合作的後端工程師找到了編譯時記憶體不足的解法，在執行 `yarn build` 時，增加 Node.js 的記憶體限制，這樣就可以直接在伺服器上編譯了：
+後來這個專案合作的後端工程師找到了編譯時記憶體不足的解法，在執行 `yarn build` 時，增加 Node.js 的記憶體限制，這樣就可以直接在伺服器上編譯了，但這個數值還是不能超過實際上的記憶體上限呵呵：
 
 ```bash
 NODE_OPTIONS="--max-old-space-size=1024" yarn build
@@ -94,7 +94,7 @@ NODE_OPTIONS="--max-old-space-size=1024" yarn build
 如果可以在伺服器上直接編譯的話，就可以寫部署腳本來自動化部署了。這樣每次要更新網站時，只要把程式碼推到 GitHub 後，在伺服器上執行這個腳本就可以了：
 
 ```bash title="deploy.sh"
-# !/bin/bash
+#!/bin/bash
 
 git pull origin main
 
@@ -107,8 +107,14 @@ pm2 restart app_name
 然後就可以 ssh 到伺服器上執行這個腳本來部署了：
 
 ```bash
+# 使用 ssh 登入伺服器
 ssh user@remote_host
-/var/www/html
+cd /var/www/html
+
+# 設定 git 不要處理檔案權限的變更，並給予 deploy.sh 執行權限
+git config core.fileMode false
 chmod +x deploy.sh
+
+# 執行部署腳本
 ./deploy.sh
 ```
