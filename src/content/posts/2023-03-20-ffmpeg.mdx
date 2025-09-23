@@ -210,7 +210,7 @@ ffmpeg -i video.mp4 -c:v copy -c:a aac -ac 2 output.mp4
 ffmpeg -i https://example.com/720p.m3u8 -c copy video.mp4
 ```
 
-但也有會給 403 的時候，可以試試看加上 Cookie 和一些 headers 來偽裝：
+但也有會給 403 的時候，可以試試看加上 Cookie 和一些 headers：
 
 ```bash
 ffmpeg -headers "Cookie: 這裡放Cookie" -headers "Referer: https://example.com/" -user_agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36" -i https://example.com/720p.m3u8 -c copy video.mp4
