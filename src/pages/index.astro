@@ -8,10 +8,12 @@ import HeroiconsArrowRight16Solid from '~icons/heroicons/arrow-right-16-solid'
 import { socialLinks } from '@/nav'
 import { createAstroContainerWithMdx, loadPostsExcerpt } from '@/utils/article'
 
+const SHOW_POST_COUNT = 5
+
 const container = await createAstroContainerWithMdx()
 const posts = await loadPostsExcerpt<'posts'>(
   container,
-  await getPostCollection(posts => posts.slice(0, 5))
+  await getPostCollection(posts => posts.slice(0, SHOW_POST_COUNT))
 )
 ---
 

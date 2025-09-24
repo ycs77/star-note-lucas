@@ -6,6 +6,8 @@ import { render } from 'astro:content'
 import type { CollectionEntry, CollectionKey } from 'astro:content'
 import { convert } from 'html-to-text'
 
+const DEFAULT_POST_TRUNCATE = 120
+
 export async function createAstroContainerWithMdx() {
   const container = await AstroContainer.create()
   // @ts-ignore
@@ -25,7 +27,7 @@ export async function createExcerpt<C extends CollectionKey>(options: {
   Content?: AstroComponentFactory
   truncate?: number
 }): Promise<string> {
-  const { container, post, truncate = 200 } = options
+  const { container, post, truncate = DEFAULT_POST_TRUNCATE } = options
 
   const Content = options.Content || (await render(post)).Content
   const html = await container.renderToString(Content)
