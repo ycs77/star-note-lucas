@@ -6,11 +6,27 @@ title: Astro 使用 Zod 驗證網址 Query String 格式
 pubDate: 2025-02-09
 category: coding
 tags: ["Astro"]
-draft: true
 ---
+
+網址中的 Query String 參數驗證是一個還滿常見的需求，通常都會在需要做搜尋或過濾器的頁面中使用，傳統的作法都會是使用 if 判斷式來驗證參數是否符合預期的格式，但這樣的寫法我是覺得還滿醜的說。後來我就嘗試使用 [zod](https://github.com/colinhacks/zod) 來解析驗證查詢參數，程式碼的確是看起來更簡潔也更好維護了~ 雖然需要稍微了解一下 zod 的用法，但其實也不難上手。
+
+## 安裝套件
+
+安裝 zod 和 query-string 這兩個套件，因為要解析網址 Query String，因此也一併安裝了 query-string：
+
+```bash
+npm install zod query-string
+# or
+yarn add zod query-string
+```
+
+## 解析 Query String 參數
+
+這邊先看一個解析 Query String 參數的範例：
 
 ```ts
 import { z } from 'zod'
+import qs from 'query-string'
 
 const defaultParams = {
   page: 1,
@@ -32,8 +48,59 @@ const querySchema = z.object({
   sort: z.enum(['latest', 'oldest']).default(defaultParams.sort).catch(defaultParams.sort),
 })
 
-const params = querySchema.parse(parseQueryParams(Astro.url.search))
+const params = querySchema.parse(qs.parse(Astro.url.search))
 ```
+
+以下是 zod 常見驗證查詢參數的範例：
+
+```ts
+// string 類型
+z.coerce.string().nullish().default(null).catch(null)
+
+// enum 類型
+// 預設值為 null
+z.enum(['product', 'service']).nullish().default(null).catch(null)
+// 預設值不為 null
+z.enum(['latest', 'oldest']).default('latest').catch('latest')
+
+// number 類型
+// 預設值為 null
+z.coerce.number().nullish().default(null).catch(null)
+// 預設值不為 null
+z.coerce.number().default(0).catch(0)
+// 限制範圍
+z.coerce.number().min(0).max(100).default(1).catch(1)
+
+// page 分頁頁數
+z.coerce.number().positive().default(1).catch(1)
+
+// array 類型
+// 例如 tags 是 number[] 類型
+//
+// array 類型比較複雜，可以先使用 preprocess() 來處理輸入的值，
+// 將輸入的值轉換成內部都是 Number 的陣列，並且過濾掉非數字的值，
+// 最後再使用 z.array(z.number()) 來驗證陣列中的值都是數字。
+z.preprocess(val => [val || []].flat().map(Number).filter(Boolean), z.array(z.number())).catch([])
+```
+
+這邊說明一下上面範例中使用到的 zod 方法：
+
+- `coerce`：將值強制轉換為指定的類型。
+- `enum`：限制值必須是列舉中的其中一個。
+- `min`：限制值必須大於等於指定的最小值。
+- `max`：限制值必須小於等於指定的最大值。
+- `positive`：限制值必須大於 0。
+- `default`：設定預設值。
+- `nullish`：允許值為 null 或 undefined。
+- `catch`：當值無法通過驗證時，使用預設值。
+- `preprocess`：對值進行預處理。
+
+使用 zod 來驗證查詢參數的關鍵是 `coerce`、`default` 和 `catch` 這三個方法：
+
+- `coerce` 用來將值轉換為指定的類型，比如解析數字時非常關鍵
+- 而 `default` 和 `catch` 的組合可以無論是沒有輸入、或是錯誤的輸入，都可以套用預設值，不會因為錯誤的輸入而導致程式出錯。
+
+最後就可以在 Astro 頁面中使用解析後的參數了，而且參數一定會是符合預期的格式和型別：
 
 ```astro
 <ul>
@@ -47,3 +114,7 @@ const params = querySchema.parse(parseQueryParams(Astro.url.search))
   <li>sort: {params.sort}</li>
 </ul>
 ```
+
+## 參考資料
+
+- [zod 說明文件](https://github.com/colinhacks/zod)
