@@ -1,19 +1,24 @@
 ---
-title: Astro 實作 i18n 多語系功能
-# description:
-# image: /og/2025-02-08-astro-i18n-2.jpg
+title: Astro + @astrolicious/i18n 實作 i18n 多語系功能
+description: 在 Astro 中搭配 @astrolicious/i18n 實作多語系功能
+# image: /og/2025-02-08-astro-i18n-astrolicious.jpg
 # showImage: false
 pubDate: 2025-02-08
 category: coding
 tags: ["Astro", "i18n"]
-draft: true
 ---
 
+之前有使用過 [用 Paraglide 做 Astro i18n](/posts/astro-i18n-paraglide)，但做起來就是很卡。後來發現 [I18n for Astro (@astrolicious/i18n)](https://astro-i18n.netlify.app/) 這個套件更好用，於是就改用這個套件來做多語系功能。
+
 ## 安裝 @astrolicious/i18n
+
+@astrolicious/i18n 是基於 i18next 這個套件來做的，因此也需要安裝 i18next：
 
 ```bash
 yarn add i18next @astrolicious/i18n
 ```
+
+然後註冊 i18n 套件：
 
 ```ts title="astro.config.ts"
 import i18n from '@astrolicious/i18n'
@@ -27,6 +32,8 @@ export default defineConfig({
   ],
 })
 ```
+
+在 Layout 中加入 I18nHead 元件來處理 SEO 相關的 meta：
 
 ```astro title="src/layouts/Layout.astro"
 ---
@@ -57,7 +64,9 @@ htmlAttrs.lang = htmlLangMap[locale] || locale
 </html>
 ```
 
-## 顯示翻譯文字
+## 設定多語系檔案
+
+在 `src/locales/` 目錄下建立語系檔案，檔案格式為 JSON：
 
 ```json title="src/locales/en/common.json"
 {
@@ -74,6 +83,10 @@ htmlAttrs.lang = htmlLangMap[locale] || locale
   "nav_posts": "文章"
 }
 ```
+
+## 使用翻譯
+
+然後在元件或頁面中使用 `t` 函式來取得翻譯：
 
 ```astro title="src/layouts/Layout.astro"
 ---
@@ -103,6 +116,8 @@ import { t, getHtmlAttrs, getLocale, getLocalePath } from 'i18n:astro'
 
 ## 新增語言選單
 
+可以顯示語系文字後，就可以新增語言選單切換語系：
+
 ```astro title="src/layouts/Layout.astro"
 ---
 import { t, getHtmlAttrs, getLocale, getLocalePath, getSwitcherData } from 'i18n:astro'
@@ -113,7 +128,6 @@ const switcherLabels: Record<string, string> = {
   en: 'English',
   'zh-TW': '繁體中文',
 }
-
 ---
 
 <!doctype html>
@@ -143,6 +157,8 @@ const switcherLabels: Record<string, string> = {
 ```
 
 ## 完整程式碼
+
+以下是完整的 Layout 程式碼：
 
 ```astro title="src/layouts/Layout.astro"
 ---
