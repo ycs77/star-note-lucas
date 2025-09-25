@@ -6,7 +6,7 @@ import siteConfig from '@/site.config'
 import Layout from '@/layouts/Layout.astro'
 import { Date, PostBackLink } from '@/components/general'
 import Seo from '@/components/seo/Seo.astro'
-import { ArticleContent, ArticleMediumZoom, ArticleTitle } from '@/components/article'
+import { ArticleContainer, ArticleContent, ArticleMediumZoom, ArticleTitle } from '@/components/article'
 import { Footer } from '@/components/partials'
 import { parsePostSlug } from '@/utils/slug'
 
@@ -55,7 +55,7 @@ const { Content } = await render(talk)
     </script>
   </Fragment>
 
-  <div class="container py-8 md:!max-w-prose xl:py-12">
+  <ArticleContainer>
     <PostBackLink href="/talks">
       返回講座列表
     </PostBackLink>
@@ -75,7 +75,7 @@ const { Content } = await render(talk)
         </ArticleContent>
       </div>
     </article>
-  </div>
+  </ArticleContainer>
 
   <div class="container">
     <Footer />

@@ -3,7 +3,7 @@ import { Schema } from 'astro-seo-schema'
 import siteConfig from '@/site.config'
 import * as entry from '@/content/about.mdx'
 import Layout from '@/layouts/Layout.astro'
-import { ArticleContent, ArticleMediumZoom, ArticleTitle } from '@/components/article'
+import { ArticleContainer, ArticleContent, ArticleMediumZoom, ArticleTitle } from '@/components/article'
 import { Footer } from '@/components/partials'
 
 const { Content } = entry
@@ -28,7 +28,7 @@ const { Content } = entry
     </script>
   </Fragment>
 
-  <div class="container py-8 md:!max-w-prose xl:py-12">
+  <ArticleContainer>
     <article>
       <ArticleTitle>{entry.frontmatter.title}</ArticleTitle>
 
@@ -38,7 +38,7 @@ const { Content } = entry
         </ArticleContent>
       </div>
     </article>
-  </div>
+  </ArticleContainer>
 
   <div class="container">
     <Footer />

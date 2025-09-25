@@ -8,7 +8,7 @@ import { categoriesMap } from '@/category.config'
 import Layout from '@/layouts/Layout.astro'
 import { Date, Draft, Tag } from '@/components/general'
 import Seo from '@/components/seo/Seo.astro'
-import { ArticleContent, ArticleLicense, ArticleMediumZoom, ArticleTitle } from '@/components/article'
+import { ArticleContainer, ArticleContent, ArticleLicense, ArticleMediumZoom, ArticleTitle } from '@/components/article'
 import { PaginationPrevNext } from '@/components/pagination'
 import { Footer } from '@/components/partials'
 import { parsePostSlug } from '@/utils/slug'
@@ -77,7 +77,7 @@ const excerpt = await createExcerpt({ container, post, Content })
     </script>
   </Fragment>
 
-  <div class="container py-8 md:!max-w-prose xl:py-12">
+  <ArticleContainer>
     <article>
       <ArticleTitle>{post.data.title}</ArticleTitle>
 
@@ -129,7 +129,7 @@ const excerpt = await createExcerpt({ container, post, Content })
     </article>
 
     <PaginationPrevNext prev={prev} next={next} />
-  </div>
+  </ArticleContainer>
 
   <div class="container">
     <Footer />
