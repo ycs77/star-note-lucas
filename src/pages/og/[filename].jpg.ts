@@ -34,7 +34,7 @@ export const GET: APIRoute<Props> = async ({ props }) => {
     template: props.template,
   })
 
-  return new Response(image, {
+  return new Response(Buffer.from(image), {
     headers: {
       'Content-Type': 'image/jpeg',
       'Content-Length': image.length.toString(),

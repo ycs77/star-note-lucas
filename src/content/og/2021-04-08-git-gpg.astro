@@ -1,17 +1,21 @@
 ---
 import GitLogo from '../../../public/images/git.svg'
 import GnupgLogo from '../../../public/images/gnupg.svg'
-// import BgWave from '../../../public/images/bg-wave.svg'
+import BgWaveHalf from '../../../public/images/bg-wave-half.svg'
 ---
 
-<div class="relative flex flex-col justify-center items-center w-full h-full bg-white text-indigo-900 font-light">
-  <!-- <div class="absolute inset-x-0 top-0 w-[1200px] h-[120px] bg-indigo-900 text-white">_</div> -->
-  <!-- <BgWave class="absolute inset-x-0 top-[120px] w-[1200px] h-[87px]" /> -->
+<div class="relative flex flex-col justify-between items-center w-full h-full bg-white text-indigo-900 font-light">
+  <BgWaveHalf class="absolute inset-x-0 top-0 w-[1200px] h-[343px]" />
 
-  <h2 class="text-[84px] leading-[1.2]">
-    <span class="font-thin">簽章<span class="text-yellow-400 font-bold px-4">Git</span>提交</span>
-  </h2>
+  <div class="relative flex flex-col justify-center items-center h-[300px] text-white text-center">
+    <h2 class="text-[84px] leading-[1.2]">
+      <span class="font-thin">簽章<span class="text-yellow-400 font-bold px-4">Git</span>提交</span>
+    </h2>
+  </div>
 
-  <GitLogo class="absolute bottom-0 left-0 w-[200px] h-[200px]" />
-  <GnupgLogo class="absolute bottom-0 right-0 w-[200px] h-[82px]" />
+  <div class="relative flex justify-center items-center h-[320px]">
+    <GitLogo class="w-[150px] h-[150px]" />
+    <div class="text-[72px] text-indigo-900 font-bold mx-8">+</div>
+    <GnupgLogo class="w-[320px] h-[131px]" />
+  </div>
 </div>
