@@ -1,4 +1,5 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     { "source": "/github", "destination": "https://github.com/ycs77" },
     { "source": "/gh", "destination": "https://github.com/ycs77" },
@@ -16,8 +17,5 @@
     { "source": "/post/:path*", "destination": "/posts/:path*" }
   ],
   "cleanUrls": true,
-  "trailingSlash": false,
-  "github": {
-    "silent": true
-  }
+  "trailingSlash": false
 }
