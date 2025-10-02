@@ -1,0 +1,109 @@
+---
+title: Inertia v2.2 的 Infinite Scroll (無限滾動) 新功能
+description: 原本在 Inertia v2.0 的時候，應該就要一起推出的 Infinite Scroll (無限滾動) 功能，拖了一年之後，終於在 Inertia v2.2 正式推出了！無限滾動通能常見在聊天訊息、社交媒體動態、照片牆等場景，可以讓使用者無限滑動載入資料，而不需要點擊分頁按鈕。而且我滿喜歡這個 API 的簡潔設計，使用起來還滿簡單的說~
+# image: /og/2025-10-03-inertia-v2-infinite-scroll.jpg
+pubDate: 2025-10-03
+category: coding
+tags: ["Laravel", "Vue.js", "Inertia.js"]
+---
+
+原本在 Inertia v2.0 的時候，應該就要一起推出的 Infinite Scroll (無限滾動) 功能，拖了一年之後，終於在 Inertia v2.2 正式推出了！無限滾動通能常見在聊天訊息、社交媒體動態、照片牆等場景，可以讓使用者無限滑動載入資料，而不需要點擊分頁按鈕。而且我滿喜歡這個 API 的簡潔設計，使用起來還滿簡單的說~
+
+## Infinite Scroll (無限滾動)
+
+通常在 Laravel 中都是使用 Model 來取得資料，因此我們可以使用 `Inertia::scroll()` 來包裝 Eloquent 的分頁結果，它會自動合併分頁參數，並回傳 Inertia 所需的資料格式：
+
+```php title="app/Http/Controllers/UserController.php"
+return Inertia::render('Users/Index', [
+    'users' => Inertia::scroll(fn () => User::paginate()),
+]);
+```
+
+然後在前端 Vue.js 中，我們就可以使用 `<InfiniteScroll>` 元件來實現無限滾動功能，以及在 props 中傳入資料來源 `users`：
+
+```vue title="resources/js/Pages/Users/Index.vue"
+<template>
+  <InfiniteScroll data="users" as="ul">
+    <li v-for="user in users.data" :key="user.id">
+      {{ user.name }}
+    </li>
+  </InfiniteScroll>
+</template>
+
+<script setup>
+import { InfiniteScroll } from '@inertiajs/vue3'
+
+const props = defineProps({
+  users: Object,
+})
+</script>
+```
+
+`<InfiniteScroll>` 元件背後使用了 Intersection Observer API 來偵測使用者是否快要滾動到底部，當快到底部時就會自動載入下一頁的資料，並且會自動合併到目前的資料中。
+
+`<InfiniteScroll>` 元件也有一些其他的 props 可以使用。比如 `buffer` 可以設定在距離底部多少像素時候開始載入下一頁，預設是 0 像素：
+
+```html
+<InfiniteScroll data="users" as="ul" :buffer="1000">
+  ...
+</InfiniteScroll>
+```
+
+`<InfiniteScroll>` 元件預設的網址處理方式是，當載入下一頁資料時會更新瀏覽器網址列的分頁參數，如果不想要更新網址列，可以加上 `preserve-url` prop：
+
+```html
+<InfiniteScroll data="users" as="ul" preserve-url>
+  ...
+</InfiniteScroll>
+```
+
+當然也可以使用 `loading` slot 來自訂載入中的顯示內容：
+
+```html
+<InfiniteScroll data="users" as="ul">
+  ...
+
+  <template #loading>
+    <div>載入中...</div>
+  </template>
+</InfiniteScroll>
+```
+
+最後完整範例如下：
+
+```vue
+<template>
+  <InfiniteScroll
+    data="users"
+    as="ul"
+    :buffer="1000"
+    preserve-url
+  >
+    <li v-for="user in users.data" :key="user.id">
+      {{ user.name }}
+    </li>
+
+    <template #loading>
+      <div>載入中...</div>
+    </template>
+  </InfiniteScroll>
+</template>
+
+<script setup>
+import { InfiniteScroll } from '@inertiajs/vue3'
+
+const props = defineProps({
+  users: Object,
+})
+</script>
+```
+
+## Demo
+
+![Inertia v2.2 Demo 預覽](/images/2025-10-03-inertia-v2-infinite-scroll-demo.jpg)
+
+這次的無限滾動功能，可以在 [inertia-v2-demo](https://github.com/ycs77/inertia-v2-demo) 裡面試用喔~
+
+## 參考資料
+
+* [Infinite scroll - Inertia.js](https://inertiajs.com/infinite-scroll)
