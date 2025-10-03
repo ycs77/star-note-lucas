@@ -688,6 +688,13 @@
   dependencies:
     "@iconify/types" "*"
 
+"@iconify-json/ion@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@iconify-json/ion/-/ion-1.2.6.tgz#43d54972472cfa6478eb8a667ffef0bc691c2675"
+  integrity sha512-JftEXKfjvJNn3SrGeSBrG/waRkjeTpLdMLNLwpAX4NgI14QgJoAeXEh2iZjNPqioAkeIgErX4Bi6mnFwpjk3BQ==
+  dependencies:
+    "@iconify/types" "*"
+
 "@iconify-json/mingcute@^1.2.3":
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/@iconify-json/mingcute/-/mingcute-1.2.3.tgz#a576b008f55957035017f3c19240c90b3dacc9c7"

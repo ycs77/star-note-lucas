@@ -31,10 +31,10 @@ const {
     <div>
       <a
         href={model.data.url || url}
-        class="block w-full aspect-16/9 md:w-auto md:h-full"
+        class="block w-full md:w-auto md:h-full md:aspect-16/9"
         target={target}
       >
-        <img src={model.data.image} alt={model.data.title} />
+        <img src={model.data.image} alt={model.data.title} class="object-cover md:w-full md:h-full" />
       </a>
     </div>
   )}

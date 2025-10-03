@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { experimental_AstroContainer as AstroContainer } from 'astro/container'
 import type { AstroComponentFactory } from 'astro/runtime/server/index.js'
+import vueRenderer from '@astrojs/vue/server.js'
 import satori from 'satori'
 import type { Font } from 'satori'
 import { html } from 'satori-html'
@@ -17,12 +18,7 @@ export async function getOGImage({ title, template }: {
   title: string
   template: AstroComponentFactory | undefined
 }) {
-  const container = await AstroContainer.create()
-  const htmlTemplate = await container.renderToString(template || defaultTemplate, {
-    props: {
-      title,
-    },
-  })
+  const { html: htmlTemplate } = await getOGImageHtml({ title, template })
 
   const fonts: Font[] = []
 
@@ -106,11 +102,14 @@ export async function getOGImageHtml({ title, template }: {
   template: AstroComponentFactory | undefined
 }) {
   const container = await AstroContainer.create()
+  // @ts-ignore
+  container.addServerRenderer({ renderer: vueRenderer })
   const html = await container.renderToString(template || defaultTemplate, {
     props: {
       title,
     },
   })
+
   return {
     width,
     height,
