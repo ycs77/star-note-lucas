@@ -15,6 +15,8 @@
 - Markdown 文章
 - 文章分類
 - 文章標籤
+- Satori 產生 Open Graph 圖片
+- RSS 訂閱
 
 ## 開發
 
