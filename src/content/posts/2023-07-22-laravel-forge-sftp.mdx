@@ -47,7 +47,7 @@ sudo chown ftp-user:ftp-user /home/ftp-user/uploads
 sudo chmod 755 /home/ftp-user/uploads
 ```
 
-不過我一開始也在想，為什麼其他文章都教到要增加一個目錄，難道不能在 FileZilla 的根目錄直接上傳嗎? 結果還真不行。因為剛才已經把根目錄 owner 設給 root，沒有 root 的權限就不能開新資料夾上傳檔案，因此需要先開好 owner 是 `ftp-user` 的資料夾讓用戶可以上傳檔案。當然資料夾想要開幾個都可以~ 只是你開哪些用戶就只能用哪些。
+不過我一開始也在想，為什麼其他文章都教到要增加一個目錄，難道不能在 FileZilla 的根目錄直接上傳嗎？結果還真不行。因為剛才已經把根目錄 owner 設給 root，沒有 root 的權限就不能開新資料夾上傳檔案，因此需要先開好 owner 是 `ftp-user` 的資料夾讓用戶可以上傳檔案。當然資料夾想要開幾個都可以~ 只是你開哪些用戶就只能用哪些。
 
 ## 設定 SFTP
 
