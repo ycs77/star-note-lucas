@@ -8,7 +8,7 @@
 
 部落格 [星星的筆記．Lucas](https://star-note-lucas.me/) 的原始碼。
 
-技術棧使用 [Astro](https://astro.build/)、[Tailwind CSS](https://tailwindcss.com/)、[Vue.js](https://vuejs.org/)。部署在 [Vercel](https://vercel.com/) 平台。
+技術棧使用 [Astro](https://astro.build/)、[Tailwind CSS](https://tailwindcss.com/)、[Vue.js](https://vuejs.org/)，部署在 [Vercel](https://vercel.com/) 平台。
 
 ## 功能
 
