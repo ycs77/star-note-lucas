@@ -143,7 +143,7 @@ laravel new blog
 
 修改 Homestead.yaml：
 
-```yaml {title="Homestead.yaml"}
+```yaml title="Homestead.yaml"
 folders:
   ...
   - map: ~/code/blog
@@ -179,7 +179,7 @@ vagrant ssh
 如果有使用 [VSCode Remote SSH 套件](https://code.visualstudio.com/docs/remote/ssh) 的話就不用加這段，因為 Remote SSH 套件會在啟動 dev server 時自動轉發 port。
 </Tip>
 
-```yaml {title="Homestead.yaml"}
+```yaml title="Homestead.yaml"
 ports:
     - send: 5173 # for vite server
       to: 5173
@@ -187,7 +187,7 @@ ports:
 
 然後在 `vite.config.js` 加上以下設定：
 
-```js {title="vite.config.js"}
+```js title="vite.config.js"
 import path from 'node:path'
 
 export default defineConfig({
@@ -228,15 +228,14 @@ sudo chmod -R 644 /etc/ssl/certs/localhost.key
 
 設定本地開發用證書路徑：
 
-*.env*
-```
+```ini title=".env"
 VITE_DEV_SERVER_KEY=/etc/ssl/certs/localhost.key
 VITE_DEV_SERVER_CERT=/etc/ssl/certs/localhost.crt
 ```
 
 然後就可以在 Vite 中讀取 HTTPS 證書了：
 
-```js {title="vite.config.js"}
+```js title="vite.config.js"
 import fs from 'node:fs'
 import { defineConfig, loadEnv } from 'vite'
 
