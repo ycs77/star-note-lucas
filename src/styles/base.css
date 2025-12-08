@@ -4,7 +4,7 @@
   }
 
   body {
-    @apply font-light overflow-x-hidden;
+    @apply overflow-x-hidden;
   }
 
   button, input {

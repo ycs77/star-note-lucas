@@ -36,7 +36,7 @@ const {
       {canPrev && (
         <li>
           <a href={prevUrl} class:list={[
-            'w-10 h-10 m-2 text-sm font-normal',
+            'w-10 h-10 m-2 text-sm',
             'inline-flex justify-center items-center rounded-full select-none',
             'transition-colors duration-150',
             'focus:outline-none',
@@ -52,7 +52,7 @@ const {
         <li>
           {page === currentPage ? (
             <span class:list={[
-              'w-10 h-10 m-2 text-sm font-normal',
+              'w-10 h-10 m-2 text-sm',
               'inline-flex justify-center items-center rounded-full select-none',
               'transition-colors duration-150',
               'focus:outline-none',
@@ -63,7 +63,7 @@ const {
             </span>
           ) : (
             <a href={getUrl(page)} class:list={[
-              'w-10 h-10 m-2 text-sm font-normal',
+              'w-10 h-10 m-2 text-sm',
               'inline-flex justify-center items-center rounded-full select-none',
               'transition-colors duration-150',
               'focus:outline-none',
@@ -79,7 +79,7 @@ const {
       {canNext && (
         <li>
           <a href={nextUrl} class:list={[
-            'w-10 h-10 m-2 text-sm font-normal',
+            'w-10 h-10 m-2 text-sm',
             'inline-flex justify-center items-center rounded-full select-none',
             'transition-colors duration-150',
             'focus:outline-none',
