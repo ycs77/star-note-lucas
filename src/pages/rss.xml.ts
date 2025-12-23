@@ -1,11 +1,12 @@
+import type { RSSFeedItem } from '@astrojs/rss'
 import type { APIRoute } from 'astro'
-import rss, { type RSSFeedItem } from '@astrojs/rss'
-import sanitizeHtml from 'sanitize-html'
+import rss from '@astrojs/rss'
 import { render } from 'astro:content'
-import siteConfig from '@/site.config'
+import sanitizeHtml from 'sanitize-html'
 import { getPostCollection } from '@/post'
-import { parsePostSlug } from '@/utils/slug'
+import siteConfig from '@/site.config'
 import { createAstroContainerWithMdx } from '@/utils/article'
+import { parsePostSlug } from '@/utils/slug'
 
 export const GET: APIRoute = async context => {
   const baseUrl = (context.site?.href || '').replace(/\/$/, '')
@@ -37,7 +38,7 @@ export const GET: APIRoute = async context => {
     items,
     // (optional) inject custom xml
     customData: `<language>zh-TW</language>`,
-  });
+  })
 }
 
 // Sanitize HTML

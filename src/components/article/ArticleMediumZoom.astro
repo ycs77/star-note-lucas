@@ -2,7 +2,7 @@
 import mediumZoom from 'medium-zoom/dist/pure'
 import 'medium-zoom/dist/style.css'
 
-let zoom = mediumZoom('article :not(a) > img')
+const zoom = mediumZoom('article :not(a) > img')
 
 document.addEventListener('astro:before-swap', () => {
   zoom.detach()

@@ -1,8 +1,8 @@
 ---
 import { getCollection } from 'astro:content'
-import Layout from '@/layouts/Layout.astro'
 import { ListCard } from '@/components/general'
 import { Footer } from '@/components/partials'
+import Layout from '@/layouts/Layout.astro'
 import { parsePostSlug } from '@/utils/slug'
 
 const talks = await getCollection('talks')

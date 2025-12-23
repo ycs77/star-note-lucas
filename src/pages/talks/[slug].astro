@@ -1,13 +1,13 @@
 ---
-import { getCollection, render } from 'astro:content'
 import type { CollectionEntry } from 'astro:content'
 import { Schema } from 'astro-seo-schema'
-import siteConfig from '@/site.config'
-import Layout from '@/layouts/Layout.astro'
-import { Date, PostBackLink } from '@/components/general'
-import Seo from '@/components/seo/Seo.astro'
+import { getCollection, render } from 'astro:content'
 import { ArticleContainer, ArticleContent, ArticleMediumZoom, ArticleTitle } from '@/components/article'
+import { Date, PostBackLink } from '@/components/general'
 import { Footer } from '@/components/partials'
+import Seo from '@/components/seo/Seo.astro'
+import Layout from '@/layouts/Layout.astro'
+import siteConfig from '@/site.config'
 import { parsePostSlug } from '@/utils/slug'
 
 interface Props {
@@ -52,7 +52,6 @@ const { Content } = await render(talk)
         },
       }}
     />
-    </script>
   </Fragment>
 
   <ArticleContainer>

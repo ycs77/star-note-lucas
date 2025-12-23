@@ -1,6 +1,6 @@
 <template>
   <Callout
-    :title="title"
+    :title
     class="bg-red-900 text-white border-red-400"
     main-class="text-red-400"
   >

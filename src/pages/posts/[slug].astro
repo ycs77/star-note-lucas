@@ -1,18 +1,18 @@
 ---
-import { render } from 'astro:content'
 import type { CollectionEntry } from 'astro:content'
 import { Schema } from 'astro-seo-schema'
-import siteConfig from '@/site.config'
-import { getPostCollection } from '@/post'
+import { render } from 'astro:content'
 import { categoriesMap } from '@/category.config'
-import Layout from '@/layouts/Layout.astro'
-import { Date, Draft, Tag } from '@/components/general'
-import Seo from '@/components/seo/Seo.astro'
 import { ArticleContainer, ArticleContent, ArticleLicense, ArticleMediumZoom, ArticleTitle } from '@/components/article'
+import { Date, Draft, Tag } from '@/components/general'
 import { PaginationPrevNext } from '@/components/pagination'
 import { Footer } from '@/components/partials'
-import { parsePostSlug } from '@/utils/slug'
+import Seo from '@/components/seo/Seo.astro'
+import Layout from '@/layouts/Layout.astro'
+import { getPostCollection } from '@/post'
+import siteConfig from '@/site.config'
 import { createAstroContainerWithMdx, createExcerpt } from '@/utils/article'
+import { parsePostSlug } from '@/utils/slug'
 
 interface Props {
   post: CollectionEntry<'posts'>
@@ -74,7 +74,6 @@ const excerpt = await createExcerpt({ container, post, Content })
         },
       }}
     />
-    </script>
   </Fragment>
 
   <ArticleContainer>

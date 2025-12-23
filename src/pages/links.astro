@@ -1,9 +1,9 @@
 ---
-import Layout from '@/layouts/Layout.astro'
-import { Star } from '@/components/icons'
 import { ArticleContent } from '@/components/article'
+import { Star } from '@/components/icons'
 import { Footer } from '@/components/partials'
 import friendLinks from '@/content/friendLinks'
+import Layout from '@/layouts/Layout.astro'
 ---
 
 <Layout title="友情連結">
@@ -49,11 +49,13 @@ import friendLinks from '@/content/friendLinks'
       <div class="mt-3">
         <span class="font-medium">內容：</span>
         <ArticleContent class="mt-3">
-          <pre><code>暱稱：
-網站標題：
-網址：需要有 https://
-簡介：
-大頭貼連結：需要有 https://</code></pre>
+          <pre><code>{[
+            '暱稱：',
+            '網站標題：',
+            '網址：需要有 https://',
+            '簡介：',
+            '大頭貼連結：需要有 https://',
+          ].join('\n')}</code></pre>
         </ArticleContent>
       </div>
 
@@ -62,10 +64,12 @@ import friendLinks from '@/content/friendLinks'
 
       <p class="mt-8 -mb-4 sm:mb-4">本站資訊：</p>
       <ArticleContent>
-        <pre class="mt-8"><code>網站標題：星星的筆記．Lucas
-網址：https://star-note-lucas.me/
-簡介：即使是一顆小星星 也會閃耀著光芒✨
-大頭貼連結：https://star-note-lucas.me/logo.png</code></pre>
+        <pre class="mt-8"><code>{[
+          '網站標題：星星的筆記．Lucas',
+          '網址：https://star-note-lucas.me/',
+          '簡介：即使是一顆小星星 也會閃耀著光芒✨',
+          '大頭貼連結：https://star-note-lucas.me/logo.png',
+        ].join('\n')}</code></pre>
       </ArticleContent>
     </div>
   </div>

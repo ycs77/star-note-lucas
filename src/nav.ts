@@ -1,10 +1,10 @@
-import siteConfig from '@/site.config'
-import TablerBrandGithub from '~icons/tabler/brand-github'
+import type { SocialLink } from '@/types'
+import MingcuteFacebookLine from '~icons/mingcute/facebook-line'
 import TablerBrandBluesky from '~icons/tabler/brand-bluesky'
 // import TablerBrandDiscord from '~icons/tabler/brand-discord'
-import MingcuteFacebookLine from '~icons/mingcute/facebook-line'
+import TablerBrandGithub from '~icons/tabler/brand-github'
 import TablerRss from '~icons/tabler/rss'
-import type { SocialLink } from '@/types'
+import siteConfig from '@/site.config'
 
 export const socialLinks: SocialLink[] = [
   {

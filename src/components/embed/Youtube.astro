@@ -29,7 +29,7 @@ if (Astro.props.id) {
   }
 } else if (Astro.props.url) {
   const url = new URL(Astro.props.url)
-  let searchParams = new URLSearchParams({
+  const searchParams = new URLSearchParams({
     ...Object.fromEntries(url.searchParams.entries()),
     ...params,
   })

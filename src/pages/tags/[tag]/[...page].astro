@@ -1,10 +1,10 @@
 ---
 import type { GetStaticPaths } from 'astro'
-import { getPostCollection } from '@/post'
-import Layout from '@/layouts/Layout.astro'
-import { Postlist } from '@/components/postlist'
 import { Pagination } from '@/components/pagination'
 import { Footer } from '@/components/partials'
+import { Postlist } from '@/components/postlist'
+import Layout from '@/layouts/Layout.astro'
+import { getPostCollection } from '@/post'
 import { createAstroContainerWithMdx, loadPostsExcerpt } from '@/utils/article'
 
 export const getStaticPaths = (async ({ paginate }) => {

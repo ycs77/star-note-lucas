@@ -42,10 +42,10 @@
             leave-to-class="opacity-0 rotate-90"
           >
             <svg v-if="!showMenu" class="absolute size-8 text-white" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 20 20">
-              <path fill="currentColor" fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd"/>
+              <path fill="currentColor" fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
             </svg>
             <svg v-else class="absolute size-8 text-white" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 20 20">
-              <path fill="currentColor" d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94L6.28 5.22Z"/>
+              <path fill="currentColor" d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94L6.28 5.22Z" />
             </svg>
           </Transition>
         </div>
@@ -111,12 +111,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import type { NavItem } from '@/types'
 import { useScrollLock } from '@vueuse/core'
-import siteConfig from '@/site.config'
+import { ref } from 'vue'
 import { Star } from '@/components/icons'
 import { socialLinks } from '@/nav'
-import type { NavItem } from '@/types'
+import siteConfig from '@/site.config'
 
 const props = defineProps<{
   // pathname 必須要從 Astro 傳入，因為要讓 SSR 的時候也能正確顯示

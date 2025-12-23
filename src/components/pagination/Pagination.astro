@@ -1,7 +1,7 @@
 ---
-import { usePagination } from '@/composables/usePagination'
 import HeroiconsArrowLeft20Solid from '~icons/heroicons/arrow-left-20-solid'
 import HeroiconsArrowRight20Solid from '~icons/heroicons/arrow-right-20-solid'
+import { usePagination } from '@/composables/usePagination'
 
 interface Props {
   baseUrl: string
@@ -35,14 +35,17 @@ const {
     <ul class="flex justify-center flex-wrap">
       {canPrev && (
         <li>
-          <a href={prevUrl} class:list={[
-            'w-10 h-10 m-2 text-sm',
-            'inline-flex justify-center items-center rounded-full select-none',
-            'transition-colors duration-150',
-            'focus:outline-none',
-            'md:w-12 md:h-12 md:text-base',
-            'bg-indigo-800 hover:bg-yellow-400 text-indigo-100 hover:text-yellow-800',
-          ]}>
+          <a
+            href={prevUrl}
+            class:list={[
+              'w-10 h-10 m-2 text-sm',
+              'inline-flex justify-center items-center rounded-full select-none',
+              'transition-colors duration-150',
+              'focus:outline-none',
+              'md:w-12 md:h-12 md:text-base',
+              'bg-indigo-800 hover:bg-yellow-400 text-indigo-100 hover:text-yellow-800',
+            ]}
+          >
             <HeroiconsArrowLeft20Solid class="w-5 h-5" />
           </a>
         </li>
@@ -51,25 +54,30 @@ const {
       {items.map(page => (
         <li>
           {page === currentPage ? (
-            <span class:list={[
-              'w-10 h-10 m-2 text-sm',
-              'inline-flex justify-center items-center rounded-full select-none',
-              'transition-colors duration-150',
-              'focus:outline-none',
-              'md:w-12 md:h-12 md:text-base',
-              'bg-indigo-600 hover:bg-indigo-600 text-white',
-            ]}>
+            <span
+              class:list={[
+                'w-10 h-10 m-2 text-sm',
+                'inline-flex justify-center items-center rounded-full select-none',
+                'transition-colors duration-150',
+                'focus:outline-none',
+                'md:w-12 md:h-12 md:text-base',
+                'bg-indigo-600 hover:bg-indigo-600 text-white',
+              ]}
+            >
               {page}
             </span>
           ) : (
-            <a href={getUrl(page)} class:list={[
-              'w-10 h-10 m-2 text-sm',
-              'inline-flex justify-center items-center rounded-full select-none',
-              'transition-colors duration-150',
-              'focus:outline-none',
-              'md:w-12 md:h-12 md:text-base',
-              'bg-indigo-800 hover:bg-yellow-400 text-indigo-100 hover:text-yellow-800',
-            ]}>
+            <a
+              href={getUrl(page)}
+              class:list={[
+                'w-10 h-10 m-2 text-sm',
+                'inline-flex justify-center items-center rounded-full select-none',
+                'transition-colors duration-150',
+                'focus:outline-none',
+                'md:w-12 md:h-12 md:text-base',
+                'bg-indigo-800 hover:bg-yellow-400 text-indigo-100 hover:text-yellow-800',
+              ]}
+            >
               {page}
             </a>
           )}
@@ -78,14 +86,17 @@ const {
 
       {canNext && (
         <li>
-          <a href={nextUrl} class:list={[
-            'w-10 h-10 m-2 text-sm',
-            'inline-flex justify-center items-center rounded-full select-none',
-            'transition-colors duration-150',
-            'focus:outline-none',
-            'md:w-12 md:h-12 md:text-base',
-            'bg-indigo-800 hover:bg-yellow-400 text-indigo-100 hover:text-yellow-800',
-          ]}>
+          <a
+            href={nextUrl}
+            class:list={[
+              'w-10 h-10 m-2 text-sm',
+              'inline-flex justify-center items-center rounded-full select-none',
+              'transition-colors duration-150',
+              'focus:outline-none',
+              'md:w-12 md:h-12 md:text-base',
+              'bg-indigo-800 hover:bg-yellow-400 text-indigo-100 hover:text-yellow-800',
+            ]}
+          >
             <HeroiconsArrowRight20Solid class="w-5 h-5" />
           </a>
         </li>
