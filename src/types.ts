@@ -62,6 +62,11 @@ export interface Project {
   tags?: string[]
 }
 
+export interface ProjectCategory {
+  title: string
+  projects: Project[]
+}
+
 export interface FriendLink {
   name: string
   link: string
