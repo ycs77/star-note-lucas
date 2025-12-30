@@ -140,9 +140,9 @@
   --animate-fade-in: fade-in 0.3s ease-out alternate both;
   --animate-stars-1-fade: stars-1-fade 10s linear infinite;
   --animate-stars-2-fade: stars-2-fade 10s linear 5s infinite;
-  --animate-home-title: home-title 0.8s ease 1s alternate both;
-  --animate-home-title-square: home-title-square 0.8s ease 1s alternate both;
-  --animate-home-sign: zoom-in 0.5s ease-out 2s alternate both;
+  --animate-home-title: home-title 0.8s ease 1.3s alternate both;
+  --animate-home-title-square: home-title-square 0.8s ease 1.3s alternate both;
+  --animate-home-sign: zoom-in 0.7s ease-out 2.3s alternate both;
   --animate-shooting-star: shooting-star 0.4s ease-out alternate both;
 
   @keyframes fade-in {
