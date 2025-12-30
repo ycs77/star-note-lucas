@@ -45,7 +45,7 @@ export default <Project[]>[
   },
   {
     title: 'ycsPlayer',
-    description: '線上影音點播包廂 - 線上影音點播包廂 - 像卡拉 OK 點歌機一樣選影片或點歌~🎵 跟遠端的朋友們一起同步觀賞~✨',
+    description: '線上影音點播包廂 - 像卡拉 OK 點歌機一樣選影片或點歌~🎵 跟遠端的朋友們一起同步觀賞~✨',
     url: 'https://github.com/ycs77/ycsplayer',
     tags: ['Inertia.js', 'Laravel', 'Vue.js'],
   },
