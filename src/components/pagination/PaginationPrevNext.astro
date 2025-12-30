@@ -19,7 +19,7 @@ const { prev, next, isSeries } = Astro.props
       <a href={`/posts/${parsePostSlug(prev).slug}`} class="group flex flex-row-reverse gap-2 sm:flex-col text-left">
         {/* {prev.data.image && (
           <div class="shrink-0 min-w-0 hidden sm:flex sm:items-center sm:mb-2">
-            <div class="relative w-32 aspect-16/9 bg-yellow-400 rounded overflow-hidden sm:w-[240px] sm:rounded-md">
+            <div class="relative w-32 aspect-video bg-yellow-400 rounded overflow-hidden sm:w-60 sm:rounded-md">
               <img
                 src={prev.data.image}
                 alt={prev.data.title}
@@ -47,7 +47,7 @@ const { prev, next, isSeries } = Astro.props
       <a href={`/posts/${parsePostSlug(next).slug}`} class="group flex gap-2 sm:flex-col text-right">
         {/* {next.data.image && (
           <div class="shrink-0 min-w-0 hidden sm:flex sm:justify-end sm:items-center sm:mb-2">
-            <div class="relative w-32 aspect-16/9 bg-yellow-400 rounded overflow-hidden sm:w-[240px] sm:rounded-md">
+            <div class="relative w-32 aspect-video bg-yellow-400 rounded overflow-hidden sm:w-60 sm:rounded-md">
               <img
                 src={next.data.image}
                 alt={next.data.title}
