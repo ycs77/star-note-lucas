@@ -8,7 +8,7 @@
     { "source": "/bsky", "destination": "https://bsky.app/profile/ycs77.star-note-lucas.me" },
     { "source": "/sponsor", "destination": "https://www.patreon.com/c/ycs77" },
     { "source": "/patreon", "destination": "https://www.patreon.com/c/ycs77" },
-    { "source": "/fb", "destination": "https://www.facebook.com/profile.php?id=61573986539814" },
+    { "source": "/fb", "destination": "https://www.facebook.com/star.note.lucas.77/" },
     { "source": "/discord", "destination": "https://discord.gg/2R6YFZjmGK" },
     { "source": "/rss", "destination": "https://star-note-lucas.me/rss.xml" },
 
