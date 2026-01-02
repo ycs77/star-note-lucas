@@ -1,7 +1,7 @@
 import type { SocialLink } from '@/types'
 import MingcuteFacebookLine from '~icons/mingcute/facebook-line'
 import TablerBrandBluesky from '~icons/tabler/brand-bluesky'
-// import TablerBrandDiscord from '~icons/tabler/brand-discord'
+import TablerBrandDiscord from '~icons/tabler/brand-discord'
 import TablerBrandGithub from '~icons/tabler/brand-github'
 import TablerRss from '~icons/tabler/rss'
 import siteConfig from '@/site.config'
@@ -19,12 +19,12 @@ export const socialLinks: SocialLink[] = [
     href: siteConfig.bluesky,
     icon: TablerBrandBluesky,
   },
-  // {
-  //   name: 'Discord',
-  //   label: '✨星星の聊天室',
-  //   href: siteConfig.discord,
-  //   icon: TablerBrandDiscord,
-  // },
+  {
+    name: 'Discord',
+    label: '✨星星の聊天室',
+    href: siteConfig.discord,
+    icon: TablerBrandDiscord,
+  },
   {
     name: 'Facebook',
     label: '星星的筆記．Lucas',
