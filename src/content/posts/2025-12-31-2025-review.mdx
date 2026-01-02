@@ -1,0 +1,108 @@
+---
+title: 2025 年終回顧
+description: 回顧了 Lucas 忙碌的 2025，有大學快畢業、部落格改版、做了開源專案、學習 AI 協作，以及對新一年的期許
+image: /og/2025-12-31-2025-review.jpg
+showImage: false
+pubDate: 2025-12-31
+category: life
+---
+
+其實以前是沒有寫回顧的習慣的，但今年突然有了寫的慾望XD 想說至少整理一下自己的這一年的經歷和以後的目標吧！
+
+## 渾渾噩噩的度過
+
+最近在聽 尖不想寫扣 這個 Podcast 的時候，Anthony 有分享說他今年會常常在想：「自己的人生想要什麼？要怎麼平衡工作與生活？」，我自己是滿有同感的。
+
+![尖不想寫扣 No Coding Today](/images/2025-12-31-2025-review-nocodingtoday.jpg)
+
+我讀了6~7年的大學終於快要畢業了，為了保證明年年初就可以畢業，今年我選的課都幾乎是塞滿的說，同時還有在做接案，生活節奏上是讓我有點喘不過氣來，也會常常想說我以後要怎麼平衡工作與生活？就會想希望未來自己可以做一些改變。聽到 Anthony 說他也在想這種事情，我自己也覺得或許沒那麼孤單了XD
+
+## 今年部落格做了什麼改變?
+
+回首望去 2025 年，我自己幾乎都被讀書和接案工作佔滿了，總覺得時間過得太快太快，有種自己快要變成只會重複讀書和工作的機器了呵呵。話雖是那麼說，但總歸還是有做了一些事情可以拿來分享的呵呵~
+
+今年我終於幫自己的部落格買了一個獨立的域名(star-note-lucas.me)了~ 對於我自己來說也是一個很重要的里程碑，像是解鎖了一個人生成就了一樣~ 以前只為了圖方便，都直接用 Vercel 預設的免費域名呵呵。
+
+然後今年終於對部落格進行了大改版，最近接案中有使用了 Astro 來試做了幾個專案，覺得他特別適合這種小型靜態網站，再加上原本的 VuePress 的靈活度不大夠，這就足以有動力來重寫了XDD 除了直接重寫部落格外，也對專案架構、畫面設計等都做了大量優化，最後現在看到的版本就是我自己很滿意的一版啦~
+
+## 被迫學習 AI，但是為了偷懶XD
+
+這兩年 AI 突然開始爆紅，讓我這個手寫派也被迫開始學習新工具了，找了一些 GitHub Copilot、Claude Code 的免費、付費課程開始學，學了半年至少可以在實際寫程式中一起協做，可以省了一些做有重複性剪剪貼貼的工作了~
+
+但不得說還是無法完全替代人，有滿多專案的大方向還是得自己把空住才行，畢竟我是真的不那麼信任 AI 就是了。
+
+## 優化 Terminal 體驗
+
+在開始用了 Claude Code 之後，就萌生了一些優化跟 Terminal 相關的想法。
+
+原本我的 Windows Terminal 有設定了一組背景圖片，每天登入電腦後就會自動輪換下一張，這些程式設定原本是和我常用的設定檔放在一起，但最近迷上了「魔法少女的魔女審判」XDD 想要可以快速替換不同的背景圖片，且為了好管理，就做了 [Terminal Wallpaper](https://github.com/ycs77/terminal-wallpaper)
+
+![Terminal 背景圖片](/images/2025-12-31-2025-review-terminal.jpg)
+
+然後 Claude Code 每次派發完任務之後，有任何問題或執行完成後都靜悄悄，完全不理人QQ 因此就爬了一下網路找播放提示音的作法，並做了 [Claude Code 提示音合集](https://github.com/ycs77/claude-code-notifications)，雖然只放了一個簡單的聲音，來不及做「魔法少女的魔女審判」的版本，等以後補上吧~
+
+## 寫了人生第一個 ESLint 套件
+
+自從 3 年前 Anthony Fu 釋出了 eslint-config，我才有使用 ESLint 的習慣直到現在。但最近 Astro 的專案中有個較為特殊的 JSX 寫法，雖然編譯器可以過網頁也能跑，但會在 ESLint 檢查中造成衝突。
+
+為了避免專案中出現此寫法，我就寫了人生中第一個 ESLint 的套件 [eslint-plugin-astro-explicit-wrapper](https://github.com/ycs77/eslint-plugin-astro-explicit-wrapper)~
+
+![我的第一個 ESLint 套件](/images/2025-12-31-2025-review-eslint-plugin.jpg)
+
+又達成一個人生小成就了~
+
+## 修了一個 Laravel 上游套件的 bug
+
+當然也是因為今年一直做 Astro 前端的專案，反倒 Laravel 就比較少碰了。
+
+在去年寫 Laravel 時其實就遇到了一個不大不小的問題，Laravel 為了讓 Console 顯示的內容可以設計更漂亮，使用了 Termwind 這個套件，雖然英文可以顯示正常，但如果寫了中文等 CJK 文字就會出現排版問題，雖然不影響程式運作，但看了會不大爽就是呵呵~
+
+於是就去提交了一個 PR：[Fix incorrect space count of CJK characters](https://github.com/nunomaduro/termwind/pull/186)，但 Review 速度非常緩慢，後來有一位網友 James 也對這個 PR 進度感興趣，我們一起跟進了一年後終於成功 merge 了~ 之後在 Laravel 和 Pest 都可以享受到正常的中文排版了！可喜可賀~
+
+Laravel Console 排版問題修復前：
+
+![Laravel Termwind 排版問題修復前](/images/2025-12-31-2025-review-termwind-cjk-bug-1.jpg)
+
+Laravel Console 排版問題修復後：
+
+![Laravel Termwind 排版問題修復後](/images/2025-12-31-2025-review-termwind-cjk-bug-2.jpg)
+
+Pest 測試畫面排版問題修復前：
+
+![Pest 測試畫面排版修復前](/images/2025-12-31-2025-review-termwind-cjk-bug-3.jpg)
+
+Pest 測試畫面排版問題修復後：
+
+![Pest 測試畫面排版修復後](/images/2025-12-31-2025-review-termwind-cjk-bug-4.jpg)
+
+## 開源 Laravel ezPay 電子發票套件
+
+不過也不是完全和 Laravel 絕緣，暑假的時候 阿龜微氣候 有想要串接 ezPay電子發票 API，他們後端也是使用 Laravel 寫，但現在市面上沒有好用的 ezPay電子發票 的 Laravel 套件，因此我們就合作開源了 [Laravel ezPay Invoice](https://github.com/Agriweather/laravel-ezpay-invoice) 套件，我負責開發，阿龜微氣候 團隊會繼續維護，希望大家多多支持開源~
+
+![Laravel ezPay Invoice 套件](/images/2025-12-31-2025-review-laravel-ezpay-invoice.jpg)
+
+## 2025 最喜歡的動漫
+
+當然今年也有看不少動漫，以下是我今年最喜歡的幾部：
+
+- 我們不可能成為戀人！絕對不行。（※似乎可行？）
+- 金牌得主
+- 明天，美食廣場見。
+- 對我垂涎欲滴的非人少女
+- 琉璃的寶石
+- GNOSIA
+- 前橋魔女
+- 妻子變成小學生。
+
+還有去電影院看的劇場版動畫，也是看得很爽的~
+
+- 鏈鋸人蕾潔篇
+- 佐賀偶像是傳奇 夢幻銀河樂園
+
+聽說 2026 年又會有好幾部熱門續作，期待明年可以繼續追番啦~
+
+## 新一年的目標
+
+對於 2026 年的目標，我雖然不敢訂定一個很具體的目標，但至少想要多學一點日文，畢竟還是想要直接看生肉的動漫XD，以及希望可以多去和不同的人交流，畢竟宅在家裡太久，都不大敢和人交流了呵呵，跨出一點舒適圈應該就是我的小目標啦~
+
+願 2026 年有個美好的一年。
