@@ -77,7 +77,7 @@ pm2 save
 
 # remote: 重啟服務
 pm2 list
-pm2 restart app_name
+pm2 restart app_name --update-env
 # 或者是完全刪除再啟動
 pm2 delete app_name
 pm2 start ./dist/server/entry.mjs --name app_name
@@ -101,7 +101,7 @@ git pull origin main
 yarn
 NODE_OPTIONS="--max-old-space-size=1024" yarn build
 
-pm2 restart app_name
+pm2 restart app_name --update-env
 ```
 
 然後就可以 ssh 到伺服器上執行這個腳本來部署了：
