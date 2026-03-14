@@ -29,5 +29,5 @@ export function getCJKCharacters(text: string): string {
   const metches = text.match(/[\p{Script=Han}\u3000-\u303F\u30A0-\u30FF\uFF01-\uFF60\uFF61-\uFFDC\uFFE0-\uFFEF]/gu)
   if (!metches) return ''
 
-  return Array.from(new Set(metches)).join('')
+  return [...new Set(metches)].join('')
 }

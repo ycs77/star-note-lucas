@@ -90,8 +90,9 @@ gpg --list-secret-keys --keyid-format LONG
 
 如果我們要簽章 Git 提交，就必須先取得金鑰 ID：
 
-```
-$ gpg --list-secret-keys --keyid-format SHORT
+```bash withOutput
+> gpg --list-secret-keys --keyid-format SHORT
+
 [keyboxd]
 ---------
 sec   rsa4096/0E4062EF 2021-04-08 [SC]
@@ -128,8 +129,9 @@ git config --global tag.gpgSign true
 
 顯示含有簽章資訊的 Git 的指令：
 
-```
-$ git log --show-signature
+```bash withOutput
+> git log --show-signature
+
 commit aa993b7b69b47a6bf9d23cacf56e00139f3907a0 (HEAD -> main, origin/main)
 gpg: Signature made 2021/4/8 <A4>U<A4><C8> 04:54:57 <A5>x<A5>_<BC>зǮɶ<A1>
 gpg:                using RSA key CB8E694EB798BFED6FA1C2DC88D3F62D215D5306

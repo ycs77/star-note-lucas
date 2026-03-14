@@ -47,7 +47,7 @@ export const GET: APIRoute = async context => {
 // Reference: https://github.com/withastro/roadmap/discussions/419#discussioncomment-11488764
 function sanitizeArticleHtml(html: string, baseUrl: string) {
   return sanitizeHtml(html, {
-    allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+    allowedTags: [...sanitizeHtml.defaults.allowedTags, ...['img']],
     transformTags: {
       a: (tagName, attribs) => ({
         tagName,
