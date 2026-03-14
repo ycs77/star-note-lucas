@@ -13,18 +13,14 @@ GPG 全名為 [The GNU Privacy Guard](https://gnupg.org/)，又稱 [GnuPG](https
 
 ### Windows
 
-Windows 可以安裝 [Gpg4win](https://www.gpg4win.org/)，安裝完成之後，必須開啟新的「命令提示字元」。
+Windows 環境中現在在 Git Bash 已經內建了 GPG，安裝 Git 的時候就會安裝好 GPG 了。
 
-並執行以下指令，找出 `gpg.exe` 執行檔所在路徑：
+不過也可以獨立安裝 [Gpg4win](https://www.gpg4win.org/)，還附有一個 GUI 介面的 金鑰管理員(Kleopatra) 與 Outlook 外掛程式，如果你需要還是可以安裝的。
 
-```bash
-where.exe gpg
-```
-
-然後設定 Git 的 gpg.program 選項設定，指定 gpg.exe 所在路徑：
+雖然可以不用安裝 gpg，但還是需要設定 Git 的 gpg.program 選項設定，指定 gpg.exe 所在路徑：
 
 ```bash
-git config --global gpg.program "C:\Program Files (x86)\GnuPG\bin\gpg.exe"
+git config --global gpg.program "C:\Program Files\Git\usr\bin\gpg.exe"
 ```
 
 ### Bash
@@ -43,22 +39,11 @@ error: gpg failed to sign the data
 fatal: failed to write commit object
 ```
 
-### Git 設定
-
-設定 Git 在每次提交 (commit) 或標籤 (tag) 都會加上 GPG 簽章：
-
-```
-git config --global commit.gpgSign true
-git config --global tag.gpgSign true
-```
-
 ## GPG 使用方式
 
 安裝好之後就可以開始使用了。
 
 ### 建立 GPG 金鑰組
-
-記住在 Windows 必須使用「命令提示字元」，不能用 Git Bash 來建立。
 
 ```bash
 gpg --full-generate-key
@@ -66,9 +51,9 @@ gpg --full-generate-key
 
 建立過程中，需要輸入以下：
 
-1. Please select what kind of key you want: 輸入 `4` 為 `(4) RSA (sign only)`
-2. keysize: 輸入 `4096`
-3. Please specify how long the key should be valid: 輸入 `Enter` (`0`)
+1. Please select what kind of key you want: 輸入 `Enter` 選預設值 `(9) ECC (sign and encrypt)`
+2. Please select which elliptic curve you want: 輸入 `Enter` 選預設值 `(1) Curve 25519`
+3. Please specify how long the key should be valid: 輸入 `2y`
 4. 輸入你的 GitHub 的名稱和 E-mail
 5. 輸入 `O` (即 OK)
 6. 設定密碼
@@ -76,15 +61,13 @@ gpg --full-generate-key
 看到如下畫面就是建立成功了：
 
 ```
-gpg: key AFA8022C0E4062EF marked as ultimately trusted
-gpg: revocation certificate stored as 'C:/Users/[使用者]/AppData/Roaming/gnupg/openpgp-revocs.d\7144F0FE70DA28DE2428982FAFA8022C0E4062EF.rev'
+gpg: revocation certificate stored as '/c/Users/Lucas/.gnupg/openpgp-revocs.d\7144F0FE70DA28DE2428982FAFA8022C0E4062EF.rev'
 public and secret key created and signed.
 
-Note that this key cannot be used for encryption.  You may want to use
-the command "--edit-key" to generate a subkey for this purpose.
-pub   rsa4096 2021-04-08 [SC]
-      7144F0FE70DA28DE2428982FAFA8022C0E4062EF
+pub   ed25519 2021-04-08 [SC] [expires: 2023-04-08]
+      DC279878969CA746899B02FFAE57F5023B001577
 uid                      Lucas Yang <yangchenshin77@gmail.com>
+sub   cv25519 2021-04-08 [E] [expires: 2023-04-08]
 ```
 
 ### 查詢 GPG 金鑰組
@@ -108,12 +91,13 @@ gpg --list-secret-keys --keyid-format LONG
 如果我們要簽章 Git 提交，就必須先取得金鑰 ID：
 
 ```
-C:\Users\[使用者]>gpg --list-secret-keys --keyid-format SHORT
-C:/Users/[使用者]/AppData/Roaming/gnupg/pubring.kbx
-------------------------------------------------
+$ gpg --list-secret-keys --keyid-format SHORT
+[keyboxd]
+---------
 sec   rsa4096/0E4062EF 2021-04-08 [SC]
       7144F0FE70DA28DE2428982FAFA8022C0E4062EF
 uid         [ultimate] Lucas Yang <yangchenshin77@gmail.com>
+ssb   cv25519/5F50EFE6 2021-04-08 [E]
 ```
 
 上述訊息中，`sec` 就是 `secret` (私密金鑰)，而 `7144F0FE70DA28DE2428982FAFA8022C0E4062EF` 就是完整的金鑰 ID，可以用簡短的金鑰代替，也就是 `0E4062EF`，之後的操作都會用到這段 ID。
@@ -126,7 +110,19 @@ uid         [ultimate] Lucas Yang <yangchenshin77@gmail.com>
 git config --global user.signingkey 0E4062EF
 ```
 
-然後現在執行 Git 提交 (commit) 或標籤 (tag) 都會加上 GPG 簽章了。
+然後就可以在 Git 提交 (commit) 或標籤 (tag) 時進行 GPG 簽章：
+
+```bash
+git commit -S
+git tag -s
+```
+
+當然也可以設定自動簽章：
+
+```bash
+git config --global commit.gpgSign true
+git config --global tag.gpgSign true
+```
 
 ### 顯示 Git 簽章資訊
 
@@ -134,7 +130,7 @@ git config --global user.signingkey 0E4062EF
 
 ```
 $ git log --show-signature
-commit aa993b7b69b47a6bf9d23cacf56e00139f3907a0 (HEAD -> vue3-type-file, origin/vue3-type-file)
+commit aa993b7b69b47a6bf9d23cacf56e00139f3907a0 (HEAD -> main, origin/main)
 gpg: Signature made 2021/4/8 <A4>U<A4><C8> 04:54:57 <A5>x<A5>_<BC>зǮɶ<A1>
 gpg:                using RSA key CB8E694EB798BFED6FA1C2DC88D3F62D215D5306
 gpg: Good signature from "Lucas Yang <yangchenshin77@gmail.com>" [ultimate]
@@ -213,6 +209,14 @@ gpg --delete-secret-key 0E4062EF
 ```bash
 gpg --delete-key 0E4062EF
 ```
+
+## 延長 GPG 金鑰組的有效期限
+
+```bash
+gpg --edit-key 0E4062EF
+```
+
+進入互動介面後，輸入 `expire`，然後選擇新的有效期限比如 `2y`，最後輸入 `save` 就完成了。
 
 ## 參考資料
 
