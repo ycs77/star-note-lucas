@@ -20,4 +20,18 @@
   .expressive-code .frame {
     box-shadow: none !important;
   }
+
+  .expressive-code .frame.is-terminal pre[data-language] {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+  }
+
+  .expressive-code .frame pre.output {
+    background: var(--code-background) !important;
+    color: var(--ec-codeFg) !important;
+    font-family: var(--ec-codeFontFml) !important;
+    font-size: var(--ec-codeFontSize) !important;
+    font-weight: var(--ec-codeFontWg) !important;
+    line-height: var(--ec-codeLineHt) !important;
+  }
 }
