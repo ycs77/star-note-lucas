@@ -25,9 +25,10 @@ git config --global gpg.program "C:\Program Files\Git\usr\bin\gpg.exe"
 
 ### Bash
 
-如果有使用 Bash，需要增加以下指令到 `~/.profile` 或 `~/.bashrc` 或 `~/.bash_profile` 檔案中：
+如果有使用 Bash，需要增加以下指令到 `~/.bashrc` 檔案中：
 
 ```bash
+# GPG Agent setup for Git commit signing
 export GPG_TTY=$(tty)
 gpgconf --launch gpg-agent
 ```
