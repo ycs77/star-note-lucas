@@ -1,25 +1,25 @@
-Create a new blog post for this Astro blog.
+為這個 Astro blog 建立一篇新文章。
 
-## Step 1 — Collect required information
+## Step 1 — 收集必要資訊
 
-Before creating any files, ask the user for **all** of the following in a **single message**. Do NOT proceed until every required field is answered.
+在建立任何檔案之前，用**一則訊息**向使用者詢問以下**所有**資訊。在所有必填欄位都確認之前，不得繼續進行。
 
-Required:
-- **Title** — the post title
-- **Slug** — the URL slug used in the filename (suggest one based on the title, but require confirmation; for Chinese titles, suggest a meaningful English slug)
-- **Date** — in `YYYY-MM-DD` format (default: today's date from the session context)
-- **Category** — must be exactly one of: `coding`, `acg`, `life`
+必填：
+- **Title** — 文章標題
+- **Slug** — 用於檔名的 URL slug（根據標題建議一個，但需要使用者確認；中文標題請建議有意義的英文 slug）
+- **Date** — `YYYY-MM-DD` 格式（預設：從 session context 取得今天的日期）
+- **Category** — 必須是以下其中一個：`coding`、`acg`、`life`
 
-Optional (ask and accept "none" or skip):
-- **Tags** — list of tags, e.g. `["Astro", "Vue"]`
-- **Description** — short summary for the post
-- **Create OG image template?** — yes or no (creates a matching file in `src/content/og/`)
+選填（可回答「無」或略過）：
+- **Tags** — tag 清單，例如 `["Astro", "Vue"]`
+- **Description** — 文章的簡短摘要
+- **建立 OG image template？** — 是或否（會在 `src/content/og/` 建立對應檔案）
 
-## Step 2 — Create the post file
+## Step 2 — 建立文章檔案
 
-Create `src/content/posts/YYYY-MM-DD-slug.mdx` using the collected values.
+使用收集到的資訊建立 `src/content/posts/YYYY-MM-DD-slug.mdx`。
 
-Frontmatter template:
+Frontmatter 範本：
 
 ```
 ---
@@ -33,16 +33,16 @@ draft: true
 ---
 ```
 
-Rules:
-- Uncomment `description` only if the user provided one.
-- Omit `tags` line entirely if no tags were given.
-- Always set `draft: true`.
-- Leave a single blank line after the closing `---` before any body content.
+規則：
+- 只有在使用者有提供 description 時才取消註解該行。
+- 若沒有提供 tags，則完全省略 `tags` 那一行。
+- 永遠設定 `draft: true`。
+- 結尾的 `---` 之後到正文內容之間保留一個空行。
 
-## Step 3 — Optionally create OG image template
+## Step 3 — 選擇性建立 OG image template
 
-If the user said yes in Step 1, create `src/content/og/YYYY-MM-DD-slug.astro` by copying the structure from an existing file in that directory (e.g. `src/content/og/default.astro`) and adapting the title.
+若使用者在 Step 1 回答是，則建立 `src/content/og/YYYY-MM-DD-slug.astro`，參考該目錄下現有的檔案結構（例如 `src/content/og/default.astro`）並修改標題。
 
-## Step 4 — Report
+## Step 4 — 回報結果
 
-List the file(s) created and remind the user that `draft: true` means the post is hidden in production.
+列出建立的檔案，並提醒使用者 `draft: true` 代表文章在 production 環境中不會顯示。
