@@ -2,18 +2,18 @@
 
 ## Step 1 — 收集必要資訊
 
-在建立任何檔案之前，用**一則訊息**向使用者詢問以下**所有**資訊。在所有必填欄位都確認之前，不得繼續進行。
+在建立任何檔案之前，必須先向使用者收集以下所有資訊。在所有必填欄位都確認之前，不得繼續進行。
 
 必填：
 - **Title** — 文章標題
-- **Slug** — 用於檔名的 URL slug（根據標題建議一個，但需要使用者確認；中文標題請建議有意義的英文 slug）
-- **Date** — `YYYY-MM-DD` 格式（預設：從 session context 取得今天的日期）
-- **Category** — 必須是以下其中一個：`coding`、`acg`、`life`
+- **Slug** — 用於檔名的 URL slug（根據標題建議一個；中文標題請建議有意義的英文 slug）。使用 `AskUserQuestion` 請使用者確認或修改建議的 slug。
+- **Date** — `YYYY-MM-DD` 格式。使用 `AskUserQuestion` 顯示預設日期（從 session context 取得今天的日期），請使用者確認或修改。
+- **Category** — 使用 `AskUserQuestion` 讓使用者從 `coding`、`acg`、`life` 三個選項中選擇。
 
-選填（可回答「無」或略過）：
+選填：
 - **Tags** — tag 清單，例如 `["Astro", "Vue"]`
 - **Description** — 文章的簡短摘要
-- **建立 OG image template？** — 是或否（會在 `src/content/og/` 建立對應檔案）
+- **建立 OG image template？** — 使用 `AskUserQuestion` 詢問是否要在 `src/content/og/` 建立對應的 OG image template 檔案。
 
 ## Step 2 — 建立文章檔案
 
