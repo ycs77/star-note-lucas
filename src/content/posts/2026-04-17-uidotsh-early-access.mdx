@@ -1,0 +1,46 @@
+---
+title: 試用 ui.sh：Tailwind 的 AI 設計工具
+description: Tailwind 最近推出了一個 AI 前端設計服務 ui.sh，剛好搶到了早期體驗的機會。底層是一套 Tailwind CSS 設計最佳實踐資料庫，透過 skill 呼叫遠端 MCP 來使用。其中最有趣的功能是設計方案選擇器，可以一次產生 4 組方案讓你挑選。
+pubDate: 2026-04-17
+category: coding
+tags: ["TailwindCSS"]
+---
+
+來淺淺分享一下 Tailwind 推出的新 AI 服務 ui.sh 的體驗心得~
+
+## ui.sh 是什麼?
+
+[ui.sh](https://ui.sh/) 是 Tailwind 推出的新 AI 服務，使用 /ui 這個 skill 來改善 AI 產生的 Tailwind CSS 網站設計，底層是一套用於設計和建立 UI 的最佳實踐資料庫。目前擅長的領域是產生 Landing Page、Dashboard 等常見的網站類型。
+
+技術上是使用 skill 來呼叫遠端的 MCP，然後才能取得更詳細的設計指引內容，算是使用了漸進式揭露的設計方式，好處是有任何更新都會是即時的，不需要重新安裝任何 skill。這種設計基本上在 Claude Code 和 Codex 上都是可以使用的，不過文件寫了建議你使用 Opus 4.6 就是了哈哈哈
+
+原因是因為在建構 ui.sh 的 prompt 時，是讓 Tailwind 團隊的設計師 Steve Schoger 在學習使用 Claude Code 建構網站的過程中，將其中的經驗精煉出來而變成 ui.sh 的，然後人家又是使用 Opus 4.6... 像我這樣的 $20 使用者沒辦法大規模使用阿... 今天我嘗試用一下 Opus 4.7，做了 1.5 個功能然後就被強制休息了呵呵
+
+## 設計方案選擇器
+
+比起設計內容是其次，我覺得最好玩的是這個選擇器XDD 沒有靈感的時候，只要跟 AI 許願說請幫我產生一些不同的設計方案，它就會在 HTML 中注入 ui-picker.js 的腳本，然後你的網頁中就會在下方出現一個黑色選擇器，可以切換 4 組方案讓你選擇~ 而且不僅限在整個頁面，網頁其中的一個小區塊一樣也可以~ 對於有時候想要重新洗牌 AI 產生 UI 的操作變得更容易了。
+
+下面是我使用 ui.sh 搭配 Opus 4.7 產生的設計方案選擇器的結果：
+
+![設計方案選擇1](/images/2026-04-17-uidotsh-early-access-1.png)
+
+![設計方案選擇2](/images/2026-04-17-uidotsh-early-access-2.png)
+
+![設計方案選擇3](/images/2026-04-17-uidotsh-early-access-3.png)
+
+![設計方案選擇4](/images/2026-04-17-uidotsh-early-access-4.png)
+
+## 產品狀態和收費方式
+
+目前 ui.sh 產品狀態是封閉測試階段，需要先加入候補名單，然後才有機會收到邀請使用的機會。然後收費方式是每年 USD$120 ($10/月)。我是覺得不算太貴，又急著想體驗，所以就刷下去了哈哈哈
+
+## 如何選擇前端設計的 Skill?
+
+目前我知道的前端設計相關的 Skill 大概有這幾個，簡單介紹一下差異 (只有 ui.sh 是付費的，其他都免費)：
+
+- [ui.sh](https://ui.sh/)：專門為 Tailwind CSS 網站設計的，如果你是 Tailwind 的使用者，這個 Skill 可能會非常適合你
+- Anthropic 的 [frontend-design skill](https://github.com/anthropics/claude-code/blob/main/plugins/frontend-design/skills/frontend-design/SKILL.md)：算是比較通用的前端設計工具，適用於想要快速美化前端設計的開發者，如果你想要快速產出一個有個性的頁面，可以直接使用這個 Skill
+- [impeccable](https://impeccable.style/)：一個更全面的前端設計工具，提供了從設計到實現的完整流程，適合有一定前端設計經驗的開發者，尤其是那些需要嚴格避免 AI slop 設計模式的團隊
+- [ui-ux-pro-max](https://ui-ux-pro-max-skill.nextlevelbuilder.io/)：一個大型的知識庫驅動的設計系統自動化工廠，適合需要快速生成比較成熟的設計系統的團隊
+
+定位上都是有些不同，可以根據自己的需求來選擇適合的工具~
