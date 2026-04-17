@@ -13,7 +13,7 @@ import { Tip, Danger } from '@/components/callouts'
 
 首先先確保有設定好 [SSH 無密碼登入](/posts/ssh-login-without-password)，讓 SSH 連線可以掛在後台運行。
 
-然後執行以下 SSH 指令連線到遠端主機，使用此方式連線會把本地的 port (這裡只 3306) 轉發到遠端主機的 (這裡只 3307)：
+然後執行以下 SSH 指令連線到遠端主機，使用此方式連線會將本地的 3307 port 轉發到遠端主機的 3306 port：
 
 ```bash
 ssh -fNL 3307:localhost:3306 root@REMOTE_HOST
