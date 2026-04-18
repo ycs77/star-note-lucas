@@ -16,6 +16,17 @@
     { "source": "/posts", "destination": "/coding" },
     { "source": "/post/:path*", "destination": "/posts/:path*" }
   ],
+  "headers": [
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Link",
+          "value": "</rss.xml>; rel=\"service-desc\", </sitemap-index.xml>; rel=\"describedby\""
+        }
+      ]
+    }
+  ],
   "cleanUrls": true,
   "trailingSlash": false
 }
