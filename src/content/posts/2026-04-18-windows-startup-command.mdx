@@ -1,0 +1,48 @@
+---
+title: Windows 中優雅的開機自動執行 JS 腳本
+pubDate: 2026-04-18
+category: coding
+tags: ["Windows"]
+---
+
+這一陣子有在做兩個小工具，都是要在 Windows 開機的時候自動執行特定的 JS 腳本，原本我用了工作排程器 (Task Scheduler) 來觸發，但問題就在每次開機之後，都會閃過一下終端機視窗，看著就會有點不爽就是了。
+
+所以我就去找了一下有沒有更好的方式，去找了一些 Windows 啟動 JS 腳本的套件，爬到原始碼之後，發現竟然是用 VBScript + Regedit 的方式來達成的，而且試過之後還真的不會閃出終端機視窗，Windows 還真是麻煩啊！
+
+## 實作自動開機腳本
+
+首先需要將檔案放在同一個資料夾中：
+
+```plaintext
+root/
+├── my-service.js   - 我們寫的，要自動執行的 JavaScript 腳本
+├── start.vbs       - 用來執行 JS 腳本的 VBScript 腳本
+├── install.cmd     - 註冊開機自動執行
+└── uninstall.cmd   - 取消註冊開機自動執行
+```
+
+基本上原理就是，會在 Windows 的 Regedit 裡面註冊一個項目，會在開機啟動時執行一個 VBScript 腳本 `start.vbs`，裡面會透過 Node.js 來執行傳給該 VBScript 的腳本：
+
+```vbscript title="start.vbs"
+CreateObject("WScript.Shell").Run """C:\Program Files\nodejs\node.exe"" """ & WScript.Arguments(0) & """", 0, False
+```
+
+接著我們需要 `install.cmd` 和 `uninstall.cmd` 兩個批次檔，分別用來註冊和取消註冊這個開機自動執行的功能。註冊時需要提供一個名字，可以將 `MyService` 替換成你想要的名字，還有要執行的 JS 腳本路徑 `my-service.js`，`%~dp0` 是批次檔所在的資料夾路徑，這樣就不需要擔心路徑問題了：
+
+```bat title="install.cmd"
+@echo off
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "MyService" /t REG_SZ /d "wscript.exe \"%~dp0start.vbs\" \"%~dp0my-service.js\"" /f
+echo.
+echo MyService installed successfully!
+pause
+```
+
+然後對應的取消註冊的批次檔，做刪除註冊項目的動作就可以了：
+
+```bat title="uninstall.cmd"
+@echo off
+reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "MyService" /f
+echo.
+echo MyService uninstalled successfully!
+pause
+```
