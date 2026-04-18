@@ -43,4 +43,7 @@ export default defineConfig({
       rehypeAutolinkHeadings,
     ],
   },
+  devToolbar: {
+    enabled: false,
+  },
 })

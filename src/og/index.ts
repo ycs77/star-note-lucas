@@ -102,8 +102,10 @@ export async function getOGImageHtml({ title, template }: {
   template: AstroComponentFactory | undefined
 }) {
   const container = await AstroContainer.create()
+
   // @ts-ignore
   container.addServerRenderer({ renderer: vueRenderer })
+
   const html = await container.renderToString(template || defaultTemplate, {
     props: {
       title,

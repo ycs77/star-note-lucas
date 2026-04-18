@@ -1,10 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "mcp__astro-docs__search_astro_docs"
+      "mcp__astro-docs__search_astro_docs",
+      "mcp__chrome-devtools__close_page",
+      "mcp__chrome-devtools__list_pages",
+      "mcp__chrome-devtools__new_page",
+      "mcp__chrome-devtools__resize_page",
+      "mcp__chrome-devtools__take_screenshot"
     ]
   },
   "enabledMcpjsonServers": [
-    "astro-docs"
+    "astro-docs",
+    "chrome-devtools"
   ]
 }
