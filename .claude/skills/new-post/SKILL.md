@@ -1,34 +1,34 @@
 ---
 name: new-post
-description: 為這個 Astro blog 建立新文章的完整流程，包含收集 frontmatter 資訊、建立 .mdx 檔案，以及選擇性建立 OG image template。當使用者說「新增文章」、「建立文章」、「寫新文章」、「new post」、「create post」，或提到要在 blog 上發表任何內容時，一律使用此 skill，不要自行假設欄位值。
+description: 為這個 Astro blog 建立新文章。當使用者說「新增文章」、「建立文章」、「寫新文章」、「new post」、「create post」、「我想發一篇」、「幫我建一篇」，或提到要在 blog 上發表任何內容時，一律使用此 skill。即使使用者已提供部分資訊（如標題），仍需使用此 skill 確認其他必填欄位。
 ---
 
 # New Post
 
-為這個 Astro blog 建立一篇新文章。
+為這個 Astro blog 建立一篇新文章。這個流程的核心原則是：**在使用者確認所有必填欄位之前，不建立任何檔案。**
 
-## Step 1 — 收集必要資訊
+## Step 1 — 收集資訊
 
-在建立任何檔案之前，先向使用者收集以下所有資訊。**在所有必填欄位都確認之前，不得建立任何檔案。**
+向使用者詢問以下欄位。可以一次問完，但必須在所有必填欄位有明確答案後才繼續。
 
-使用 `AskUserQuestion` 確認下列欄位，可合併在同一次問答中，但每個必填欄位都必須有明確答案才能繼續。
+**必填**
 
-必填：
-- **Title** — 文章標題
-- **Slug** — 用於檔名的 URL slug。根據標題建議一個合理的值（中文標題請建議有意義的英文 slug），再請使用者確認或修改。
-- **Date** — `YYYY-MM-DD` 格式。顯示今天日期作為預設值，請使用者確認或修改。
-- **Category** — 讓使用者從 `coding`、`acg`、`life` 三個選項中選擇一個。
+| 欄位 | 說明 |
+|------|------|
+| Title | 文章標題 |
+| Slug | 用於檔名與 URL 的識別碼。根據標題建議一個值（中文標題請給有意義的英文 slug），讓使用者確認或修改。 |
+| Date | `YYYY-MM-DD` 格式，預設為今天，讓使用者確認或修改。 |
+| Category | 從 `coding`、`acg`、`life` 三選一。 |
 
-選填（未提供則省略）：
+**選填**（使用者未提供則直接省略，不必追問）
+
 - **Tags** — tag 清單，例如 `["Astro", "Vue"]`
 - **Description** — 文章的簡短摘要
-- **OG image template** — 是否要在 `src/content/og/` 建立對應的 OG image template
+- **OG image template** — 是否在 `src/content/og/` 建立客製 OG image 模板
 
-## Step 2 — 建立文章檔案
+## Step 2 — 建立文章
 
-在 `src/content/posts/YYYY-MM-DD-slug.mdx` 建立文章。
-
-Frontmatter 範本：
+在 `src/content/posts/YYYY-MM-DD-slug.mdx` 建立文章檔案。
 
 ```mdx
 ---
@@ -40,19 +40,19 @@ category: <category>
 tags: [<tags>]
 draft: true
 ---
+
 ```
 
-規則：
-- 只有使用者有提供 description 時才取消 `# description:` 那行的註解。
-- 若沒有提供 tags，則完全省略 `tags` 那一行。
-- 永遠設定 `draft: true`（production 環境不顯示草稿）。
-- 結尾的 `---` 後到正文之間保留一個空行。
+調整規則：
 
-## Step 3 — 選擇性建立 OG image template
+- 有提供 description → 取消 `# description:` 的註解並填入內容
+- 沒有提供 tags → 完整省略 `tags` 那行（不留空行）
+- `draft: true` 永遠保留——這讓文章在 dev 環境可預覽，但 production 不會出現
+- 最後一個 `---` 後空一行，讓正文有清楚的起點
 
-若使用者在 Step 1 選擇建立 OG image template，則在 `src/content/og/YYYY-MM-DD-slug.astro` 建立檔案。
+## Step 3 — 建立 OG image template（選填）
 
-參考 `src/content/og/default.astro` 的結構，並將標題替換為文章實際標題：
+若使用者在 Step 1 選擇建立 OG image template，在 `src/content/og/YYYY-MM-DD-slug.astro` 建立：
 
 ```astro
 ---
@@ -68,10 +68,8 @@ const { title } = Astro.props
 </div>
 ```
 
-> 只有在 `src/content/og/` 有對應檔案的文章才會產生客製 OG image；其餘使用 `public/images/` 的靜態圖片。
+這裡的結構與 `src/content/og/default.astro` 相同——只有在此目錄有對應檔案的文章才會產生客製 OG image，其餘使用 `public/images/` 的靜態圖片。
 
 ## Step 4 — 回報結果
 
-列出所有建立的檔案路徑，並提醒使用者：
-- `draft: true` 代表文章在 production 環境中不會顯示。
-- 若要發佈，需手動移除 `draft: true` 或改為 `draft: false`。
+列出所有建立的檔案路徑，並提醒：`draft: true` 表示文章在 production 不顯示，發佈前需手動改為 `draft: false`。
