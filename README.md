@@ -21,8 +21,8 @@
 ## 開發
 
 ```bash
-yarn
-yarn dev
+pnpm install
+pnpm dev
 ```
 
 ## LICENSE

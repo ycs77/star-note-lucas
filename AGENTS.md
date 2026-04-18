@@ -14,9 +14,9 @@
 
 ## Commands
 
-- `yarn astro check`
-- `yarn lint --fix`
-- `yarn eslint [...files] --fix`
+- `pnpm astro check`
+- `pnpm lint --fix`
+- `pnpm eslint [...files] --fix`
 
 ## Rules
 
