@@ -23,7 +23,7 @@ root/
 
 基本上原理就是，會在 Windows 的 Regedit 裡面註冊一個項目，會在開機啟動時執行一個 VBScript 腳本 `start.vbs`，裡面會透過 Node.js 來執行傳給該 VBScript 的腳本：
 
-```vbscript title="start.vbs"
+```vb title="start.vbs"
 CreateObject("WScript.Shell").Run """C:\Program Files\nodejs\node.exe"" """ & WScript.Arguments(0) & """", 0, False
 ```
 
