@@ -1,0 +1,70 @@
+---
+import type { AstroInstance } from 'astro'
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js'
+import type { CollectionEntry } from 'astro:content'
+import { getOGImageHtml } from '@/og'
+import { getPostCollection } from '@/post'
+import '@/styles/index.css'
+
+interface Props {
+  post: CollectionEntry<'posts'>
+  template?: AstroComponentFactory
+}
+
+export async function getStaticPaths() {
+  // Only dev mode will visit the OG image devtools
+  if (import.meta.env.PROD) {
+    return []
+  }
+
+  const posts = await getPostCollection()
+  const templates = import.meta.glob('../../../content/og/*.astro') as Record<string, () => Promise<AstroInstance | undefined>>
+  const paths = await Promise.all(
+    posts.map(async post => {
+      const templatePath = `../../../content/og/${post.id}.astro`
+      const template = templates[templatePath]
+        ? await templates[templatePath]().then(m => m?.default)
+        : undefined
+      return {
+        params: { filename: post.id },
+        props: { post, template },
+      }
+    })
+  )
+  return paths.filter(({ props }) => props.template)
+}
+
+// Only dev mode will visit the OG image devtools
+if (import.meta.env.PROD) {
+  return Astro.rewrite('/404')
+}
+
+const post = Astro.props.post
+
+const { width, height, html } = await getOGImageHtml({
+  title: post.data.title,
+  template: Astro.props.template,
+})
+---
+
+<!DOCTYPE html>
+<html style="height: 100%;">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;700&family=Noto+Sans+TC:wght@100;300;700&display=swap" />
+  </head>
+  <body class="antialiased" style={{ width: '100%', height: '100%', minWidth: `${width}px`, minHeight: `${height}px`, margin: 0, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgb(14, 14, 14)' }}>
+    <div class="relative" style={{ width: `${width}px`, height: `${height}px` }}>
+      <Fragment set:html={html} />
+
+      <!-- 輔助邊框 -->
+      <!-- <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div class="h-full aspect-video border border-gray-300"></div>
+      </div> -->
+    </div>
+  </body>
+</html>

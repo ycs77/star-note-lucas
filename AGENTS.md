@@ -11,6 +11,7 @@
 - Node.js v24
 - Astro v6
 - TypeScript formatting: 2 spaces, single quotes, no semicolons, trailing commas
+- chrome-devtools MCP base URL: `http://localhost:4321/`
 
 ## Commands
 
@@ -26,13 +27,11 @@
 ## OG Image
 
 - `src/content/og/` — per-post OG image Astro templates (only posts with a matching file here get a custom OG image; the rest use static images in `public/images/`).
-- `src/og/` — core OG image generation (Satori + Sharp, dynamic CJK font loading).
-- `src/pages/og/[filename].jpg.ts` — production endpoint for OG images.
+- `src/og/` — renders OG Astro templates to HTML strings via `AstroContainer`.
 - `src/pages/og/[filename].astro` — dev-only devtools page, blocked in production (redirects to /404).
 
 ## Non-Obvious Behavior
 
 - Draft posts (`draft: true` in frontmatter) are visible in dev but hidden in production.
-- Excerpt generation uses experimental `AstroContainer` API with Vue and MDX renderers; `@ts-ignore` comments are intentional.
-- OG image generation dynamically fetches `Noto Sans TC` from Google Fonts at runtime for CJK characters.
+- OG image dev page loads Inter and Noto Sans TC via Google Fonts `<link>` tags; screenshots are captured by chrome-devtools MCP.
 - Build command runs `astro check` before `astro build`; type errors will fail the build.

@@ -1,0 +1,36 @@
+---
+import BgWaveFullUrl from '@/../public/images/bg-wave-full.svg?url'
+import BgWaveHalfUrl from '@/../public/images/bg-wave-half.svg?url'
+import { cn } from '@/utils/className'
+
+interface Props {
+  bg?: 'wave-full' | 'wave-half'
+  class?: astroHTML.JSX.HTMLAttributes['class']
+}
+
+const { bg } = Astro.props
+
+let bgImage: string | null = null
+
+switch (bg) {
+  case 'wave-full':
+    bgImage = BgWaveFullUrl
+    break
+  case 'wave-half':
+    bgImage = BgWaveHalfUrl
+    break
+}
+---
+
+<div
+  class={cn([
+    'relative flex flex-col justify-between items-center w-full h-full',
+    bg === 'wave-full' && 'bg-white bg-top bg-[length:100%_auto] bg-no-repeat text-indigo-900',
+    bg === 'wave-half' && 'bg-white bg-top bg-[length:100%_auto] bg-no-repeat text-indigo-900',
+  ], Astro.props.class)}
+  style={{
+    backgroundImage: bgImage ? `url("${bgImage}")` : undefined,
+  }}
+>
+  <slot />
+</div>

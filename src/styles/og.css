@@ -1,0 +1,7 @@
+@import "./index.css";
+
+@layer base {
+  html {
+    @apply leading-[1.2];
+  }
+}

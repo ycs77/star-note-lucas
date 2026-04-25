@@ -1,16 +1,15 @@
 ---
 import IonInfinite from '~icons/ion/infinite'
-import InertiajsLogo from '../../../public/images/inertiajs-circle.svg'
-import BgWaveFull from '../../components/og/BgWaveFull.astro'
+import InertiajsLogo from '@/../public/images/inertiajs-circle.svg'
+import Container from '@/components/og/Container.astro'
 ---
 
-<div class="relative flex flex-col justify-between items-center w-full h-full bg-white text-indigo-900">
-  <BgWaveFull />
-
-  <div class="relative flex flex-col justify-center items-center h-[560px] text-white text-center">
-    <InertiajsLogo class="w-[160px] h-[160px] mb-0" />
-    <h2 class="text-[100px] leading-[1.2] font-light">
-      <span class="text-yellow-400 font-bold">Inertia</span><span class="pr-6" /><span>無限滾動</span><span class="pr-6" /><IonInfinite class="inline-block w-36 h-36" />
+<Container bg="wave-full" class="font-light">
+  <div class="relative flex flex-col justify-center items-center h-[540px] text-white text-center">
+    <InertiajsLogo class="w-[160px] h-[160px] mb-4" />
+    <h2 class="flex justify-center items-center text-[100px]">
+      <span><span class="text-yellow-400 font-bold">Inertia</span> 無限滾動</span>
+      <IonInfinite class="w-36 h-36 ml-6" />
     </h2>
   </div>
-</div>
+</Container>

@@ -10,9 +10,7 @@ const DEFAULT_POST_TRUNCATE = 120
 
 export async function createAstroContainerWithMdx() {
   const container = await AstroContainer.create()
-  // @ts-ignore
   container.addServerRenderer({ renderer: vueRenderer })
-  // @ts-ignore
   container.addServerRenderer({ renderer: mdxRenderer })
   container.addClientRenderer({
     name: '@astrojs/vue',
