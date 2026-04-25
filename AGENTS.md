@@ -29,9 +29,10 @@
 - `src/content/og/` — per-post OG image Astro templates (only posts with a matching file here get a custom OG image; the rest use static images in `public/images/`).
 - `src/og/` — renders OG Astro templates to HTML strings via `AstroContainer`.
 - `src/pages/og/[filename].astro` — dev-only devtools page, blocked in production (redirects to /404).
+- Screenshots are captured by `.claude/skills/og-image/scripts/capture-og-image.mjs` (Playwright + sharp). Set `CHROME_EXECUTABLE_PATH` in `.env` to use the system Chrome; omit to use Playwright's built-in Chromium (`pnpm exec playwright install chromium` required).
 
 ## Non-Obvious Behavior
 
 - Draft posts (`draft: true` in frontmatter) are visible in dev but hidden in production.
-- OG image dev page loads Inter and Noto Sans TC via Google Fonts `<link>` tags; screenshots are captured by chrome-devtools MCP.
+- OG image dev page loads Inter and Noto Sans TC via Google Fonts `<link>` tags; screenshots are captured by Playwright using the system Chrome specified in `.env`.
 - Build command runs `astro check` before `astro build`; type errors will fail the build.
