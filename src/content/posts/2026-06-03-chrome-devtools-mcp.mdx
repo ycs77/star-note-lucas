@@ -1,0 +1,77 @@
+---
+title: Chrome DevTools MCP 在 Windows 與 WSL 的設定筆記
+# description:
+# image:
+pubDate: 2026-06-03
+category: coding
+tags: ["WSL", "Chrome", "MCP"]
+draft: true
+---
+
+不得不說，要設定 Chrome DevTools MCP 可以連上 Chrome 來進行除錯或自動控制，是真的有夠麻煩的。嘗試了好多種方法，目前有整理出我覺得比較容易操作的步驟和採到的坑都記錄下來了~
+
+## Windows 設定 Chrome DevTools MCP
+
+### 在 Chrome 中設定 Remote debugging
+
+開啟 [chrome://inspect/#remote-debugging](chrome://inspect/#remote-debugging)，然後勾選「Allow remote debugging for this browser instance」並確定出現「Server running at: 127.0.0.1:9222」訊息。
+
+### 設定 Chrome DevTools MCP
+
+```json file=".mcp.json"
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--autoConnect"
+      ]
+    }
+  }
+}
+```
+
+## WSL 設定 Chrome DevTools MCP
+
+### 啟用 Mirrored Networking Mode
+
+開啟 WSL 設定檔並加入以下內容：
+
+```ini title="C:\Users\[USER]\.wslconfig"
+[wsl2]
+networkingMode=mirrored
+```
+
+### 啟動可讓 MCP 連接的 Chrome
+
+```powershell
+& "C:\Program Files\Google\Chrome\Application\chrome.exe" `
+  --remote-debugging-port=9922 `
+  --user-data-dir="$env:TEMP\chrome-devtools-mcp-profile"
+```
+
+### 設定 Chrome DevTools MCP
+
+```json file=".mcp.json"
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--browser-url=http://127.0.0.1:9922"
+      ]
+    }
+  }
+}
+```
+
+## 參考資料
+
+- [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp)
+- [Chrome DevTools MCP Troubleshooting](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/troubleshooting.md)
