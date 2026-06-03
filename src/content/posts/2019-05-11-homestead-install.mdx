@@ -276,19 +276,19 @@ ngrok http example.com:443 --host-header=rewrite
 
 需要關閉「容器」、「Windows 沙箱」、「虛擬機器平台」、「Windows 子系統 Linux 版」、「Hyper-V」功能，以「系統管理員」身分開啟 PowerShell 執行：
 
-```bash
+```powershell
 Disable-WindowsOptionalFeature -Online -FeatureName Containers,Containers-DisposableClientVM,VirtualMachinePlatform,Microsoft-Windows-Subsystem-Linux,Microsoft-Hyper-V-All
 ```
 
 若需要使用 Docker 或 WSL 的話，可以重新開啟：
 
-```bash
+```powershell
 Enable-WindowsOptionalFeature -Online -FeatureName Containers,Containers-DisposableClientVM,VirtualMachinePlatform,Microsoft-Windows-Subsystem-Linux,Microsoft-Hyper-V-All
 ```
 
 檢查功能是否開啟：
 
-```bash
+```powershell
 Get-WindowsOptionalFeature -Online -FeatureName Containers
 Get-WindowsOptionalFeature -Online -FeatureName Containers-DisposableClientVM
 Get-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform

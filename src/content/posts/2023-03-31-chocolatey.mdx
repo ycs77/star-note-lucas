@@ -13,13 +13,13 @@ tags: ["powershell"]
 
 以系統管理員身分執行 Powershell：
 
-```
+```powershell
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 ```
 
 安裝軟體 (可以在[這裡](https://community.chocolatey.org/packages)搜尋軟體)：
 
-```
+```bash
 choco install googlechrome -y
 choco install line -y
 choco install git -y
@@ -32,7 +32,7 @@ choco install k-litecodecpackfull -y
 
 查看本地安裝的軟體：
 
-```
+```bash
 choco list -l
 ```
 
