@@ -1,6 +1,6 @@
 ---
 title: Chrome DevTools MCP 在 Windows 與 WSL 的設定筆記
-# description:
+description: 記錄 Chrome DevTools MCP 在 Windows 與 WSL 的設定筆記，包含 Remote debugging 和 Command 啟用兩種方式來啟動可自動化操作的 Chrome 的方式。
 # image:
 pubDate: 2026-06-03
 category: coding
@@ -8,15 +8,38 @@ tags: ["WSL", "Chrome", "MCP"]
 draft: true
 ---
 
-不得不說，要設定 Chrome DevTools MCP 可以連上 Chrome 來進行除錯或自動控制，是真的有夠麻煩的。嘗試了好多種方法，目前有整理出我覺得比較容易操作的步驟和採到的坑都記錄下來了~
+最近在沉浸於將 AI 的方方面面導入到我的開發流程中，其中一個環節我很久前就想嘗試的就是瀏覽器內的除錯，畢竟瀏覽器內才能看到前端出錯時的許多細節。而工具方面，就我所知現在比較常見的瀏覽器自動化有 Chrome 官方的 [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp) 和 Vercel 的 [agent-browser](https://github.com/vercel-labs/agent-browser)，因此我兩個都來試了一下啦~
+
+不得不說，要設定 Chrome DevTools MCP 可以連上 Chrome 來進行除錯或自動控制，是真的有夠麻煩的，在 Windows 上原本測好的方式，開了 WSL 卻不能用。嘗試了好多種方法，目前有整理出我覺得比較容易操作的步驟和採到的坑都記錄下來了~
+
+## 連接方式
+
+Chrome 要啟用自動化操作主要有兩種方式：
+
+- **啟用 Remote debugging**：可以直接連上現在正在使用的，主要的 Chrome 瀏覽器環境，重點是 Default Profile 也可以 (Chrome 144+ 才能用)。MCP 透過 `--auto-connect` 參數連接。
+- **Command 啟用可以遠端連線的 Chrome**：會開啟一個全新的 Chrome 環境，可以設定允許連接的 Port，也可以指定當前瀏覽器的 User Data 保存的位置，但需注意無法指定 Default Profile。MCP 透過 `--browser-url` 參數連接。
+
+看了兩種方式，想當然耳為了方便，自然會想要選擇比較不安全的啟用 Remote debugging 的選項嘛~ 這個方式在 Windows 直接開是沒有問題的，照後續的說明設定一下就可以用了。而如果想要完全乾淨的環境也可以用 Command 啟用的方式來設定。
+
+但是 WSL 無法用啟用 Remote debugging 的方式，別問我怎麼知道的呵呵~ 原因似乎是啟用 Remote debugging 選項並自動發現的機制，似乎根本就不是透過 Port 的方式，而是監看某個資料夾的樣子，反正如果在 Windows 外面開了 Chrome，在 WSL 內也只會讀 WSL 自己環境內的資料 (當然是空的)，自然就行不通。
+
+後來死心之後，我終於才去試了一下透過 Command 來啟動 Chrome，最後的最後也是終於試出一個可行的方案了~ 可喜可賀可喜可賀~
+
+那下面就來看看吧~
+
+歐差點忘了說，我現在平常是用 Claude Code，因此下面的 MCP 設定是以 Claude Code 的 MCP 設定為範例，如果你使用的是其他的 AI Agent，請自行替換成對應的設定喔~
 
 ## Windows 設定 Chrome DevTools MCP
+
+Windows 這邊就以 **啟用 Remote debugging** 的方式來示範，喔對說一下，記得你的 Chrome 版本要 144 以上才有這功能~
 
 ### 在 Chrome 中設定 Remote debugging
 
 開啟 [chrome://inspect/#remote-debugging](chrome://inspect/#remote-debugging)，然後勾選「Allow remote debugging for this browser instance」並確定出現「Server running at: 127.0.0.1:9222」訊息。
 
 ### 設定 Chrome DevTools MCP
+
+然後在你的前端專案什麼的都行，加入 Chrome DevTools MCP 的設定。只是不知道為什麼，Claude Code 在 Windows 上有個奇怪的問題，如果是使用 npx 來啟動的 MCP，都需要加上 `cmd /c` 才能跑就對了，其他 AI Agent 或其他平台似乎都不用。
 
 ```json file=".mcp.json"
 {
@@ -28,7 +51,7 @@ draft: true
         "npx",
         "-y",
         "chrome-devtools-mcp@latest",
-        "--autoConnect"
+        "--auto-connect"
       ]
     }
   }
@@ -37,7 +60,21 @@ draft: true
 
 ## WSL 設定 Chrome DevTools MCP
 
+WSL 這邊我就只能用 Command 啟用可以遠端連線的 Chrome 的方式了。
+
 ### 啟用 Mirrored Networking Mode
+
+目前依照 Chrome DevTools MCP 文件的說明，你只有 3 種方式可以在 WSL 中使用：
+
+1. 在 WSL 中直接安裝 Chrome
+2. 啟用 Mirrored Networking Mode
+3. 別用 WSL 試了，滾回去 Windows
+
+在 WSL 中直接安裝 Chrome 的方式我試過，但是那個 UI 我真的操作不習慣。別用 WSL 滾回去 Windows 的選項則是完全就不在我的選項之內，拜託我就是因為 Windows 開發很多問題才進 WSL 的好不好！
+
+因此最後只剩下啟用 Mirrored Networking Mode，然後我依然還是不死心，天真的想說能不能不設定就繼續後續的步驟? 因為怕會有副作用。但結論是，想都別想。
+
+因此，就只能乖乖地開囉~
 
 開啟 WSL 設定檔並加入以下內容：
 
@@ -46,7 +83,17 @@ draft: true
 networkingMode=mirrored
 ```
 
+然後開 CMD 或 PowerShell 來關機 WSL，然後重新開 WSL 的終端就可以了：
+
+```powershell
+wsl.exe --shutdown
+```
+
+這個選項似乎也是會有副作用的，說是可能 Docker 的網路介面相關會故障，因此如果有要開 Docker 之類的記得關掉。
+
 ### 啟動可讓 MCP 連接的 Chrome
+
+在 PowerShell 啟動 Chrome：
 
 ```powershell
 & "C:\Program Files\Google\Chrome\Application\chrome.exe" `
@@ -54,7 +101,17 @@ networkingMode=mirrored
   --user-data-dir="$env:TEMP\chrome-devtools-mcp-profile"
 ```
 
+或是用 Git Bash 啟動：
+
+```bash
+"/c/Program Files/Google/Chrome/Application/chrome.exe" \
+  --remote-debugging-port=9922 \
+  --user-data-dir="$TEMP/chrome-devtools-mcp-profile" &
+```
+
 ### 設定 Chrome DevTools MCP
+
+最後在 WSL 的專案中設定 MCP 就好啦~
 
 ```json file=".mcp.json"
 {
