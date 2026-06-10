@@ -1,0 +1,284 @@
+---
+title: 修復 VSCode 在 WSL 中無法載入 composer.json 的 JSON Schema
+description: VSCode 在 WSL 中載入 composer.json 的 JSON Schema 會失敗，原因是 WSL 無 IPv6 路由、VSCode 內建 Node.js 沒有正確 fallback 到 IPv4。提供兩種解法：透過 systemd service 動態將網域固定為 IPv4，或直接停用 WSL 的 IPv6。
+# image:
+pubDate: 2026-06-10
+category: coding
+tags: [VSCode, WSL, Composer, PHP]
+---
+
+## 問題描述
+
+最近在開 Laravel 的新專案的時候，有注意到說 v12 左右開始 `composer.json` 會出現了 JSON Schema 的連結：
+
+```json
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "laravel/laravel",
+    "type": "project",
+    ...
+}
+```
+
+這個 JSON Schema 的連結加上了之後，VSCode 就可以明確知道當前 JSON 格式有哪些欄位定義，可以知道型別、顯示欄位的說明，對於 DX 上是有幫助的。
+
+VS Code 設定如下，`json.schemaDownload.enable` 已啟用，且 `getcomposer.org` 也在信任清單中：
+
+```json
+{
+  "json.schemaDownload.enable": true,
+  "json.schemaDownload.trustedDomains": {
+    "https://getcomposer.org/": true
+  }
+}
+```
+
+其他 JSON Schema 都可以正常載入（如 `https://www.schemastore.org/package.json`），只有 `getcomposer.org` 這個會失敗。
+
+為了找出問題，依序查詢了以下幾個 JSON Schema 的載入情形：
+
+- ⭕ 在 Windows 上開 VSCode 看 `package.json` (https://www.schemastore.org/package.json)
+- ⭕ 在 Windows 上開 VSCode 看 `composer.json` (https://getcomposer.org/schema.json)
+- ⭕ 在 WSL 中開 VSCode 看 `package.json` (https://www.schemastore.org/package.json)
+- ❌ 在 WSL 中開 VSCode 看 `composer.json` (https://getcomposer.org/schema.json)
+
+其他幾個方向沒有問題的，但是唯獨在 WSL 中看 `composer.json` 就會出現以下警告：
+
+```
+unable to load schema from 'https://getcomposer.org/schema.json': not found.
+the requested location could not be found.
+unable to connect to https://getcomposer.org/schema.json. error: .json(65541)
+```
+
+實話說這個問題並不影響開發，可是不解決實在是會讓我的頭超癢，因此還是駕駛起我的 AI 機器人開始尋找問題啦~
+
+## AI 診斷過程
+
+其實在之前我已經有讓 AI 在 WSL 中和 VSCode 的 Source Code 中爬過了，連 Google 都找過了一遍，當時都沒有找出真正的解法，只找到了問題可能和 Node.js 的 ipv4/v6 部分相關。然後以下就是勤勉的 AI 的解題資訊。
+
+這段有點長，如果急需解決的話可以直接看 [解決方法](#解決方法) 段落。
+
+### 步驟 1：確認 curl 與 Node.js 是否可以連線
+
+在 WSL 中直接執行 `curl`，確認網路本身是否有問題：
+
+```bash
+curl -v https://getcomposer.org/schema.json
+```
+
+結果：可以成功連線，回傳 HTTP 200。
+
+觀察到 curl 的輸出中有一個關鍵細節：
+
+```
+* IPv6: 2607:5300:201:2100::6e1
+* IPv4: 57.128.19.244
+*   Trying 57.128.19.244:443...
+*   Trying [2607:5300:201:2100::6e1]:443...
+* Immediate connect fail for 2607:5300:201:2100::6e1: Network is unreachable
+* Connected to getcomposer.org (57.128.19.244) port 443
+```
+
+IPv6 連線立刻失敗（Network is unreachable），但 curl 正確 fallback 到 IPv4 成功連線。
+
+接著測試 Node.js 是否也能連線：
+
+```javascript
+const https = require('https');
+const req = https.get('https://getcomposer.org/schema.json', (res) => {
+  console.log('Status:', res.statusCode);
+  res.destroy();
+});
+req.on('error', (e) => { console.error('Error:', e.message, e.code); });
+```
+
+結果：Node.js (`v24`) 也可以成功連線，回傳 HTTP 200。
+
+### 步驟 2：確認 DNS 解析結果
+
+```javascript
+const dns = require('dns');
+dns.lookup('getcomposer.org', { all: true }, (err, addresses) => {
+  console.log('lookup results:', addresses);
+});
+```
+
+結果：
+
+```
+lookup results: [
+  { address: '57.128.19.244', family: 4 },
+  { address: '2607:5300:201:2100::6e1', family: 6 }
+]
+```
+
+DNS 同時回傳了 IPv4 和 IPv6 地址。
+
+### 步驟 3：確認 IPv6 連線狀況
+
+```bash
+curl -6 -v --connect-timeout 5 https://getcomposer.org/schema.json
+```
+
+結果：
+
+```
+* Trying [2607:5300:201:2100::6e1]:443...
+* Immediate connect fail for 2607:5300:201:2100::6e1: Network is unreachable
+```
+
+**強制使用 IPv6 時完全無法連線。**
+
+### 步驟 4：確認 WSL 的 IPv6 介面狀態
+
+```bash
+ip -6 addr show
+ip -6 route show
+```
+
+結果：
+
+```
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP>
+    inet6 fe80::215:5dff:fe91:190d/64 scope link   ← 只有 link-local，沒有 global 地址
+
+fe80::/64 dev eth0 proto kernel metric 256 pref medium   ← 沒有預設路由
+```
+
+確認：WSL 的 `eth0` 只有 link-local IPv6 地址（`fe80::...`），沒有可路由的 global IPv6 地址，IPv6 出口路由不存在。
+
+## AI 認定的根本原因
+
+```
+schema domain DNS → 回傳 IPv4 + IPv6
+        ↓
+VS Code 內建 Node.js 嘗試 IPv6 連線
+        ↓
+WSL 無 IPv6 路由 → Network is unreachable
+        ↓
+VS Code 的 http module 沒有正確 fallback 到 IPv4
+        ↓
+schema 載入失敗，丟出 .json(65541) 錯誤
+```
+
+**為什麼 curl 和系統 Node.js 可以，VS Code 不行？**
+
+- `curl` 自己實作了 Happy Eyeballs（RFC 8305），IPv6 失敗後會自動 fallback 到 IPv4
+- 系統 Node.js `v24` 修正了這個 fallback 問題
+- VS Code 內建自己版本的 Node.js，版本不同，IPv6 失敗後沒有正確 fallback
+
+此問題不只發生在 `getcomposer.org`，任何 DNS 同時回傳 IPv4 + IPv6 的 schema domain 都可能受影響。
+
+## 解決方法
+
+AI 有提出了兩種解決方法：
+
+1. 直接把 JSON Schema 的 IPv4 寫死到 `/etc/hosts`
+2. 停用 WSL 的 IPv6，讓連線固定會使用 IPv4
+
+方案 A 我還有和 AI 進行了多輪修改，目前這個是比較彈性通用的版本，如果有其他 JSON Schema 也有這個問題的話，也可以加入到這個修復之中。
+
+目前這兩種都可以解決，方案 A 影響範圍比較小，而方案 B 如果你有使用到 IPv6 的功能才會比較有影響，就看你想如何解決~
+
+### 方案 A：將 JSON Schema 網域固定為 IPv4
+
+直接把 IP 寫死到 `/etc/hosts` 有兩個問題：WSL 每次重開機會重置 `hosts`，而且 IP 本身也可能變動。解法是建立一個 systemd service，在每次啟動時動態查詢最新 IPv4 並自動注入。
+
+Domain 列表直接寫在腳本內，需要新增受影響的 domain 時直接編輯腳本即可。
+
+**步驟 1：建立腳本 `/usr/local/bin/vscode-json-schema-ipv4-fix.sh`**
+
+```bash
+NODE_BIN=$(which node) && sudo tee /usr/local/bin/vscode-json-schema-ipv4-fix.sh << EOF
+#!/bin/bash
+MARKER="# vscode-json-schema-ipv4-fix"
+
+# 在這裡新增需要固定為 IPv4 的 domain
+DOMAINS=(
+  "getcomposer.org"
+)
+
+# 先清除所有舊的 patch 記錄
+sed -i "/\$MARKER/d" /etc/hosts
+
+for DOMAIN in "\${DOMAINS[@]}"; do
+  IPV4=\$($NODE_BIN -e "require('dns').resolve4('\$DOMAIN', (e,a) => { if(e) process.exit(1); console.log(a[0]); })" 2>/dev/null)
+
+  if [ -z "\$IPV4" ]; then
+    echo "vscode-json-schema-ipv4-fix: 無法解析 \$DOMAIN，跳過" >&2
+    continue
+  fi
+
+  echo "\$IPV4 \$DOMAIN \$MARKER" >> /etc/hosts
+  echo "vscode-json-schema-ipv4-fix: \$DOMAIN -> \$IPV4"
+done
+EOF
+sudo chmod +x /usr/local/bin/vscode-json-schema-ipv4-fix.sh
+```
+
+**步驟 2：建立 systemd service**
+
+```bash
+sudo tee /etc/systemd/system/vscode-json-schema-ipv4-fix.service << 'EOF'
+[Unit]
+Description=Patch /etc/hosts with IPv4 entries for VS Code JSON Schema domains
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/vscode-json-schema-ipv4-fix.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+**步驟 3：啟用並啟動**
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable vscode-json-schema-ipv4-fix.service
+sudo systemctl start vscode-json-schema-ipv4-fix.service
+```
+
+**確認是否成功：**
+
+```bash
+systemctl status vscode-json-schema-ipv4-fix.service
+grep "vscode-json-schema-ipv4-fix" /etc/hosts
+# 預期輸出：
+# 54.39.182.210 getcomposer.org # vscode-json-schema-ipv4-fix
+```
+
+**新增 domain：**
+
+直接編輯腳本，在 `DOMAINS` 陣列中加入新的 domain，然後重新執行一次：
+
+```bash
+sudo vim /usr/local/bin/vscode-json-schema-ipv4-fix.sh
+sudo systemctl restart vscode-json-schema-ipv4-fix.service
+```
+
+### 方案 B：停用 WSL 的 IPv6
+
+WSL 本身沒有可用的 IPv6 路由，停用它也可以解決問題，但影響範圍是整個系統層級，若未來有其他服務需要 IPv6（如某些 Docker 網路設定）可能會受影響。
+
+**立即生效（重啟後失效）：**
+
+```bash
+sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
+sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
+```
+
+**永久生效：**
+
+建立 `/etc/sysctl.d/99-disable-ipv6.conf`，內容如下：
+
+```
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+```
+
+停用後重啟 VS Code，schema 即可正常載入。
