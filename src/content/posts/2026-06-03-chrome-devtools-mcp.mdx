@@ -28,15 +28,15 @@ Chrome 要啟用自動化操作主要有兩種方式：
 
 歐差點忘了說，我現在平常是用 Claude Code，因此下面的 MCP 設定是以 Claude Code 的 MCP 設定為範例，如果你使用的是其他的 AI Agent，請自行替換成對應的設定喔~
 
-## Windows 設定 Chrome DevTools MCP
+## 情境一：Windows 設定 Chrome DevTools MCP
 
 Windows 這邊就以 **啟用 Remote debugging** 的方式來示範，喔對說一下，記得你的 Chrome 版本要 144 以上才有這功能~
 
-### 在 Chrome 中設定 Remote debugging
+### 1. 在 Chrome 中設定 Remote debugging
 
 開啟 [chrome://inspect/#remote-debugging](chrome://inspect/#remote-debugging)，然後勾選「Allow remote debugging for this browser instance」並確定出現「Server running at: 127.0.0.1:9222」訊息。
 
-### 設定 Chrome DevTools MCP
+### 2. 設定 Chrome DevTools MCP
 
 然後在你的前端專案什麼的都行，加入 Chrome DevTools MCP 的設定。只是不知道為什麼，Claude Code 在 Windows 上有個奇怪的問題，如果是使用 npx 來啟動的 MCP，都需要加上 `cmd /c` 才能跑就對了，其他 AI Agent 或其他平台似乎都不用。
 
@@ -57,11 +57,11 @@ Windows 這邊就以 **啟用 Remote debugging** 的方式來示範，喔對說�
 }
 ```
 
-## WSL 設定 Chrome DevTools MCP
+## 情境二：WSL 設定 Chrome DevTools MCP
 
 WSL 這邊我就只能用 Command 啟用可以遠端連線的 Chrome 的方式了。
 
-### 啟用 Mirrored Networking Mode
+### 1. 啟用 Mirrored Networking Mode
 
 目前依照 Chrome DevTools MCP 文件的說明，你只有 3 種方式可以在 WSL 中使用：
 
@@ -90,7 +90,7 @@ wsl.exe --shutdown
 
 這個選項似乎也是會有副作用的，說是可能 Docker 的網路介面相關會故障，因此如果有要開 Docker 之類的記得關掉。
 
-### 啟動可讓 MCP 連接的 Chrome
+### 2. 啟動可讓 MCP 連接的 Chrome
 
 在 PowerShell 啟動 Chrome：
 
@@ -108,7 +108,7 @@ wsl.exe --shutdown
   --user-data-dir="$TEMP/chrome-devtools-mcp-profile" &
 ```
 
-### 設定 Chrome DevTools MCP
+### 3. 設定 Chrome DevTools MCP
 
 最後在 WSL 的專案中設定 MCP 就好啦~
 
