@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 import { mkdir } from 'node:fs/promises'
-import { dirname, join, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join, resolve } from 'node:path'
 import { config } from 'dotenv'
 import { chromium } from 'playwright'
 import sharp from 'sharp'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const projectRoot = resolve(__dirname, '../../../../')
+const projectRoot = resolve(import.meta.dirname, '../')
+const width = 1200
+const height = 630
 
 config({ path: join(projectRoot, '.env') })
 
 const slug = process.argv[2]
 if (!slug) {
   console.error('Error: slug is required')
-  console.error('Usage: node capture-og-image.mjs <slug>')
+  console.error('Usage: pnpm ogimage <slug>')
   process.exit(1)
 }
 
@@ -34,7 +34,7 @@ try {
     args: ['--disable-gpu'],
   })
   const page = await browser.newPage()
-  await page.setViewportSize({ width: 1200, height: 630 })
+  await page.setViewportSize({ width, height })
 
   let response
   try {
@@ -57,11 +57,11 @@ try {
   const buffer = await page.screenshot({ type: 'jpeg', quality: 95, fullPage: false })
 
   await sharp(buffer)
-    .resize(1200, 630, { fit: 'fill' })
+    .resize(width, height, { fit: 'fill' })
     .jpeg({ quality: 95 })
     .toFile(outputPath)
 
-  console.log(`Saved: ${outputPath}`)
+  console.log(`Saved:  ${outputPath}`)
 } finally {
   if (browser) await browser.close()
 }

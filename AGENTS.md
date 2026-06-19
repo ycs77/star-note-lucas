@@ -18,6 +18,7 @@
 - `pnpm astro check`
 - `pnpm lint --fix`
 - `pnpm eslint [...files] --fix`
+- `pnpm ogimage <slug>` — capture OG image for a post with the given slug
 
 ## Rules
 
@@ -29,7 +30,7 @@
 - `src/content/og/` — per-post OG image Astro templates (only posts with a matching file here get a custom OG image; the rest use static images in `public/images/`).
 - `src/og/` — renders OG Astro templates to HTML strings via `AstroContainer`.
 - `src/pages/og/[filename].astro` — dev-only devtools page, blocked in production (redirects to /404).
-- Screenshots are captured by `.claude/skills/og-image/scripts/capture-og-image.mjs` (Playwright + sharp). Set `CHROME_EXECUTABLE_PATH` in `.env` to use the system Chrome; omit to use Playwright's built-in Chromium (`pnpm exec playwright install chromium` required).
+- Screenshots are captured by `scripts/capture-og-image.js` (Playwright + sharp). Set `CHROME_EXECUTABLE_PATH` in `.env` to use the system Chrome; omit to use Playwright's built-in Chromium (`pnpm exec playwright install chromium` required).
 
 ## Non-Obvious Behavior
 

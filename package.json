@@ -11,7 +11,8 @@
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "lint": "eslint . --cache --concurrency auto"
+    "lint": "eslint . --cache --concurrency auto",
+    "ogimage": "node scripts/capture-og-image.js"
   },
   "dependencies": {
     "@vueuse/core": "^14.3.0",
