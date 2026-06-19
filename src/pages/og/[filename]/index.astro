@@ -62,9 +62,20 @@ const { width, height, html } = await getOGImageHtml({
       <Fragment set:html={html} />
 
       <!-- 輔助邊框 -->
-      <!-- <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div id="border" class="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ display: 'none' }}>
         <div class="h-full aspect-video border border-gray-300"></div>
-      </div> -->
+      </div>
     </div>
+
+    <script>
+      const borderParam = new URLSearchParams(window.location.search).get('border')
+      const showBorder = borderParam === '1'
+      if (showBorder) {
+        const borderDiv = document.getElementById('border')
+        if (borderDiv) {
+          borderDiv.style.display = ''
+        }
+      }
+    </script>
   </body>
 </html>
