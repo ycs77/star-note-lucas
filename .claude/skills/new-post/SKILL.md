@@ -34,10 +34,11 @@ description: 為這個 Astro blog 建立新文章。當使用者說「新增文�
 ---
 title: <title>
 # description: <description>
-# image:
+# image: /og/<YYYY-MM-DD>-<slug>.jpg
+# showImage: false
 pubDate: <YYYY-MM-DD>
 category: <category>
-tags: [<tags>]
+tags: ["<tag>", "<tag>", ...]
 draft: true
 ---
 

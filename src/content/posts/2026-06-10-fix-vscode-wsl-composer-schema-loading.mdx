@@ -1,10 +1,11 @@
 ---
 title: 修復 VSCode 在 WSL 中無法載入 composer.json 的 JSON Schema
-description: VSCode 在 WSL 中載入 composer.json 的 JSON Schema 會失敗，原因是 WSL 無 IPv6 路由、VSCode 內建 Node.js 沒有正確 fallback 到 IPv4。提供兩種解法：透過 systemd service 動態將網域固定為 IPv4，或直接停用 WSL 的 IPv6。
-# image:
+description: VSCode 在 WSL 中載入 composer.json 的 JSON Schema 會失敗，原因是 WSL 無 IPv6 路由、VSCode 內建 Node.js 沒有正確 fallback 到 IPv4。因此本文提供兩種解法：可以透過 systemd service 動態將網域固定為 IPv4，或直接停用 WSL 的 IPv6。
+image: /og/2026-06-10-fix-vscode-wsl-composer-schema-loading.jpg
+showImage: false
 pubDate: 2026-06-10
 category: coding
-tags: [VSCode, WSL, Composer, PHP]
+tags: ["VSCode", "WSL", "Composer"]
 ---
 
 ## 問題描述
