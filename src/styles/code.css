@@ -21,7 +21,8 @@
     box-shadow: none !important;
   }
 
-  .expressive-code .frame.is-terminal pre[data-language] {
+  .expressive-code .frame.is-terminal pre[data-language]:has(+ .output) {
+    border-bottom: none !important;
     border-bottom-left-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
   }
