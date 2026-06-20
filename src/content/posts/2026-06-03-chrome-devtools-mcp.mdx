@@ -41,7 +41,7 @@ Windows 這邊就以 **啟用 Remote debugging** 的方式來示範，喔對說�
 
 然後在你的前端專案什麼的都行，加入 Chrome DevTools MCP 的設定。只是不知道為什麼，Claude Code 在 Windows 上有個奇怪的問題，如果是使用 npx 來啟動的 MCP，都需要加上 `cmd /c` 才能跑就對了，其他 AI Agent 或其他平台似乎都不用。
 
-```json file=".mcp.json"
+```json title=".mcp.json"
 {
   "mcpServers": {
     "chrome-devtools": {
@@ -78,7 +78,7 @@ WSL 這邊我就只能用 Command 啟用可以遠端連線的 Chrome 的方式�
 
 開啟 WSL 設定檔並加入以下內容：
 
-```ini title="C:\Users\[USER]\.wslconfig"
+```ini title="C:\\Users\\[USER]\\.wslconfig"
 [wsl2]
 networkingMode=mirrored
 ```
@@ -113,7 +113,7 @@ wsl.exe --shutdown
 
 最後在 WSL 的專案中設定 MCP 就好啦~
 
-```json file=".mcp.json"
+```json title=".mcp.json"
 {
   "mcpServers": {
     "chrome-devtools": {
