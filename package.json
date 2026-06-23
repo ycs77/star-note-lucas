@@ -2,7 +2,7 @@
   "name": "star-note-lucas",
   "type": "module",
   "version": "0.0.0",
-  "packageManager": "pnpm@10.33.4",
+  "packageManager": "pnpm@11.8.0",
   "engines": {
     "node": "24.x"
   },
@@ -56,8 +56,5 @@
     "tailwindcss": "^4.3.0",
     "typescript": "~6.0.3",
     "unplugin-icons": "^23.0.1"
-  },
-  "resolutions": {
-    "chokidar": "^5.0.0"
   }
 }
