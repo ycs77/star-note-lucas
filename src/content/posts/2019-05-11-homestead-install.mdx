@@ -121,7 +121,7 @@ sudo update-alternatives --config editor
 
 ### 12. 配置共享資料夾
 
-預設的資料夾為 `C:\Users\[使用者]\code`，若 `code` 資料夾不存在須創建。
+預設的資料夾為 `C:\Users\[USER]\code`，若 `code` 資料夾不存在須創建。
 
 ```bash
 mkdir ~/code && cd ~/code
@@ -350,9 +350,9 @@ PATH="/home/vagrant/.yarn/bin:$PATH"
 
 刪除以下資料夾：
 
-* `C:\Users\[使用者]\.vagrant.d`
-* `C:\Users\[使用者]\VirtualBox VMs`
-* `C:\Users\[使用者]\Homestead\.vagrant`
+* `C:\Users\[USER]\.vagrant.d`
+* `C:\Users\[USER]\VirtualBox VMs`
+* `C:\Users\[USER]\Homestead\.vagrant`
 
 再重新執行 `vagrant up`
 

@@ -153,16 +153,6 @@ gpg --armor --export 0E4062EF
 
 並複製公鑰，到 [GitHub 的 SSH and GPG keys 設定](https://github.com/settings/keys)，新增一個 GPG 金鑰。
 
-### 設定 VS Code
-
-在 VS Code 增加 `git.enableCommitSigning`，之後 VS Code 提交 Git commit 時都會加上簽章：
-
-```json title="settings.json"
-{
-  "git.enableCommitSigning": true,
-}
-```
-
 ### 遷移 GPG 金鑰組到其他電腦
 
 匯出公鑰：
@@ -220,6 +210,38 @@ gpg --edit-key 0E4062EF
 ```
 
 進入互動介面後，輸入 `expire`，然後選擇新的有效期限比如 `2y`，最後輸入 `save` 就完成了。
+
+## 設定金鑰快取時間
+
+將 GPG Agent 的快取時間延長到 12 小時，可以在一天中只需輸入一次密碼：
+
+```apache title="C:\Users\[USER]\.gnupg\gpg-agent.conf"
+# Cache passphrase for 43200 seconds (12 hours)
+default-cache-ttl 43200
+
+# Keep passphrase at most 86400 seconds (24 hours)
+max-cache-ttl 86400
+```
+
+## WSL 切換成 Windows 原生 GUI 密碼輸入介面
+
+WSL 預設會使用文字介面的密碼輸入框，這裡可以改成 Windows 原生 GUI 密碼輸入框：
+
+```apache title="~/.gnupg/gpg-agent.conf"
+pinentry-program "/mnt/c/Program Files/Git/usr/bin/pinentry.exe"
+```
+
+重啟 GPG Agent：
+
+```bash
+gpg-connect-agent reloadagent /bye
+```
+
+然後執行以下指令測試：
+
+```bash
+echo "test" | gpg --clearsign
+```
 
 ## 參考資料
 
