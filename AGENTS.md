@@ -11,7 +11,6 @@
 - Node.js v24
 - Astro v6
 - TypeScript formatting: 2 spaces, single quotes, no semicolons, trailing commas
-- chrome-devtools MCP base URL: `http://localhost:4321/`
 
 ## Commands
 

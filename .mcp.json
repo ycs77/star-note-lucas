@@ -3,10 +3,6 @@
     "astro-docs": {
       "type": "http",
       "url": "https://mcp.docs.astro.build/mcp"
-    },
-    "chrome-devtools": {
-      "command": "cmd",
-      "args": ["/c", "npx", "-y", "chrome-devtools-mcp@latest"]
     }
   }
 }
