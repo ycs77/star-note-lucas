@@ -8,7 +8,7 @@
 
 ## Constraints
 
-- Node.js v24
+- Node.js v26
 - Astro v6
 - TypeScript formatting: 2 spaces, single quotes, no semicolons, trailing commas
 
