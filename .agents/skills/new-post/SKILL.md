@@ -28,7 +28,7 @@ description: 為這個 Astro blog 建立新文章。當使用者說「新增文�
 
 ## Step 2 — 建立文章
 
-在 `src/content/posts/YYYY-MM-DD-slug.mdx` 建立文章檔案。
+在 `src/content/posts/<YYYY-MM-DD>-<slug>.mdx` 建立文章檔案。
 
 ```mdx
 ---

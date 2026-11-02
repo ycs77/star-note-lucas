@@ -28,7 +28,7 @@ grep -rl "draft: true" src/content/posts/
 
 | 項目 | 規則 |
 |------|------|
-| 檔名格式 | 符合 `YYYY-MM-DD-slug.mdx` 或 `.md`（`parsePostSlug()` 依賴此格式） |
+| 檔名格式 | 符合 `<YYYY-MM-DD>-<slug>.mdx` 或 `.md`（`parsePostSlug()` 依賴此格式） |
 | 檔名日期 vs `pubDate` | 兩者日期一致 |
 | 必填欄位 | `title`、`pubDate`、`category` 都存在且非空 |
 | `category` 合法值 | 必須為 `coding`、`acg`、`life` 三者之一 |
@@ -40,7 +40,7 @@ grep -rl "draft: true" src/content/posts/
 |------|------|
 | `tags` | 存在且數量 2–4 個。若缺少，根據標題與內容建議 2–4 個 |
 | `description` | 存在且非空（影響 SEO 與列表頁顯示） |
-| OG image | 有 `image:` frontmatter 或 `src/content/og/<slug>.astro` 其一即可 |
+| OG image | 有 `image:` frontmatter 或 `src/content/og/<YYYY-MM-DD>-<slug>.astro` 其一即可 |
 | 標題長度 | ≤ 40 字（避免 OG image 擠壓） |
 | 內文長度 | ≥ 100 字（避免文章過於單薄） |
 
