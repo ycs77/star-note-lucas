@@ -2,7 +2,7 @@
   "name": "star-note-lucas",
   "type": "module",
   "version": "0.0.0",
-  "packageManager": "pnpm@11.8.0",
+  "packageManager": "pnpm@12.16.1",
   "engines": {
     "node": ">=22"
   },
