@@ -171,7 +171,7 @@ importers:
         version: 15.0.0(vue@3.5.44(typescript@6.0.3))
       astro-seo-schema:
         specifier: ^7.0.1
-        version: 7.0.1(astro@7.4.5(@astrojs/markdown-remark@7.3.5)(@types/node@24.19.2)(@vercel/functions@3.10.6)(jiti@2.7.0)(yaml@2.9.1))(schema-dts@2.1.0)
+        version: 7.0.1(astro@7.4.5(@astrojs/markdown-remark@7.3.5)(@types/node@24.19.2)(@vercel/functions@3.10.6)(jiti@2.7.0)(yaml@2.9.1))(schema-dts@1.1.5)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -188,8 +188,8 @@ importers:
         specifier: ^2.18.1
         version: 2.18.1
       schema-dts:
-        specifier: ^2.1.0
-        version: 2.1.0
+        specifier: ^1.1.0
+        version: 1.1.5
       tailwind-merge:
         specifier: ^3.7.0
         version: 3.7.0
@@ -3582,12 +3582,8 @@ packages:
     resolution: {integrity: sha512-42tBVwLWnaQvW5zc4HbZrTuWccECCZfBi92FDuwtqxasH+JbPB3/FOKb1m222K42R4WxuxzzMsTswfzgtSu64Q==}
     engines: {node: '>=11.0.0'}
 
-  schema-dts-lib@1.1.0:
-    resolution: {integrity: sha512-Nx00FDPHDimSENMznVpADeYUJDsqlMiO9wcs2S+giggNTm5+ruNkM4m9z9qCk6xUJT+ThDM3NxxpwfHfFk1G+Q==}
-    engines: {node: '>=14.0.0'}
-
-  schema-dts@2.1.0:
-    resolution: {integrity: sha512-Y/NvOvuJUZwrm+EmNqJF3M+bRufERJs1h5GJPLilUuK5D5b53ttU+XZgIjEFaAVRToh+ib+cQawFmxKC5Jt9ow==}
+  schema-dts@1.1.5:
+    resolution: {integrity: sha512-RJr9EaCmsLzBX2NDiO5Z3ux2BVosNZN5jo0gWgsyKvxKIUL5R3swNvoorulAeL9kLB0iTSX7V6aokhla2m7xbg==}
 
   scslre@0.3.0:
     resolution: {integrity: sha512-3A6sD0WYP7+QrjbfNA2FN3FsOaGGFoekCVgTyypy53gPxhbkCIjtO6YWgdrfM+n/8sI8JeXZOIxsHjMTNxQ4nQ==}
@@ -6022,10 +6018,10 @@ snapshots:
       rehype-expressive-code: 0.44.3
       url-extras: 0.1.0
 
-  astro-seo-schema@7.0.1(astro@7.4.5(@astrojs/markdown-remark@7.3.5)(@types/node@24.19.2)(@vercel/functions@3.10.6)(jiti@2.7.0)(yaml@2.9.1))(schema-dts@2.1.0):
+  astro-seo-schema@7.0.1(astro@7.4.5(@astrojs/markdown-remark@7.3.5)(@types/node@24.19.2)(@vercel/functions@3.10.6)(jiti@2.7.0)(yaml@2.9.1))(schema-dts@1.1.5):
     dependencies:
       astro: 7.4.5(@astrojs/markdown-remark@7.3.5)(@types/node@24.19.2)(@vercel/functions@3.10.6)(jiti@2.7.0)(yaml@2.9.1)
-      schema-dts: 2.1.0
+      schema-dts: 1.1.5
 
   astro@7.4.5(@astrojs/markdown-remark@7.3.5)(@types/node@24.19.2)(@vercel/functions@3.10.6)(jiti@2.7.0)(yaml@2.9.1):
     dependencies:
@@ -8350,11 +8346,7 @@ snapshots:
 
   sax@1.6.1: {}
 
-  schema-dts-lib@1.1.0: {}
-
-  schema-dts@2.1.0:
-    dependencies:
-      schema-dts-lib: 1.1.0
+  schema-dts@1.1.5: {}
 
   scslre@0.3.0:
     dependencies:
