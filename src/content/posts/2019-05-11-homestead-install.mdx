@@ -280,10 +280,10 @@ ngrok http example.com:443 --host-header=rewrite
 Disable-WindowsOptionalFeature -Online -FeatureName Containers,Containers-DisposableClientVM,VirtualMachinePlatform,Microsoft-Windows-Subsystem-Linux,Microsoft-Hyper-V-All
 ```
 
-若需要使用 Docker 或 WSL 的話，可以重新開啟：
+若需要使用 Docker 或 WSL 2 的話，可以開啟「虛擬機器平台」：
 
 ```powershell
-Enable-WindowsOptionalFeature -Online -FeatureName Containers,Containers-DisposableClientVM,VirtualMachinePlatform,Microsoft-Windows-Subsystem-Linux,Microsoft-Hyper-V-All
+Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform
 ```
 
 檢查功能是否開啟：
